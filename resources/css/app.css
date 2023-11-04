@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base{
+    :root{
+        --color-text-base: #140F07;
+        --color-text-secondary: #5b5fab;
+        --color-primary: #ffe5f4;
+        --color-secondary: #a49bf9;
+        --color-tertiary: #5b5fab;
+        --color-quaternary: #252c52;
+        --color-quinary: #140f07;
+    }
+}
+
 /*[x-cloak] {
     display: none;
 }*/

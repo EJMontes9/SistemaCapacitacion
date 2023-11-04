@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="lang="{{ str_replace('_', '-', app()->getLocale()) }}"">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,19 +37,13 @@
                     <!-- logo -->
                     <div class="min-w-max inline-flex relative">
                         <a href="/" class="relative flex items-center gap-3">
-                            <div class="relative w-7 h-7 overflow-hidden flex rounded-xl">
-                                <span class="absolute w-4 h-4 -top-1 -right-1 bg-green-500 rounded-md rotate-45"></span>
-                                <span class="absolute w-4 h-4 -bottom-1 -right-1 bg-[#FCDC58] rounded-md rotate-45"></span>
-                                <span class="absolute w-4 h-4 -bottom-1 -left-1 bg-blue-600 rounded-md rotate-45"></span>
-                                <span
-                                    class="absolute w-2 h-2 rounded-full bg-gray-900 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></span>
-                            </div>
                             <div class="inline-flex text-lg font-semibold text-gray-900">
-                                AgenceX
+                                {{config('app.global_variables.company_name')}}
                             </div>
                         </a>
                     </div>
 
+                    <!-- option -->
                     <div data-nav-overlay aria-hidden="true"
                          class="fixed hidden inset-0 lg:!hidden bg-gray-800/60 bg-opacity-50 backdrop-filter backdrop-blur-xl">
                     </div>
@@ -64,31 +58,48 @@
                             </li>
                             <li>
                                 <a href="#" class="duration-300 font-medium ease-linear hover:text-blue-600 py-3">
-                                    Services
+                                    Cursos
                                 </a>
                             </li>
                             <li>
                                 <a href="#" class="duration-300 font-medium ease-linear hover:text-blue-600 py-3">
-                                    About us
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="duration-300 font-medium ease-linear hover:text-blue-600 py-3">
-                                    Features
+                                    Contactanos
                                 </a>
                             </li>
                         </ul>
 
-                        <div
-                            class="lg:min-w-max flex items-center sm:w-max w-full pb-6 lg:pb-0 border-b border-gray-100   lg:border-0 px-6 lg:px-0">
-                            <a href="#"
-                               class="flex justify-center items-center w-full sm:w-max px-6 h-12 rounded-full outline-none relative overflow-hidden border duration-300 ease-linear
-                    after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-[#172554] hover:after:opacity-100 hover:after:scale-[2.5] bg-blue-600 border-transparent hover:border-[#172554]">
-                        <span class="relative z-10 text-white">
-                            Get Started
-                        </span>
-                            </a>
-                        </div>
+                        <!-- auth -->
+                        @if (Route::has('login'))
+                            <div
+                                class="lg:min-w-max flex items-center sm:w-max w-full pb-6 lg:pb-0 border-b border-gray-100   lg:border-0 px-6 lg:px-0">
+                                @auth
+                                    <a href="{{ url('/dashboard') }}"
+                                       class="flex justify-center items-center w-full sm:w-max px-6 h-12 rounded-full outline-none relative overflow-hidden border duration-300 ease-linear
+                                    after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-skin-hoverPrimary hover:after:opacity-100 hover:after:scale-[2.5] bg-skin-primary border-transparent hover:border-[#172554]">
+                                    <span class="relative z-10 text-white h">
+                                        Dashboard
+                                    </span>
+                                    </a>
+                                @else
+                                    <a href="{{ route('login') }}"
+                                        class="flex justify-center items-center w-full sm:w-max px-6 h-12 rounded-full outline-none relative overflow-hidden border duration-300 ease-linear
+                                        after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-skin-secondary hover:after:opacity-100 hover:after:scale-[2.5]  border-transparent ">
+                                        <span class="relative z-10 text-skin-secondary font-bold ">
+                                            Iniciar sesion
+                                        </span>
+                                    </a>
+                                    @if (Route::has('register'))
+                                        <a href="{{ route('register') }}"
+                                            class="flex justify-center items-center w-full sm:w-max px-6 h-12 rounded-full outline-none relative overflow-hidden border duration-300 ease-linear
+                                            after:absolute after:inset-x-0 after:aspect-square after:scale-0 after:opacity-70 after:origin-center after:duration-300 after:ease-linear after:rounded-full after:top-0 after:left-0 after:bg-skin-hoverPrimary hover:after:opacity-100 hover:after:scale-[2.5] bg-skin-primary border-transparent hover:border-[#172554]">
+                                            <span class="relative z-10 text-white h">
+                                                Registrarse
+                                            </span>
+                                        </a>
+                                    @endif
+                                @endauth
+                            </div>
+                        @endif
                     </div>
 
 
@@ -125,9 +136,9 @@
 
                     <h1 class="text-3xl leading-tight sm:text-4xl md:text-5xl xl:text-6xl
             font-bold text-gray-900">
-                        Social Media <span
-                            class="text-transparent bg-clip-text bg-gradient-to-br from-indigo-600 from-20% via-blue-600 via-30% to-green-600">Marketing</span>
-                        is the Best Ever.
+                        Cursos <span
+                            class="text-transparent bg-clip-text bg-gradient-to-br from-indigo-600 from-20% via-blue-600 via-30% to-green-600">Excepcionales</span>
+                        en un solo lugar.
                     </h1>
                     <p class="mt-8 text-gray-700">
                         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolores repellat perspiciatis aspernatur
@@ -166,7 +177,7 @@
                     </div>
                 </div>
                 <div class="flex flex-1 lg:w-1/2 lg:h-auto relative lg:max-w-none lg:mx-0 mx-auto max-w-3xl">
-                    <img src="https://agencex-astro.vercel.app/images/image1.webp" alt="Hero image" width="2350" height="2359"
+                    <img src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&q=80&w=1740&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Hero image" width="2350" height="2359"
                          class="lg:absolute lg:w-full lg:h-full rounded-3xl object-cover lg:max-h-none max-h-96">
                 </div>
             </div>
