@@ -187,4 +187,22 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Global Variables
+    |--------------------------------------------------------------------------
+    |
+    | This array of global variables will be registered when this application
+    | is started. However, feel free to register as many as you wish as
+    | the variables are "lazy" loaded so they don't hinder performance.
+    | You can access these variables in your blade files by using {{ $variable }}
+    | or in your controllers by using $this->variable
+    |
+    */
+
+    'global_variables' => [
+        'company_name' => env('COMPANY_NAME', 'Nombre de la empresa'),
+        ],
+
+
 ];
