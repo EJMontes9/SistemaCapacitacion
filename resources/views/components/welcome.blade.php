@@ -1,5 +1,5 @@
 <main>
-    <div class="pt-6 px-4">
+
         <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
             <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8  2xl:col-span-2">
                 <x-graficos>
@@ -66,7 +66,6 @@
                 <x-progreso-cursos></x-progreso-cursos>
             </div>
         </div>
-    </div>
 </main>
 
 <!--<div class="p-6 lg:p-8 bg-white border-b border-gray-200">
