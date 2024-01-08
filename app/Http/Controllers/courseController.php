@@ -25,7 +25,7 @@ class courseController extends Controller
     {
         $categories = category::get();
         $levels = level::get();
-        return view('courses.create-courses',compact('categories'),compact('levels'));
+        return view('courses.create-courses',compact('categories','levels'));
     }
 
     /**
@@ -33,14 +33,14 @@ class courseController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        //dd($request->all());
         $courses = new courses;
         $courses->title = $request->title;
         $courses->subtitle = $request->subtitle;
         $courses->description = $request->description;
         $courses->slug = $request->slug;
         $courses->user_id = 2;
-        $courses->level_id = 1;
+        $courses->level_id = $request->level;
         $courses->category_id = $request->category;
         $courses->price_id = $request->price;
         $courses->image = $request->image;
