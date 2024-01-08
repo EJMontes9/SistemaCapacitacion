@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\category;
 use App\Models\courses;
+use App\Models\level;
 use Illuminate\Http\Request;
 
 class courseController extends Controller
@@ -21,7 +23,9 @@ class courseController extends Controller
      */
     public function create()
     {
-        return view('courses.create-courses');
+        $categories = category::get();
+        $levels = level::get();
+        return view('courses.create-courses',compact('categories'),compact('levels'));
     }
 
     /**
@@ -29,7 +33,19 @@ class courseController extends Controller
      */
     public function store(Request $request)
     {
-        echo 'store';
+        dd($request->all());
+        $courses = new courses;
+        $courses->title = $request->title;
+        $courses->subtitle = $request->subtitle;
+        $courses->description = $request->description;
+        $courses->slug = $request->slug;
+        $courses->user_id = 2;
+        $courses->level_id = 1;
+        $courses->category_id = $request->category;
+        $courses->price_id = $request->price;
+        $courses->image = $request->image;
+        $courses->save();
+        return redirect()->route('courses.index');
     }
 
     /**
