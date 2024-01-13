@@ -10,24 +10,22 @@
                     <x-input class="mt-4 lg:w-1/2" type="text" name="subtitle" placeholder="Subtitulo del curso" />
                 </div>
                 <x-text-area class="mt-4" type="text" name="description" placeholder="Descripción del curso" />
-                <x-input class="mt-4" type="text" name="slug" placeholder="slug" />
                 <div class="flex flex-col lg:flex-row">
-                    <x-combobox class="mt-4 lg:w-1/2 lg:mr-2" name="category">
+                    <x-combobox class="mt-4 lg:w-1/2 lg:mr-2 text-gray-500" name="category_id">
                         <x-slot name="title">Categoria</x-slot>
-                        <option class="text-gray-300" value="0">Seleccione una categoria...</option>
+                        <option value="0">Seleccione una categoria...</option>
                         @foreach ($categories as $category)
                             <option value="{{$category->id}}">{{$category->name}}</option>
                         @endforeach
                     </x-combobox>
-                    <x-combobox class="mt-4 lg:w-1/2" name="level">
+                    <x-combobox class="mt-4 lg:w-1/2 text-gray-500" name="level_id">
                         <x-slot name="title">Nivel</x-slot>
-                        <option class="text-gray-300" value="0">Seleccione un nivel...</option>
+                        <option  value="0">Seleccione un nivel...</option>
                         @foreach ($levels as $level)
                             <option value="{{$level->id}}">{{$level->name}}</option>
                         @endforeach
                     </x-combobox>
                 </div>
-                <x-input class="mt-4" type="text" name="price" placeholder="Precio del curso" />
                 <x-input class="mt-4" type="text" name="image" placeholder="Link de la imagen" />
             </div>
             <x-button class="mt-4" type="submit">Save</x-button>

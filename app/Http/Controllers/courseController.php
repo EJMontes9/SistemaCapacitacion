@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Courses\StoreRequest;
 use App\Models\category;
 use App\Models\courses;
 use App\Models\level;
@@ -15,6 +16,7 @@ class courseController extends Controller
     public function index()
     {
         $courses = courses::all();
+
         return view('listcourse', ['courses' => $courses]);
     }
 
@@ -25,26 +27,17 @@ class courseController extends Controller
     {
         $categories = category::get();
         $levels = level::get();
-        return view('courses.create-courses',compact('categories','levels'));
+
+        return view('courses.create-courses', compact('categories', 'levels'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //dd($request->all());
-        $courses = new courses;
-        $courses->title = $request->title;
-        $courses->subtitle = $request->subtitle;
-        $courses->description = $request->description;
-        $courses->slug = $request->slug;
-        $courses->user_id = 2;
-        $courses->level_id = $request->level;
-        $courses->category_id = $request->category;
-        $courses->price_id = $request->price;
-        $courses->image = $request->image;
-        $courses->save();
+        courses::create($request->validated());
+
         return redirect()->route('courses.index');
     }
 
