@@ -29,6 +29,7 @@ export default {
                 skin: {
                     primary: 'var(--color-tertiary)',
                     secondary: 'var(--color-primary)',
+                    tertiary: 'var(--color-secondary)',
                     hoverPrimary: 'var(--color-quaternary)',
                     hoverSecondary: 'var(--color-secondary)',
                 }

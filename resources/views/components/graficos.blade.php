@@ -11,7 +11,7 @@
 <style>
     .highcharts-figure,
     .highcharts-data-table table {
-        min-width: 360px;
+        min-width: 200px;
         max-width: 800px;
         margin: 1em auto;
     }

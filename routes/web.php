@@ -29,3 +29,7 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('/listcourse', 'App\Http\Controllers\courseController@index');
+
+Route::resource('courses', 'App\Http\Controllers\courseController');
