@@ -6,8 +6,25 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
+/**
+ * Class StoreRequest
+ *
+ * This class is responsible for handling the validation of the course creation request.
+ * It prepares the data for validation by adding the 'slug' and 'user_id' fields.
+ * It also specifies the validation rules that the request data must adhere to.
+ *
+ * @package App\Http\Requests\Courses
+ */
 class StoreRequest extends FormRequest
 {
+    /**
+     * Prepare the data for validation.
+     *
+     * This method is called before the validation rules are applied.
+     * It adds the 'slug' and 'user_id' fields to the request data.
+     *
+     * @return void
+     */
     protected function prepareForValidation(): void
     {
         $this->merge([
@@ -18,6 +35,8 @@ class StoreRequest extends FormRequest
 
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * @return bool
      */
     public function authorize(): bool
     {
@@ -26,6 +45,8 @@ class StoreRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+     *
+     * These rules are applied to the request data after it has been prepared.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
@@ -39,6 +60,7 @@ class StoreRequest extends FormRequest
             'level_id' => 'required|integer',
             'category_id' => 'required|integer',
             'user_id' => 'required|integer',
+            'image' => 'required',
             //'image' => 'required|image',
         ];
     }

@@ -15,7 +15,7 @@ class courseController extends Controller
      */
     public function index()
     {
-        $courses = courses::all();
+        $courses = courses::paginate(12);
 
         return view('listcourse', ['courses' => $courses]);
     }
@@ -46,7 +46,7 @@ class courseController extends Controller
      */
     public function show(courses $courses)
     {
-        //
+        dd($courses);
     }
 
     /**
