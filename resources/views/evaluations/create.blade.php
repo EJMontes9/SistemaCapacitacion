@@ -54,20 +54,83 @@
         </div>
     </nav>
 
-
     <div>
-
         <div class="flex overflow-hidden bg-white pt-16">
             <div class="bg-gray-900 opacity-50 hidden fixed inset-0 z-10" id="sidebarBackdrop"></div>
             <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
-                <x-welcome />
+                <div class="py-12">
+                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+                        @if ($errors->any())
+                            <div class="bg-red-500 text-white px-4 py-2 rounded mb-2" id="error-alert">
+                                <strong>Error!</strong>
+                                @foreach ($errors->all() as $error)
+                                    <p>{{ $error }}</p>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <div class="card">
+                            <h1 class="font-bold text-2xl mb-2">Formulario de Evaluaciones</h1>
+                        </div>
+                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                            <div class="p-6 bg-white border-b border-gray-200">
+                                <form method="POST" action="{{ route('evaluations.store') }}">
+                                    @csrf
+
+                                    <div class="mb-4">
+                                        <label class="text-xl text-gray-600">Título de la evaluación <span
+                                                class="text-red-500">*</span></label></br>
+                                        <input type="text" class="border-2 border-gray-300 p-2 w-full rounded-lg"
+                                            name="title" id="title" value=""
+                                            placeholder="Ingresa un título para tu evaluación" required>
+                                    </div>
+
+                                    <div class="mb-8">
+                                        <label class="text-xl text-gray-600">Descripción <span
+                                                class="text-red-500">*</span></label></br>
+                                        <textarea name="description" class="border-2 border-gray-300 p-2 w-full rounded-lg" id="description"
+                                            placeholder="Ingresa una breve descripción aquí" required></textarea>
+                                    </div>
+
+                                    <div id="questions-container" class="shadow-md rounded-md p-5 mb-2">
+                                        <!-- Las tarjetas de las preguntas se agregarán aquí -->
+                                    </div>
+
+                                    <button type="button" id="add-question-button"
+                                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Agregar
+                                        pregunta</button>
+                                    <button type="button" id="remove-question-button"
+                                        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Eliminar
+                                        pregunta</button>
+
+                                    <div class="flex justify-end p-1">
+                                        <button role="submit"
+                                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                                            required>Guardar</button>
+                                        <a href="{{ route('evaluations.index') }}"
+                                            onclick="event.preventDefault(); if(confirm('¿Estás seguro de que quieres cancelar?')) { window.location.href = this.href; }"
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4 ml-2 no-underline">Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <x-footer></x-footer>
             </div>
         </div>
-        <script async defer src="https://buttons.github.io/buttons.js"></script>
-        <script src="https://demo.themesberg.com/windster/app.bundle.js"></script>
     </div>
 
+    @push('scripts')
+        <script src="{{ mix('resources\js\createevaluation.js') }}"></script>
+    @endpush
 
+    @push('scripts')
+        <script src="{{ mix('resources\js\alert.js') }}"></script>
+    @endpush
+
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://demo.themesberg.com/windster/app.bundle.js"></script>
 
 </x-app-layout>

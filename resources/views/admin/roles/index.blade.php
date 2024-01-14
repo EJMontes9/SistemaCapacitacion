@@ -22,57 +22,42 @@
         </div>
 
         <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre del Rol</th>
-                        <th>Permisos</th>
-                        <th colspan="2"></th>
-                    </tr>
-                </thead>
+            <div class="table-responsive">
 
-                <tbody>
-                    @forelse($roles as $role)
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>{{ $role->id }}</td>
-                            <td>{{ $role->name }}</td>
-                            <td>
-                                <!-- Muestra todos los permisos que tiene el rol asignado y reemplazalos por un icocno, por ejemplo si es editar, muestra un lápiz, si es borrar, muestra un trash -->
-                                @foreach ($role->permissions as $permission)
-                                    @switch($permission->name)
-                                        @case('Actualizar cursos')
-                                            <i class="fas fa-pencil-alt ml-2"></i>
-                                        @break
-
-                                        @case('Eliminar cursos')
-                                            <i class="fas fa-trash-alt ml-2"></i>
-                                        @break
-
-                                        @case('Crear cursos')
-                                            <i class="fas fa-plus ml-2"></i>
-                                        @break
-
-                                        @case('Leer cursos')
-                                            <i class="fa fa-eye ml-2"></i>
-                                        @break
-                                    @endswitch
-                                @endforeach
-                            </td>
-
-                            <td width="10px">
-                                <a class="btn btn-info btn-sm" href="{{ route('admin.roles.edit', $role) }}">Editar</a>
-                            </td>
-
-                            <td width="10px">
-                                <form action="{{ route('admin.roles.destroy', $role) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
-                                </form>
-                            </td>
+                            <th>ID</th>
+                            <th>Nombre del Rol</th>
+                            <th>Permisos</th>
+                            <th colspan="2"></th>
                         </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse($roles as $role)
+                            <tr>
+                                <td>{{ $role->id }}</td>
+                                <td>{{ $role->name }}</td>
+                                <td>
+                                    @foreach ($role->permissions as $permission)
+                                        <span class="badge badge-warning text-white">{{ $permission->name }}</span>
+                                    @endforeach
+                                </td>
+
+                                <td width="10px">
+                                    <a class="btn btn-info btn-sm" href="{{ route('admin.roles.edit', $role) }}">Editar</a>
+                                </td>
+
+                                <td width="10px">
+                                    <form action="{{ route('admin.roles.destroy', $role) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
                         @empty
                             <tr>
                                 <td colspan="4">No hay ningun rol registrado</td>
@@ -82,14 +67,19 @@
                 </table>
             </div>
         </div>
-    @stop
+    </div>
+@stop
 
-    @section('css')
-        <link rel="stylesheet" href="/css/admin_custom.css">
-    @stop
+@section('css')
+    <link rel="stylesheet" href="/css/admin_custom.css">
+@stop
 
-    @section('js')
-        <script>
-            console.log('Hi!');
-        </script>
-    @stop
+@section('js')
+    <script>
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function() {
+                $(this).remove();
+            });
+        }, 5000);
+    </script>
+@stop

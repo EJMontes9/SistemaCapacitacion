@@ -54,20 +54,70 @@
         </div>
     </nav>
 
-
     <div>
-
         <div class="flex overflow-hidden bg-white pt-16">
             <div class="bg-gray-900 opacity-50 hidden fixed inset-0 z-10" id="sidebarBackdrop"></div>
             <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
-                <x-welcome />
+                <div class="py-12">
+                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                            <div class="p-6 bg-white border-b border-gray-200">
+                                <div class="container mx-auto px-4">
+                                    <a href="{{ route('evaluations.index') }}"
+                                        class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150 mb-4">
+                                        Regresar
+                                    </a>
+                                    <h1 class="text-4xl font-bold mb-4">{{ $evaluation->title }}</h1>
+                                    <p class="text-lg mb-8">{{ $evaluation->description }}</p>
+                                    <div class="grid grid-cols-1 gap-4">
+
+                                        <!-- Itera sobre las preguntas -->
+                                        @foreach ($questions as $question)
+                                            <div class="card bg-white shadow-md rounded-lg p-6">
+                                                <h2 class="text-lg font-medium mb-2">{{ $loop->iteration }}.
+                                                    {{ $question->question }}</h2>
+
+                                                <!-- Aquí es donde se generan las opciones de respuesta -->
+                                                <div class="flex flex-col gap-2">
+                                                    @php
+                                                        $options = json_decode($question->options, true);
+                                                    @endphp
+
+                                                    @foreach ($options as $option)
+                                                        <label class="inline-flex items-center">
+                                                            <input type="checkbox"
+                                                                class="form-radio text-blue-600 h-5 w-5 rounded-full"
+                                                                name="question{{ $question->id }}"
+                                                                value="{{ $option['options'] }}">
+                                                            <span class="ml-2">{{ $option['options'] }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+
+                                    @if (!Auth::user()->hasRole('Admin') && !Auth::user()->hasRole('Instructor'))
+                                        <button
+                                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-8">
+                                            Enviar
+                                        </button>
+                                    @endif
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <x-footer></x-footer>
             </div>
         </div>
-        <script async defer src="https://buttons.github.io/buttons.js"></script>
-        <script src="https://demo.themesberg.com/windster/app.bundle.js"></script>
     </div>
 
+    @push('scripts')
+        <script src="{{ mix('resources\js\createevaluation.js') }}"></script>
+    @endpush
 
-
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://demo.themesberg.com/windster/app.bundle.js"></script>
 </x-app-layout>
