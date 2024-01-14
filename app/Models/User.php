@@ -11,6 +11,9 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
 
+use Spatie\Permission\Traits\HasRoles;
+
+
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -19,6 +22,7 @@ class User extends Authenticatable
     use HasTeams;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HasRoles; //Agregamos el trait
 
     /**
      * The attributes that are mass assignable.
@@ -60,34 +64,40 @@ class User extends Authenticatable
     ];
 
     //Relacion de uno a uno
-    public function profile(){
+    public function profile()
+    {
         return $this->hasOne('App/Models/profile');
     }
 
     //Relacion de uno a muchos
-    public function courses_dictated(){
+    public function courses_dictated()
+    {
         return $this->hasMany('App/Models/courses');
     }
 
     //Relacion de muchos a muchos
-    public function courses_enrolled(){
+    public function courses_enrolled()
+    {
         return $this->belongsToMany('App/Models/courses');
     }
 
-    public function reviews(){
+    public function reviews()
+    {
         return $this->hasMany('App/Models/review');
     }
 
-    public function comments(){
+    public function comments()
+    {
         return $this->hasMany('App/Models/comment');
     }
 
-    public function reactions(){
+    public function reactions()
+    {
         return $this->hasMany('App/Models/reaction');
     }
 
-    public function lessons(){
+    public function lessons()
+    {
         return $this->belongsToMany('App/Models/lesson');
     }
-
 }
