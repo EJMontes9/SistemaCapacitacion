@@ -55,10 +55,6 @@ class courses extends Model
         return $this->belongsTo('App\Models\category');
     }
 
-    //Relacion uno a muchos inversa
-    public function price(){
-        return $this->belongsTo('App\Models\price');
-    }
 
     //Relacion uno a uno polimorfica
     public function image(){
