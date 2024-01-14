@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base{
-    :root{
-        --color-text-base: #140F07;
+@layer base {
+    :root {
+        --color-text-base: #140f07;
         --color-text-secondary: #5b5fab;
         --color-primary: #ffe5f4;
         --color-secondary: #a49bf9;
@@ -14,7 +14,13 @@
     }
 }
 
+@media (max-width: 991.98px) {
+    .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:focus,
+    .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover {
+        background: yellow;
+    }
+}
+
 /*[x-cloak] {
     display: none;
 }*/
-

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+</body>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -135,10 +137,10 @@
         @stack('modals')
 
         @livewireScripts
+        @stack('scripts')
 
     </body>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="https://demo.themesberg.com/windster/app.bundle.js"></script>
-
 
 </html>
