@@ -18,6 +18,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('instructor_id')->constrained('users');
             $table->foreignId('course_id')->constrained('courses');
+            $table->string('title');
+            $table->text('description');
             $table->timestamps();
         });
     }

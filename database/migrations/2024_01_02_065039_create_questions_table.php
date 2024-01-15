@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('evaluation_id')->constrained()->onDelete('cascade');
             $table->string('question');
-            $table->json('options');
-            $table->string('correct_answer');
             $table->timestamps();
         });
     }
