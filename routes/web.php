@@ -33,3 +33,4 @@ Route::middleware([
 Route::get('/listcourse', 'App\Http\Controllers\courseController@index');
 
 Route::resource('courses', 'App\Http\Controllers\courseController');
+Route::resource('sections', 'App\Http\Controllers\sectionsController');

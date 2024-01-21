@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Courses\StoreRequest;
+use App\Http\Requests\Courses\UpdateRequest;
 use App\Models\category;
 use App\Models\courses;
 use App\Models\level;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class courseController extends Controller
 {
@@ -15,7 +16,8 @@ class courseController extends Controller
      */
     public function index()
     {
-        $courses = courses::paginate(12);
+        //$courses = courses::paginate(12);
+        $courses = courses::where('user_id', Auth::id())->paginate(12);
 
         return view('listcourse', ['courses' => $courses]);
     }
@@ -25,8 +27,8 @@ class courseController extends Controller
      */
     public function create()
     {
-        $categories = category::get();
-        $levels = level::get();
+        $categories = category::pluck('name', 'id');
+        $levels = level::pluck('name', 'id');
 
         return view('courses.create-courses', compact('categories', 'levels'));
     }
@@ -44,32 +46,48 @@ class courseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(courses $courses)
+    public function show(courses $course)
     {
-        dd($courses);
+        dd($course);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(courses $courses)
+    public function edit(courses $course)
     {
-        //
+        $categories = category::pluck('name', 'id');
+        $levels = level::pluck('name', 'id');
+
+        return view('courses.edit-courses', compact('categories', 'levels', 'course'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, courses $courses)
+    public function update(UpdateRequest $request, courses $course)
     {
-        //
+        $data = $request->validated();
+
+        if (isset($data['image'])) {
+            $data['image'] = $filename = time().$data['image']->getClientOriginalName();
+            $request->validated()['image']->move(public_path('images/courses'), $filename);
+        }
+        /*if ($request->hasFile('image')) {
+            $course->image = $request->file('image')->store('public/courses');
+        }*/
+        $course->update($data);
+
+        return redirect()->route('courses.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(courses $course)
     {
-        //
+        $course->delete();
+
+        return redirect()->route('courses.index');
     }
 }

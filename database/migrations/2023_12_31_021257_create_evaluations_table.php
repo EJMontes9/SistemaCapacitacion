@@ -27,13 +27,8 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    //eliminar campos de la tabla options, question, correct_answer
     public function down(): void
     {
-        Schema::table('evaluations', function (Blueprint $table) {
-            $table->dropColumn('options');
-            $table->dropColumn('questions');
-            $table->dropColumn('correct_answer');
-        });
+        Schema::dropIfExists('evaluations');
     }
 };
