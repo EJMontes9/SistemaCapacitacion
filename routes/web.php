@@ -18,7 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('evaluations', EvaluationController::class)->middleware(['auth:sanctum', 'verified']);
+Route::resource('evaluations', EvaluationController::class)->middleware('can:instructor.home');
 
 Route::middleware([
     'auth:sanctum',
@@ -33,3 +33,9 @@ Route::middleware([
 Route::get('/listcourse', 'App\Http\Controllers\courseController@index');
 
 Route::resource('courses', 'App\Http\Controllers\courseController');
+
+Route::post('/evaluations/{evaluation}/finished', [EvaluationController::class, 'finish'])->name('evaluations.finished');
+
+Route::get('/evaluations/{evaluation}/finished', 'App\Http\Controllers\EvaluationController@finish')->name('evaluations.finished');
+
+//Route::get('/evaluations/{evaluation}/finished', 'EvaluationController@finish')->name('evaluations.finished');

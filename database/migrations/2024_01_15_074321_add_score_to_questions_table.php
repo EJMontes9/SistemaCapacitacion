@@ -12,18 +12,16 @@ return new class extends Migration
     public function up()
     {
         Schema::table('questions', function (Blueprint $table) {
-            $table->dropColumn('options');
-            $table->dropColumn('correct_answer');
+            $table->integer('score')->after('question');
         });
     }
-
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
         Schema::table('questions', function (Blueprint $table) {
-            //
+            $table->dropColumn('score');
         });
     }
 };
