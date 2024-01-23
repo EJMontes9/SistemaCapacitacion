@@ -6,7 +6,7 @@
     <h5 class="font-bold text-black my-2 text-xl">{{ $course->title }}</h5>
     <p class="text-black">{{ $course->description }}</p>
     <x-button class="mt-5">
-      <a href="{{route('courses.show', $course)}}" class="btn btn-primary mx-1">Ver detalles</a>
+      <a href="{{route('courses.show', $course->slug)}}" class="btn btn-primary mx-1">Ver detalles</a>
     </x-button>
     <x-button class="mt-5">
         <a href="{{route('courses.edit', $course)}}" class="btn btn-primary mx-1">Editar</a>

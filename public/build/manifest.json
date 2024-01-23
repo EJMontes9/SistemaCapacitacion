@@ -1,11 +1,55 @@
 {
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf": {
+    "file": "assets/fa-brands-400-5656d596.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-3a8924cd.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf": {
+    "file": "assets/fa-regular-400-5d02dc9b.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-2bccecf0.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf": {
+    "file": "assets/fa-solid-900-fbbf06d7.ttf",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.ttf"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-9fc85f3a.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-40308bde.css",
+    "file": "assets/app-41e62af9.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
+  "resources/js/addLesson.js": {
+    "file": "assets/addLesson-76c5e4e9.js",
+    "isEntry": true,
+    "src": "resources/js/addLesson.js"
+  },
+  "resources/js/app.css": {
+    "file": "assets/app-71c41fb9.css",
+    "src": "resources/js/app.css"
+  },
   "resources/js/app.js": {
-    "file": "assets/app-02317797.js",
+    "assets": [
+      "assets/fa-brands-400-3a8924cd.woff2",
+      "assets/fa-brands-400-5656d596.ttf",
+      "assets/fa-regular-400-2bccecf0.woff2",
+      "assets/fa-regular-400-5d02dc9b.ttf",
+      "assets/fa-solid-900-9fc85f3a.woff2",
+      "assets/fa-solid-900-fbbf06d7.ttf"
+    ],
+    "css": [
+      "assets/app-71c41fb9.css"
+    ],
+    "file": "assets/app-2e6ff859.js",
     "isEntry": true,
     "src": "resources/js/app.js"
   }

@@ -6,24 +6,27 @@ use App\Http\Requests\Courses\StoreRequest;
 use App\Http\Requests\Courses\UpdateRequest;
 use App\Models\category;
 use App\Models\courses;
+use App\Models\lesson;
 use App\Models\level;
+use App\Models\section;
 use Illuminate\Support\Facades\Auth;
 
 class courseController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the courses.
+     * The courses are paginated in groups of 12.
      */
     public function index()
     {
-        //$courses = courses::paginate(12);
         $courses = courses::where('user_id', Auth::id())->paginate(12);
 
         return view('listcourse', ['courses' => $courses]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new course.
+     * The categories and levels are fetched to be used in the form.
      */
     public function create()
     {
@@ -34,7 +37,8 @@ class courseController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created course in the database.
+     * The course data is validated using the StoreRequest class before being stored.
      */
     public function store(StoreRequest $request)
     {
@@ -44,15 +48,24 @@ class courseController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display a specific course.
      */
-    public function show(courses $course)
+    public function show($slug)
     {
-        dd($course);
+        $numSection = 1;
+        $course = courses::where('slug', $slug)->firstOrFail();
+        $section = section::where('course_id', $course->id)->get();
+        $section_id = section::where('course_id', $course->id)->pluck('id');
+        foreach ($section_id as $id) {
+            $lesson[$numSection] = lesson::where('section_id', $id)->get();
+            $numSection++;
+        }
+        return view('courses-view', compact('course', 'section', 'lesson'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing a specific course.
+     * The categories and levels are fetched to be used in the form.
      */
     public function edit(courses $course)
     {
@@ -63,7 +76,9 @@ class courseController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update a specific course in the database.
+     * The course data is validated using the UpdateRequest class before being updated.
+     * If an image is provided, it is stored on the server and the course's image field is updated.
      */
     public function update(UpdateRequest $request, courses $course)
     {
@@ -73,16 +88,14 @@ class courseController extends Controller
             $data['image'] = $filename = time().$data['image']->getClientOriginalName();
             $request->validated()['image']->move(public_path('images/courses'), $filename);
         }
-        /*if ($request->hasFile('image')) {
-            $course->image = $request->file('image')->store('public/courses');
-        }*/
+
         $course->update($data);
 
         return redirect()->route('courses.index');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove a specific course from the database.
      */
     public function destroy(courses $course)
     {

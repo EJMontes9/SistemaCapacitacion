@@ -4,6 +4,7 @@
         <x-validation-errors />
         <form action="{{route('courses.update',$course->id )}}" method="post" enctype="multipart/form-data">
             @method('PUT')
+            @csrf
             <x-course.form-courses :categories="$categories" :levels="$levels" :course="$course" />
             <x-button class="mt-4" type="submit">Save</x-button>
         </form>

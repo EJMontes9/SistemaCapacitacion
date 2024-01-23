@@ -1,4 +1,3 @@
-@csrf
 <div class="flex flex-col justify-center">
     <div class="flex flex-col w-full lg:flex-row">
         <x-input class="mt-4 lg:mr-2 lg:w-1/2" type="text" name="title" placeholder="Titulo del curso" value="{{ old('title', $course->title ?? '') }}" />

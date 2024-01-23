@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Sections\StoreRequest;
-use App\Models\courses;
+use App\Http\Requests\Lessons\StoreRequest;
+use App\Models\lesson;
 use App\Models\platforms;
 use App\Models\section;
 use Illuminate\Http\Request;
 
-class sectionsController extends Controller
+class lessonsController extends Controller
 {
     public function index()
     {
@@ -17,22 +17,22 @@ class sectionsController extends Controller
 
     public function create()
     {
-        $courses = courses::pluck('title', 'id');
         $platform = platforms::pluck('name', 'id');
+        $section = section::pluck('name', 'id');
 
-        return view('sections.create-sections', compact('courses', 'platform'));
-
+        return view('lesson.create-lesson', compact('platform', 'section'));
     }
 
     public function store(StoreRequest $request)
     {
-        section::create($request->validated());
+        lesson::create($request->validated());
 
         return redirect()->route('courses.index');
     }
 
     public function show($id)
     {
+        return view('lesson.show-lesson', ['lesson' => lesson::findOrFail($id)]);
     }
 
     public function edit($id)
