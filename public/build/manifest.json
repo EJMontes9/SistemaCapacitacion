@@ -24,14 +24,9 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-41e62af9.css",
+    "file": "assets/app-2ae09792.css",
     "isEntry": true,
     "src": "resources/css/app.css"
-  },
-  "resources/js/addLesson.js": {
-    "file": "assets/addLesson-76c5e4e9.js",
-    "isEntry": true,
-    "src": "resources/js/addLesson.js"
   },
   "resources/js/app.css": {
     "file": "assets/app-71c41fb9.css",
@@ -52,5 +47,10 @@
     "file": "assets/app-2e6ff859.js",
     "isEntry": true,
     "src": "resources/js/app.js"
+  },
+  "resources/js/courses-view.js": {
+    "file": "assets/courses-view-646fbb31.js",
+    "isEntry": true,
+    "src": "resources/js/courses-view.js"
   }
 }

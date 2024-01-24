@@ -201,8 +201,7 @@ return [
     */
 
     'global_variables' => [
-        'company_name' => env('COMPANY_NAME', 'Nombre de la empresa'),
-        ],
-
+        'company_name' => env('COMPANY_NAME', 'StudyApp'),
+    ],
 
 ];

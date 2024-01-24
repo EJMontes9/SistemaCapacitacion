@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class courses extends Model
 {
-
-    protected $guarded = ['id','status'];
+    protected $guarded = ['id', 'status'];
 
     use HasFactory;
+
     const BORRADOR = 1;
     const REVISION = 2;
+
     const PUBLICADO = 3;
 
     //Relacion uno a muchos inversa
@@ -55,7 +57,6 @@ class courses extends Model
         return $this->belongsTo('App\Models\category');
     }
 
-
     //Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne('App\Models\image','imageable');
@@ -64,6 +65,4 @@ class courses extends Model
     public function lessons(){
         return $this->hasManyThrough('App\Models\lesson','App\Models\section');
     }
-
-
 }

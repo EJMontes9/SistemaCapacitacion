@@ -9,6 +9,7 @@ use App\Models\courses;
 use App\Models\lesson;
 use App\Models\level;
 use App\Models\section;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class courseController extends Controller
@@ -50,17 +51,20 @@ class courseController extends Controller
     /**
      * Display a specific course.
      */
-    public function show($slug)
+    public function show(string $slug)
     {
+        $lesson = [];
         $numSection = 1;
         $course = courses::where('slug', $slug)->firstOrFail();
         $section = section::where('course_id', $course->id)->get();
         $section_id = section::where('course_id', $course->id)->pluck('id');
+        $user = User::findOrFail($course->user_id);
+        $name_user = $user->name;
         foreach ($section_id as $id) {
             $lesson[$numSection] = lesson::where('section_id', $id)->get();
             $numSection++;
         }
-        return view('courses-view', compact('course', 'section', 'lesson'));
+        return view('courses-view', compact('course', 'section', 'lesson', 'name_user'));
     }
 
     /**

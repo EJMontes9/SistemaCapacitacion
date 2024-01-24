@@ -148,7 +148,7 @@
 
                 </div>
                 <div class="flex flex-1 lg:w-1/2 lg:h-auto relative lg:max-w-none lg:mx-0 mx-auto max-w-3xl">
-                    <img src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?auto=format&fit=crop&q=80&w=1740&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Hero image" width="2350" height="2359"
+                    <img src="{{ asset('images/courses/' . '1706071682florian-olivo-4hbJ-eymZ1o-unsplash.jpg') }}" alt="Hero image" width="2350" height="2359"
                          class="lg:absolute lg:w-full lg:h-full rounded-3xl object-cover lg:max-h-none max-h-96">
                 </div>
             </div>

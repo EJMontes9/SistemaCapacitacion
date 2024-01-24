@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Lessons\StoreRequest;
+use App\Models\courses;
 use App\Models\lesson;
 use App\Models\platforms;
 use App\Models\section;
@@ -37,6 +38,7 @@ class lessonsController extends Controller
 
     public function edit($id)
     {
+
     }
 
     public function update(Request $request, $id)

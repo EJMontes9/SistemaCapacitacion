@@ -1,7 +1,7 @@
 @props(['disabled' => false,'name' => 'image'])
 
 <!-- component -->
-<div class="bg-white p7 rounded w-9/12 mx-auto">
+<div class="bg-white p7 rounded w-full mx-auto mt-4">
     <div x-data="dataFileDnD()" class="relative flex flex-col p-4 text-gray-400 border border-gray-200 rounded">
         <div x-ref="dnd"
              class="relative flex flex-col text-gray-400 border border-gray-200 border-dashed rounded cursor-pointer">

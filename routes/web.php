@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\EvaluationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EvaluationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,10 +32,12 @@ Route::middleware([
 
 Route::get('/listcourse', 'App\Http\Controllers\courseController@index');
 
-Route::get('courses/{slug}', 'App\Http\Controllers\courseController@show')->name('courses.show');
+
 Route::resource('courses', 'App\Http\Controllers\courseController')->except([
     'show',
 ]);
+
+Route::get('courses/{slug}', 'App\Http\Controllers\courseController@show')->name('courses.show');
 Route::resource('sections', 'App\Http\Controllers\sectionsController');
 Route::resource('lessons', 'App\Http\Controllers\lessonsController');
 
