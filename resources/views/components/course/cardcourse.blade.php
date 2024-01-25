@@ -8,15 +8,5 @@
     <x-button class="mt-5">
       <a href="{{route('courses.show', $course->slug)}}" class="btn btn-primary mx-1">Ver detalles</a>
     </x-button>
-    <x-button class="mt-5">
-        <a href="{{route('courses.edit', $course)}}" class="btn btn-primary mx-1">Editar</a>
-    </x-button>
-    <form action="{{route('courses.destroy',$course)}}" method="post">
-        @csrf
-        @method('delete')
-        <x-button class="mt-5 btn btn-danger">
-            Eliminar
-        </x-button>
-    </form>
   </div>
 </div>

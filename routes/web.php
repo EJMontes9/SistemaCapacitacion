@@ -37,7 +37,9 @@ Route::resource('courses', 'App\Http\Controllers\courseController')->except([
     'show',
 ]);
 
+Route::get('/courses/{slug}/{id_lesson}', 'App\Http\Controllers\courseController@showLesson')->name('courses.showLesson');
 Route::get('courses/{slug}', 'App\Http\Controllers\courseController@show')->name('courses.show');
 Route::resource('sections', 'App\Http\Controllers\sectionsController');
 Route::resource('lessons', 'App\Http\Controllers\lessonsController');
+
 

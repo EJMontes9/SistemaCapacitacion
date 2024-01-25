@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Lessons\StoreRequest;
+use App\Http\Requests\Lessons\UpdateRequest;
 use App\Models\courses;
 use App\Models\lesson;
 use App\Models\platforms;
@@ -36,16 +37,22 @@ class lessonsController extends Controller
         return view('lesson.show-lesson', ['lesson' => lesson::findOrFail($id)]);
     }
 
-    public function edit($id)
+    public function edit(lesson $lesson)
     {
+        $platform = platforms::pluck('name', 'id');
+        $section = section::pluck('name', 'id');
 
+        return view('lesson.edit-lesson', compact('platform', 'section', 'lesson'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
     }
 
-    public function destroy($id)
+    public function destroy(lesson $lesson)
     {
+        $lesson->delete();
+
+        return redirect()->route('courses.index');
     }
 }

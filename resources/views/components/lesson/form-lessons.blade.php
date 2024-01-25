@@ -5,7 +5,7 @@
             <x-slot name="title">Seccion</x-slot>
             <option value="0">Seleccione una seccion...</option>
             @foreach ($section as $id => $name)
-                <option value="{{$id}}" {{ old('section_id', $secction->section_id ?? '') == $id ? 'selected' : '' }}>{{$name}}</option>
+                <option value="{{$id}}" {{ old('section_id', $lessons->section_id ?? '') == $id ? 'selected' : '' }}>{{$name}}</option>
             @endforeach
         </x-combobox>
     </div>

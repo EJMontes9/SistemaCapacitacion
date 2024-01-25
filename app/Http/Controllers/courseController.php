@@ -64,6 +64,7 @@ class courseController extends Controller
             $lesson[$numSection] = lesson::where('section_id', $id)->get();
             $numSection++;
         }
+
         return view('courses-view', compact('course', 'section', 'lesson', 'name_user'));
     }
 
@@ -106,5 +107,25 @@ class courseController extends Controller
         $course->delete();
 
         return redirect()->route('courses.index');
+    }
+
+    /**
+     * Display a specific course's sections and lessons as JSON.
+     */
+    public function showLesson(string $slug, int $id_lesson)
+    {
+        $lesson = [];
+        $numSection = 1;
+        $course = courses::where('slug', $slug)->firstOrFail();
+        $section = section::where('course_id', $course->id)->get();
+        $section_id = section::where('course_id', $course->id)->pluck('id');
+        foreach ($section_id as $id) {
+            $lesson[$numSection] = lesson::where('section_id', $id)->get();
+            $numSection++;
+        }
+        $thislesson = lesson::findOrFail($id_lesson);
+
+        return view('lesson.show-lesson', compact('lesson', 'section', 'course', 'thislesson'));
+
     }
 }
