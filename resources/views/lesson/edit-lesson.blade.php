@@ -1,8 +1,8 @@
 <x-app-layout>
     <div>
-        <h1 class="text-2xl font-semibold text-gray-900">Creacion de Lecciones</h1>
+        <h1 class="text-2xl font-semibold text-gray-900">editar de Lecciones</h1>
         <x-validation-errors />
-        <form action="{{route('lessons.store')}}" method="post" >
+        <form action="{{ route('lessons.update', ['lesson' => $lesson->id]) }}" method="post" >
             @method('PUT')
             @csrf
             <x-lesson.form-lessons :platform="$platform" :section="$section" :lessons="$lesson"/>

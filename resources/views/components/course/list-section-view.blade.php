@@ -9,7 +9,9 @@ $numSection =1;
                 <h2>
                     Secciones del curso
                 </h2>
-                <a href="{{ route('sections.create') }}" ><i class="fa-solid fa-plus"></i></a>
+                @hasanyrole('Instructor|Admin')
+                    <a href="{{ route('sections.create') }}" ><i class="fa-solid fa-plus"></i></a>
+                @endhasanyrole
             </div>
             @foreach ($section as $sections)
                 <div class="flex items-center justify-between w-full p-2 lg:rounded-full md:rounded-full hover:bg-gray-100 cursor-pointer border-2 rounded-lg" id="seccion-list">
@@ -21,6 +23,7 @@ $numSection =1;
                                 <div class="text-xs text-gray-600 w-full">{{$sections->name}}</div>
                             </div>
                         </div>
+                        @hasanyrole('Instructor|Admin')
                         <div>
                             <div class="px-3 flex flex-row justify-center items-center">
                                 <a href="{{route('sections.edit',$sections)}}" class="mr-4">
@@ -35,9 +38,10 @@ $numSection =1;
                                 </form>
                             </div>
                         </div>
+                        @endhasanyrole
                     </div>
                 </div>
-                <x-course.list-lesson-view :lesson="$lesson" :sections="$sections" :courseid="$sections->course_id"></x-course.list-lesson-view>
+                <x-course.list-lesson-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id"></x-course.list-lesson-view>
                     <?php $numSection++;?>
             @endforeach
         </div>

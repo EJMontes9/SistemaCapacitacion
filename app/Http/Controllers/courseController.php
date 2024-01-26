@@ -18,9 +18,17 @@ class courseController extends Controller
      * Display a listing of the courses.
      * The courses are paginated in groups of 12.
      */
-    public function index()
+    public function index($param = null)
     {
-        $courses = courses::where('user_id', Auth::id())->paginate(12);
+
+        //$courses = courses::where('user_id', Auth::id())->paginate(12);
+        if ($param) {
+            $courses = courses::whereHas('users', function ($query) {
+                $query->where('id', Auth::id());
+            })->get();
+        } else {
+            $courses = courses::paginate(12);
+        }
 
         return view('listcourse', ['courses' => $courses]);
     }
@@ -114,6 +122,7 @@ class courseController extends Controller
      */
     public function showLesson(string $slug, int $id_lesson)
     {
+        echo 'holaaaaaaa';
         $lesson = [];
         $numSection = 1;
         $course = courses::where('slug', $slug)->firstOrFail();
@@ -127,5 +136,22 @@ class courseController extends Controller
 
         return view('lesson.show-lesson', compact('lesson', 'section', 'course', 'thislesson'));
 
+    }
+
+    public function mycourse()
+    {
+        $courses = courses::whereHas('users', function ($query) {
+            $query->where('users.id', Auth::id());
+        })->get();
+
+        return view('listcourse', ['courses' => $courses]);
+    }
+
+    public function addCourse(courses $course)
+    {
+        $user = Auth::user();
+        $user->courses()->attach($course->id);
+
+        return redirect()->back()->with('success', 'Curso agregado con éxito');
     }
 }

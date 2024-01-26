@@ -37,10 +37,13 @@ Route::resource('courses', 'App\Http\Controllers\courseController')->except([
     'show',
 ]);
 
+Route::get('courses/add/{course}', 'App\Http\Controllers\courseController@addCourse')->name('courses.add');
 Route::get('/courses/{slug}/{id_lesson}', 'App\Http\Controllers\courseController@showLesson')->name('courses.showLesson');
 Route::get('courses/{slug}', 'App\Http\Controllers\courseController@show')->name('courses.show');
 Route::resource('sections', 'App\Http\Controllers\sectionsController');
-Route::resource('lessons', 'App\Http\Controllers\lessonsController');
+Route::resource('lessons', 'App\Http\Controllers\lessonsController')->except(['create']);
+
+Route::get('lessons/create/{courseId}', 'App\Http\Controllers\lessonsController@create')->name('lessons.create');
 
 
 
@@ -49,3 +52,6 @@ Route::post('/evaluations/{evaluation}/finished', [EvaluationController::class, 
 Route::get('/evaluations/{evaluation}/finished', 'App\Http\Controllers\EvaluationController@finish')->name('evaluations.finished');
 
 //Route::get('/evaluations/{evaluation}/finished', 'EvaluationController@finish')->name('evaluations.finished');
+Route::get('mycourses', 'App\Http\Controllers\courseController@mycourse')->name('courses.mycourse');
+
+

@@ -14,6 +14,7 @@
 
         </div>
         <div class="w-full md:w-5/12 ml-auto mr-auto px-4">
+            @hasanyrole('Instructor|Admin')
             <div class="flex flex-row justify-end items-center">
                 <a href="{{route('courses.edit', $course)}}" class=" mr-4"><i class="fa-solid fa-pen text-blue-900"></i></a>
                 <form action="{{route('courses.destroy',$course)}}" method="post">
@@ -24,6 +25,7 @@
                     </button>
                 </form>
             </div>
+            @endhasanyrole
             <div class="md:pr-12">
                 <h3 class="text-3xl font-semibold">{{$course->title}}</h3>
                 <p class="mt-4 text-lg leading-relaxed text-blueGray-500">

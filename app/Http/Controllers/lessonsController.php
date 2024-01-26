@@ -32,7 +32,7 @@ class lessonsController extends Controller
     {
         lesson::create($request->validated());
 
-        return redirect()->route('courses.index');
+        return redirect()->route('courses.create');
     }
 
     public function show($id)
@@ -50,6 +50,11 @@ class lessonsController extends Controller
 
     public function update(UpdateRequest $request, $id)
     {
+        $lesson = lesson::findOrFail($id);
+
+        $lesson->update($request->validated());
+
+        return redirect()->route('courses.index');
     }
 
     public function destroy(lesson $lesson)
