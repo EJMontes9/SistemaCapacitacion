@@ -11,26 +11,33 @@
             </div>
         @endif
 
+        <div id="existing-questions-container" style="display: none;">
+            @foreach ($evaluation->questions as $question)
+                <div class="existing-question" data-id="{{ $question->id }}" data-question="{{ $question->question }}"
+                    data-score="{{ $question->score }}" data-options="{{ json_encode($question->options) }}"></div>
+            @endforeach
+        </div>
+
         <div class="card">
-            <h1 class="font-bold text-2xl mb-2">Formulario de Evaluaciones</h1>
+            <h1 class="font-bold text-2xl mb-2">Editar Evaluación</h1>
         </div>
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
-                <form method="POST" action="{{ route('evaluations.store') }}">
+                <form method="POST" action="{{ route('evaluations.update', $evaluation->id) }}">
                     @csrf
+                    @method('PUT')
 
                     <div class="mb-4">
                         <label class="text-xl text-gray-600">Título de la evaluación <span
                                 class="text-red-500">*</span></label></br>
                         <input type="text" class="border-2 border-gray-300 p-2 w-full rounded-lg" name="title"
-                            id="title" value="" placeholder="Ingresa un título para tu evaluación" required>
+                            id="title" value="{{ $evaluation->title }}" required>
                     </div>
 
                     <div class="mb-2">
                         <label class="text-xl text-gray-600">Descripción <span
                                 class="text-red-500">*</span></label></br>
-                        <textarea name="description" class="border-2 border-gray-300 p-2 w-full rounded-lg" id="description"
-                            placeholder="Ingresa una breve descripción aquí" required></textarea>
+                        <textarea name="description" class="border-2 border-gray-300 p-2 w-full rounded-lg" id="description" required>{{ $evaluation->description }}</textarea>
                     </div>
 
                     <div class="flex space-x-4">
@@ -43,7 +50,10 @@
                                 required>
                                 <option value="">Selecciona una opción</option>
                                 @foreach ($courses as $course)
-                                    <option value="{{ $course->id }}">{{ $course->title }}</option>
+                                    <option value="{{ $course->id }}"
+                                        {{ $evaluation->course_id == $course->id ? 'selected' : '' }}>
+                                        {{ $course->title }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -58,8 +68,10 @@
                                 <option value="">Selecciona una opción</option>
                                 @foreach ($courses as $course)
                                     @foreach ($course->sections as $section)
-                                        <option value="{{ $section->id }}" data-course-id="{{ $course->id }}">
-                                            {{ $section->name }}</option>
+                                        <option value="{{ $section->id }}" data-course-id="{{ $course->id }}"
+                                            {{ $evaluation->module_id == $section->id ? 'selected' : '' }}>
+                                            {{ $section->name }}
+                                        </option>
                                     @endforeach
                                 @endforeach
                             </select>
@@ -93,31 +105,35 @@
 
     @push('scripts')
         <script src="{{ mix('resources\js\createevaluation.js') }}"></script>
-    @endpush
-
-    @push('scripts')
         <script src="{{ mix('resources\js\alert.js') }}"></script>
     @endpush
 
+    <!-- Script para filtrar los módulos por curso -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-
-    <!-- Script para filtrar los módulos por curso -->
     <script>
         $(document).ready(function() {
             $('#course_id').change(function() {
                 var courseId = $(this).val();
-                $('#module_id').val(
-                    ''); // Cambiar el valor del menú desplegable de módulos al valor por defecto
+
                 $('#module_id option').each(function() {
                     var optionCourseId = $(this).data('course-id');
-                    if (courseId == optionCourseId) {
+
+                    if (optionCourseId == courseId) {
                         $(this).show();
                     } else {
                         $(this).hide();
+
+                        // Restablecer el menú desplegable de módulos a su valor por defecto
+                        if ($(this).is(':selected')) {
+                            $('#module_id').val('');
+                        }
                     }
                 });
             });
+
+            // Simular un evento 'change' en el menú desplegable de cursos
+            $('#course_id').trigger('change');
         });
     </script>
 

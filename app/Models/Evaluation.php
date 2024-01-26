@@ -11,7 +11,7 @@ class Evaluation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['instructor_id', 'course_id', 'title', 'description'];
+    protected $fillable = ['instructor_id', 'course_id', 'title', 'description', 'module_id'];
 
     public function instructor()
     {
@@ -26,5 +26,10 @@ class Evaluation extends Model
     public function questions()
     {
         return $this->hasMany(Question::class);
+    }
+
+    public function module()
+    {
+        return $this->belongsTo(Section::class);
     }
 }
