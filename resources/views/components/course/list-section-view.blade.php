@@ -23,10 +23,10 @@ $numSection =1;
                         </div>
                         <div>
                             <div class="px-3 flex flex-row justify-center items-center">
-                                <a href="" class="mr-4">
+                                <a href="{{route('sections.edit',$sections)}}" class="mr-4">
                                     <i class="fa-solid fa-pen text-blue-900"></i>
                                 </a>
-                                <form action="" method="post" class="flex flex-row items-center">
+                                <form action="{{route('sections.destroy',$sections->id)}}" method="post" class="flex flex-row items-center">
                                     @csrf
                                     @method('delete')
                                     <button type="submit" class="mx-0 p-0 mt-4 ">
