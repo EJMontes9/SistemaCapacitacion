@@ -21,10 +21,14 @@
                     autofocus autocomplete="username" />
             </div>
 
-            <div class="mt-4">
+            <div class="mt-4 relative">
                 <x-label for="password" value="{{ __('Password') }}" />
                 <x-input id="password" class="block mt-1 w-full" type="password" name="password" required
                     autocomplete="current-password" />
+                <button type="button" id="togglePassword"
+                    class="absolute right-0 top-1/2 transform -translate-y-1/2 my-3 mr-3 text-gray-600">
+                    <i id="togglePasswordIcon" class="fa fa-eye" aria-hidden="true"></i>
+                </button>
             </div>
 
             <div class="block mt-4">
@@ -54,3 +58,18 @@
         </form>
     </x-authentication-card>
 </x-guest-layout>
+
+<script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+    const togglePasswordIcon = document.querySelector('#togglePasswordIcon');
+
+    togglePassword.addEventListener('click', function(e) {
+        // toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        // toggle the eye slash icon
+        togglePasswordIcon.classList.toggle('fa-eye');
+        togglePasswordIcon.classList.toggle('fa-eye-slash');
+    });
+</script>

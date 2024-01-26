@@ -19,6 +19,7 @@ class CreateNewUser implements CreatesNewUsers
      *
      * @param  array<string, string>  $input
      */
+
     public function create(array $input): User
     {
         Validator::make($input, [
@@ -26,6 +27,8 @@ class CreateNewUser implements CreatesNewUsers
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
+            //is_instructor es un campo opcional
+            'is_instructor' => ['nullable']
         ])->validate();
 
         return DB::transaction(function () use ($input) {
@@ -33,8 +36,15 @@ class CreateNewUser implements CreatesNewUsers
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => Hash::make($input['password']),
-            ]), function (User $user) {
+            ]), function (User $user) use ($input) {
                 $this->createTeam($user);
+
+                // Si el usuario marcó "Soy Alumno", asigna el rol de Alumno
+                if (isset($input['is_instructor']) && $input['is_instructor']) {
+                    $user->assignRole('Instructor'); // Asigna el rol por nombre
+                } else {
+                    $user->assignRole('Alumno'); // Asigna el rol por nombre
+                }
             });
         });
     }
@@ -46,7 +56,7 @@ class CreateNewUser implements CreatesNewUsers
     {
         $user->ownedTeams()->save(Team::forceCreate([
             'user_id' => $user->id,
-            'name' => explode(' ', $user->name, 2)[0]."'s Team",
+            'name' => explode(' ', $user->name, 2)[0] . "'s Team",
             'personal_team' => true,
         ]));
     }
