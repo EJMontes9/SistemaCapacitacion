@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Lessons\StoreRequest;
 use App\Http\Requests\Lessons\UpdateRequest;
-use App\Models\courses;
 use App\Models\lesson;
 use App\Models\platforms;
 use App\Models\section;
-use Illuminate\Http\Request;
 
 class lessonsController extends Controller
 {
@@ -17,10 +15,15 @@ class lessonsController extends Controller
 
     }
 
-    public function create()
+    public function create($courseId = null)
     {
         $platform = platforms::pluck('name', 'id');
-        $section = section::pluck('name', 'id');
+
+        if ($courseId) {
+            $section = section::where('course_id', $courseId)->pluck('name', 'id');
+        } else {
+            $section = section::pluck('name', 'id');
+        }
 
         return view('lesson.create-lesson', compact('platform', 'section'));
     }

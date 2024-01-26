@@ -27,5 +27,10 @@
             </li>
         @endforeach
     @endif
+        <li>
+            <div class="flex flex-row justify-between border-2 ml-12 py-2 rounded-xl mt-3">
+                <a href="{{route('lessons.create', $courseid)}}" class="ml-4">Agregar leccion - {{$courseid}}</a>
+            </div>
+        </li>
 </ul>
 
