@@ -31,12 +31,26 @@
                                 <div class="flex flex-col gap-2">
                                     @php
                                         $options = json_decode($question->options, true);
+                                        $correctOptionsCount = collect($options)
+                                            ->where('correct_answer', true)
+                                            ->count();
                                     @endphp
 
                                     @foreach ($options as $option)
                                         <label class="inline-flex items-center">
-                                            <input type="checkbox" class="form-radio text-blue-600 h-5 w-5 rounded-full"
-                                                name="questions[{{ $question->id }}][]" value="{{ $option['id'] }}">
+                                            @if ($correctOptionsCount > 1)
+                                                <!-- Checkbox para múltiples respuestas correctas -->
+                                                <input type="checkbox"
+                                                    class="form-radio text-blue-600 h-5 w-5 rounded-sm"
+                                                    name="questions[{{ $question->id }}][]"
+                                                    value="{{ $option['id'] }}">
+                                            @else
+                                                <!-- Radiobutton para una única respuesta correcta -->
+                                                <input type="radio"
+                                                    class="form-radio text-blue-600 h-5 w-5 rounded-full"
+                                                    name="questions[{{ $question->id }}][]"
+                                                    value="{{ $option['id'] }}">
+                                            @endif
                                             <span class="ml-2">{{ $option['options'] }}</span>
                                         </label>
                                     @endforeach

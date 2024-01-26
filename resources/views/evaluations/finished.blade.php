@@ -16,14 +16,21 @@
                         <p class="text-center text-lg mt-10">{{ $evaluation->description }}</p>
                     </div>
                     <div class="card mt-11">
-                        <p class="text-center text-lg font-bold">{{ $user->name }} tu calificación de la evaluación es
-                            de {{ $totalScore }}/{{ $totalEvaluationScore }}</p>
+                        <p class="text-center text-xl font-bold">
+                            {{ $user->name }} tu calificación de la evaluación del último intento es
+                            <span
+                                class="{{ $totalScore > 7 ? 'text-green-600' : ($totalScore == 7 ? 'text-yellow-500' : 'text-red-500') }}">
+                                {{ $totalScore }}/{{ $totalEvaluationScore }}
+                            </span>
+                        </p>
                     </div>
+
+                    <!-- Aquí se mostrará el historial de intentos -->
 
                     @php
                         \Carbon\Carbon::setLocale('es');
                     @endphp
-                    <div class="card mt-5">
+                    <div class="card mt-10">
                         <p class="text-justify text-lg font-bold">Historial de intentos</p>
                         <table class="table-auto w-full mt-3 rounded-lg">
                             <thead>
@@ -34,9 +41,12 @@
                             </thead>
                             <tbody>
                                 @foreach ($evaluationResults as $index => $result)
-                                    <tr class="{{ $index % 2 == 0 ? 'bg-gray-200' : '' }}">
+                                    <tr class="{{ $index % 2 == 0 ? 'bg-gray-100' : '' }}">
                                         <td class="border px-4 py-2 text-center">
                                             {{ $result->created_at->isoFormat('dddd D [de] MMMM [del] YYYY [a las] HH:mm:ss') }}
+                                            @if ($index == 0)
+                                                <span class="text-red-500">(Último intento realizado)</span>
+                                            @endif
                                         </td>
                                         <td class="border px-4 py-2 text-center">{{ $result->total_score }}</td>
                                     </tr>
@@ -46,32 +56,57 @@
                     </div>
 
                     <!-- Aquí es donde se agregan las preguntas incorrectas -->
+
                     @if (!empty($incorrectQuestions))
                         <div class="card shadow-xl my-8">
                             <div class="text-red-500 card-header text-lg font-semibold py-4 pl-5 rounded-lg hover:bg-red-300 hover:text-white"
                                 id="incorrectQuestionsHeader" style="cursor: pointer;" onclick="toggleColor(this)">
-                                Ver mis respuestas incorrectas
+                                Ver mis respuestas incorrectas del último intento realizado
                             </div>
 
                             <div class="card-body pl-5 pb-4" id="incorrectQuestionsBody" style="display: none;">
                                 @foreach ($incorrectQuestions as $incorrectQuestion)
                                     <div class="card">
                                         <h2 class="font-semibold mt-4">Pregunta:
-                                            {{ $incorrectQuestion['question']->question }}
-                                        </h2>
+                                            {{ $incorrectQuestion['question']->question }}</h2>
 
-                                        @foreach ($incorrectQuestion['selectedOptions'] as $option)
-                                            <p>
-                                                Opción: {{ $option->options }}
-
-                                                @if ($option->correct_answer == false)
-                                                    <span class="text-red-500">Respuesta incorrecta</span>
-                                                @endif
-                                            </p>
+                                        {{-- Muestra las opciones de la pregunta --}}
+                                        @foreach ($incorrectQuestion['question']->options as $option)
+                                            @if ($option->correct_answer)
+                                                {{-- Solo muestra las opciones correctas --}}
+                                                <p>
+                                                    Opción: {{ $option->options }}
+                                                    <span class="text-green-500">Respuesta correcta</span>
+                                                </p>
+                                            @endif
                                         @endforeach
+
+                                        <p class="font-semibold">Tu selección</p>
+
+                                        {{-- Muestra las opciones seleccionadas incorrectas --}}
+                                        @foreach ($incorrectQuestion['selectedOptions'] as $selectedOption)
+                                            @if (!$selectedOption->correct_answer)
+                                                <p>
+                                                    Opción: {{ $selectedOption->options }}
+                                                    <span class="text-red-500">Respuesta seleccionada
+                                                        incorrecta</span>
+                                                </p>
+                                            @endif
+                                        @endforeach
+
+                                    </div>
+                                @endforeach
+
+                                {{-- Muestra las preguntas no respondidas --}}
+                                @foreach ($unansweredQuestions as $unansweredQuestion)
+                                    <div class="card">
+                                        <h2 class="font-semibold mt-4">Pregunta:
+                                            {{ $unansweredQuestion['question']->question }}</h2>
+                                        <span class="text-red-500">Sin responder</span>
                                     </div>
                                 @endforeach
                             </div>
+
                         </div>
                     @endif
 

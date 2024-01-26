@@ -11,16 +11,25 @@
         Bienvenido al panel del Administrador {{ auth()->user()->name }}
     </p>
     <div class="row">
-        <div class="col-sm-4">
-            <div class="card bg-gray text-white shadow">
+        <div class="col-sm-3">
+            <div class="card bg-danger text-white shadow">
                 <div class="card-body">
-                    <i class="fas fa-book fa-2x mb-3 float-right"></i>
-                    <h5 class="card-title display-4 font-weight-bold">Cursos creados</h5>
-                    <p class="card-text display-4 font-weight-bold">{{ $numCursos }}</p>
+                    <i class="fas fa-user-times fa-2x mb-3 float-right"></i>
+                    <h5 class="card-title display-4 font-weight-bold">Usuarios sin roles</h5>
+                    <p class="card-text display-4 font-weight-bold">{{ $numSinRoles }}</p>
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body">
+                    <i class="fas fa-book fa-2x mb-3 float-right text-white"></i>
+                    <h5 class="card-title display-4 font-weight-bold text-white">Cursos creados</h5>
+                    <p class="card-text display-4 font-weight-bold text-white">{{ $numCursos }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
             <div class="card bg-primary text-white shadow">
                 <div class="card-body">
                     <i class="fas fa-chalkboard-teacher fa-2x mb-3 float-right"></i>
@@ -29,7 +38,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <div class="card bg-success text-white shadow">
                 <div class="card-body">
                     <i class="fas fa-user-graduate fa-2x mb-3 float-right"></i>

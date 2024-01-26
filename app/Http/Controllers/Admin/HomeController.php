@@ -19,7 +19,8 @@ class HomeController extends Controller
         $numInstructores = \App\Models\User::whereHas('roles', function ($query) {
             $query->where('name', 'instructor');
         })->count();
+        $numSinRoles = \App\Models\User::whereDoesntHave('roles')->count();
 
-        return view('admin.index', compact('numCursos', 'numAlumnos', 'numInstructores'));
+        return view('admin.index', compact('numCursos', 'numAlumnos', 'numInstructores', 'numSinRoles'));
     }
 }

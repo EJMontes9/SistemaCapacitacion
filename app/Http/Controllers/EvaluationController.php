@@ -200,35 +200,47 @@ class EvaluationController extends Controller
     {
         $totalScore = 0;
         $totalEvaluationScore = 0;
-
-        // Inicializa un array para rastrear las preguntas incorrectas
         $incorrectQuestions = [];
+        $unansweredQuestions = [];
+
+        $questions = $evaluation->questions;
+
+        foreach ($questions as $question) {
+            $totalEvaluationScore += $question->score;
+        }
+
+        $unansweredQuestionIds = array_diff($questions->pluck('id')->toArray(), array_keys($request->questions ?? []));
+
+        foreach ($unansweredQuestionIds as $questionId) {
+            $unansweredQuestions[] = [
+                'question' => Question::find($questionId),
+                'selectedOptions' => []
+            ];
+        }
 
         if ($request->questions) {
             foreach ($request->questions as $questionId => $selectedOptions) {
                 $question = Question::find($questionId);
 
                 if ($question) {
-                    $correctOptions = $question->options()->where('correct_answer', true)->pluck('id');
-                    $incorrectOptions = $question->options()->where('correct_answer', false)->pluck('id');
+                    $correctOptionIds = $question->options()->where('correct_answer', true)->pluck('id')->toArray();
+                    $incorrectOptionIds = $question->options()->where('correct_answer', false)->pluck('id')->toArray();
 
-                    // Incrementa el totalEvaluationScore con el puntaje de la pregunta
-                    $totalEvaluationScore += $question->score;
+                    $selectedOptionIds = Option::whereIn('id', $selectedOptions)->pluck('id')->toArray();
 
                     // Verifica si todas las opciones seleccionadas son correctas
-                    $allCorrect = count(array_diff($correctOptions->toArray(), $selectedOptions)) == 0;
+                    $allCorrect = empty(array_diff($selectedOptionIds, $correctOptionIds));
 
                     // Verifica si hay opciones incorrectas seleccionadas
-                    $hasIncorrect = count(array_intersect($incorrectOptions->toArray(), $selectedOptions)) > 0;
+                    $hasIncorrect = !empty(array_intersect($selectedOptionIds, $incorrectOptionIds));
 
-                    // Solo suma el puntaje si todas las opciones seleccionadas son correctas y no hay opciones incorrectas
                     if ($allCorrect && !$hasIncorrect) {
-                        $totalScore += $question->score;
+                        // Calcula el puntaje para la pregunta basándose en el número de opciones correctas seleccionadas
+                        $totalScore += $question->score * (count($selectedOptionIds) / count($correctOptionIds));
                     } else {
-                        // Si hay opciones incorrectas, agrega la pregunta y las opciones seleccionadas a $incorrectQuestions
                         $incorrectQuestions[] = [
                             'question' => $question,
-                            'selectedOptions' => Option::find($selectedOptions)
+                            'selectedOptions' => Option::whereIn('id', $selectedOptions)->get(),
                         ];
                     }
                 }
@@ -238,18 +250,21 @@ class EvaluationController extends Controller
         $user = User::find($request->user_id);
         $course = Courses::find($request->course_id);
         $section = Section::find($request->module_id);
+
         $evaluationResults = EvaluationResult::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(3);
 
         if ($user && $course && $section && $evaluation) {
-            EvaluationResult::create([
+            $newResult = EvaluationResult::create([
                 'user_id' => $user->id,
                 'course_id' => $course->id,
                 'module_id' => $section->id,
                 'evaluation_id' => $evaluation->id,
                 'total_score' => $totalScore,
             ]);
+
+            $evaluationResults->prepend($newResult);
         }
 
         return view('evaluations.finished', [
@@ -259,7 +274,8 @@ class EvaluationController extends Controller
             'course' => $course,
             'totalScore' => $totalScore,
             'totalEvaluationScore' => $totalEvaluationScore,
-            'incorrectQuestions' => $incorrectQuestions, // Pasa las preguntas incorrectas y las opciones seleccionadas a la vista
+            'incorrectQuestions' => $incorrectQuestions,
+            'unansweredQuestions' => $unansweredQuestions,
             'evaluationResults' => $evaluationResults,
         ])->with('success', 'La evaluación ha sido finalizada con éxito.');
     }

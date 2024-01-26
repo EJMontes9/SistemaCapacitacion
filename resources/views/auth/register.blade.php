@@ -61,9 +61,10 @@
             @endif
 
             <div class="mt-4">
-                <label for="is_student" class="inline-flex items-center">
-                    <input id="is_student" type="checkbox" class="form-checkbox rounded-sm ml-1" name="is_student">
-                    <span class="ml-2 text-sm text-gray-600">{{ __('Soy Alumno') }}</span>
+                <label for="is_instructor" class="inline-flex items-center">
+                    <input id="is_instructor" type="checkbox" class="form-checkbox rounded-sm ml-1"
+                        name="is_instructor">
+                    <span class="ml-2 text-sm text-gray-700 font-semibold">{{ __('Soy Instructor') }}</span>
                 </label>
             </div>
 

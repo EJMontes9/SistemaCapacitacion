@@ -27,8 +27,8 @@ class CreateNewUser implements CreatesNewUsers
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-            //is_Student es un campo opcional
-            'is_student' => ['nullable']
+            //is_instructor es un campo opcional
+            'is_instructor' => ['nullable']
         ])->validate();
 
         return DB::transaction(function () use ($input) {
@@ -40,7 +40,9 @@ class CreateNewUser implements CreatesNewUsers
                 $this->createTeam($user);
 
                 // Si el usuario marcó "Soy Alumno", asigna el rol de Alumno
-                if (isset($input['is_student']) && $input['is_student']) {
+                if (isset($input['is_instructor']) && $input['is_instructor']) {
+                    $user->assignRole('Instructor'); // Asigna el rol por nombre
+                } else {
                     $user->assignRole('Alumno'); // Asigna el rol por nombre
                 }
             });
