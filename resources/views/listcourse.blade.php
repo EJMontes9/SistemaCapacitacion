@@ -10,6 +10,6 @@
         @endif
     </div>
     <div class="mt-4">
-        {{--$courses->links()--}}
+        {{$courses->links()}}
     </div>
 </x-app-layout>
