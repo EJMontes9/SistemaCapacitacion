@@ -32,7 +32,7 @@ class lessonsController extends Controller
     {
         lesson::create($request->validated());
 
-        return redirect()->route('courses.create');
+        return back()->with('success', 'La lección se registró correctamente');
     }
 
     public function show($id)
@@ -61,6 +61,6 @@ class lessonsController extends Controller
     {
         $lesson->delete();
 
-        return redirect()->route('courses.index');
+        return back();
     }
 }

@@ -7,7 +7,6 @@
             @csrf
             <x-sections.form-sections :course="$courses" :sections="$section" />
             <x-button class="mt-4" type="submit">Guardar</x-button>
-            <x-button class="mt-4" id="custom-button" type="button">Guardar y crear lecciones</x-button>
         </form>
     </div>
 </x-app-layout>

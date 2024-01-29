@@ -40,9 +40,9 @@ class courses extends Model
     }
 
     public function sections()
-    {
-        return $this->hasMany('App\Models\section');
-    }
+{
+    return $this->hasMany('App\Models\Section', 'course_id');
+}
 
     //Relacion muchos a muchos
     public function students()

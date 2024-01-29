@@ -10,7 +10,9 @@ $numSection =1;
                     Secciones del curso
                 </h2>
                 @hasanyrole('Instructor|Admin')
+                @if(Auth::user()->id == $course->user_id)
                     <a href="{{ route('sections.create') }}" ><i class="fa-solid fa-plus"></i></a>
+                @endif
                 @endhasanyrole
             </div>
             @foreach ($section as $sections)
@@ -24,6 +26,7 @@ $numSection =1;
                             </div>
                         </div>
                         @hasanyrole('Instructor|Admin')
+                        @if(Auth::user()->id == $course->user_id)
                         <div>
                             <div class="px-3 flex flex-row justify-center items-center">
                                 <a href="{{route('sections.edit',$sections)}}" class="mr-4">
@@ -38,10 +41,14 @@ $numSection =1;
                                 </form>
                             </div>
                         </div>
+                        @endif
                         @endhasanyrole
                     </div>
                 </div>
-                <x-course.list-lesson-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id"></x-course.list-lesson-view>
+
+                <x-course.list-lesson-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id"
+                                           :section_id="$sections->id" :evaluation="$evaluation" :sectionsObj="$sections"
+                                           :usercreate="$course"></x-course.list-lesson-view>
                     <?php $numSection++;?>
             @endforeach
         </div>

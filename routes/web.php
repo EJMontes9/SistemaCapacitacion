@@ -18,7 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('evaluations', EvaluationController::class)->middleware('can:instructor.home');
+Route::resource('evaluations', EvaluationController::class)->middleware('auth');
 
 Route::middleware([
     'auth:sanctum',

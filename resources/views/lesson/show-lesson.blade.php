@@ -6,8 +6,10 @@
             <div class="p-4 w-[500px] h-[400px]">
                 {!! $thislesson->iframe !!}
             </div>
+
+
             <div class="w-full">
-                <x-course.list-section-view :section="$section" :lesson="$lesson" />
+                <x-course.list-section-view :section="$section" :lesson="$lesson"/>
             </div>
         </div>
     </div>

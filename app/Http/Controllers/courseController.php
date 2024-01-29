@@ -6,10 +6,12 @@ use App\Http\Requests\Courses\StoreRequest;
 use App\Http\Requests\Courses\UpdateRequest;
 use App\Models\category;
 use App\Models\courses;
+use App\Models\Evaluation;
 use App\Models\lesson;
 use App\Models\level;
 use App\Models\section;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class courseController extends Controller
@@ -18,19 +20,22 @@ class courseController extends Controller
      * Display a listing of the courses.
      * The courses are paginated in groups of 12.
      */
-    public function index($param = null)
+    public function index(Request $request)
     {
+        $filter = $request->get('filter');
+        $userId = Auth::id();
+        $filterByUser = $request->get('filterByUser'); // Nuevo parámetro para el filtro de usuario
 
-        //$courses = courses::where('user_id', Auth::id())->paginate(12);
-        if ($param) {
-            $courses = courses::whereHas('users', function ($query) {
-                $query->where('id', Auth::id());
-            })->get();
-        } else {
-            $courses = courses::paginate(12);
-        }
+        $courses = courses::query()
+            ->when($filterByUser, function ($query) use ($userId) {
+                return $query->where('user_id', $userId); // Filtra los cursos por el user_id solo cuando el filtro de usuario está activo
+            })
+            ->when($filter, function ($query, $filter) {
+                return $query->where('title', 'like', "%{$filter}%");
+            })
+            ->paginate(12);
 
-        return view('listcourse', ['courses' => $courses]);
+        return view('listcourse', compact('courses'));
     }
 
     /**
@@ -73,7 +78,9 @@ class courseController extends Controller
             $numSection++;
         }
 
-        return view('courses-view', compact('course', 'section', 'lesson', 'name_user'));
+        $evaluation = Evaluation::query()->where('course_id', $course->id)->get();
+
+        return view('courses-view', compact('course', 'section', 'lesson', 'name_user', 'evaluation'));
     }
 
     /**
@@ -122,7 +129,6 @@ class courseController extends Controller
      */
     public function showLesson(string $slug, int $id_lesson)
     {
-        echo 'holaaaaaaa';
         $lesson = [];
         $numSection = 1;
         $course = courses::where('slug', $slug)->firstOrFail();
@@ -132,6 +138,7 @@ class courseController extends Controller
             $lesson[$numSection] = lesson::where('section_id', $id)->get();
             $numSection++;
         }
+
         $thislesson = lesson::findOrFail($id_lesson);
 
         return view('lesson.show-lesson', compact('lesson', 'section', 'course', 'thislesson'));
@@ -142,7 +149,7 @@ class courseController extends Controller
     {
         $courses = courses::whereHas('users', function ($query) {
             $query->where('users.id', Auth::id());
-        })->get();
+        })->paginate(12);
 
         return view('listcourse', ['courses' => $courses]);
     }

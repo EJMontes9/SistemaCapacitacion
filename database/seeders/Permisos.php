@@ -20,13 +20,14 @@ class Permisos extends Seeder
         //Re-enable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
         //Insert new records into the 'users' table
+
         DB::table('permissions')->insert([
-            'name' => 'Leer cursos',
+            'name' => 'Crear cursos',
             'guard_name' => 'web',
         ]);
 
         DB::table('permissions')->insert([
-            'name' => 'Crear cursos',
+            'name' => 'Leer cursos',
             'guard_name' => 'web',
         ]);
 

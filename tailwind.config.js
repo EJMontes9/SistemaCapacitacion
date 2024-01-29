@@ -34,6 +34,15 @@ export default {
                     hoverSecondary: 'var(--color-secondary)',
                 }
             },
+            keyframes: {
+                fadeOut: {
+                    '0%': { opacity: '1' },
+                    '100%': { opacity: '0' },
+                },
+            },
+            animation: {
+                fadeOut: 'fadeOut 9s forwards',
+            },
         },
     },
 
