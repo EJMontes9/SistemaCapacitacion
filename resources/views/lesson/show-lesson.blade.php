@@ -7,9 +7,8 @@
                 {!! $thislesson->iframe !!}
             </div>
 
-
             <div class="w-full">
-                <x-course.list-section-view :section="$section" :lesson="$lesson"/>
+                <x-course.list-section-view :section="$section" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
             </div>
         </div>
     </div>

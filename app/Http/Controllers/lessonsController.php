@@ -7,6 +7,9 @@ use App\Http\Requests\Lessons\UpdateRequest;
 use App\Models\lesson;
 use App\Models\platforms;
 use App\Models\section;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 class lessonsController extends Controller
 {
@@ -62,5 +65,18 @@ class lessonsController extends Controller
         $lesson->delete();
 
         return back();
+    }
+
+    public function markLessonAsSeen(Request $request)
+    {
+        $userId = Auth::id();
+        $lessonId = $request->input('lesson_id');
+
+        DB::table('lesson_user')->insert([
+            'user_id' => $userId,
+            'lesson_id' => $lessonId,
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

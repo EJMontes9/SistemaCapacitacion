@@ -1,5 +1,5 @@
 
-<ul class="lesson-menu hidden" id="lesson-list">
+<ul class="lesson-menu" id="lesson-list">
     @if(!isset($lesson[$sections]) || count($lesson[$sections]) == 0 )
         <li>
             <div class="flex flex-row justify-between border-2 ml-12 py-2 rounded-xl">
@@ -13,7 +13,7 @@
                 <div class="flex flex-row justify-between items-center border-2 ml-12 py-2 rounded-xl">
                     <a class="ml-4" href="{{route('courses.showLesson', ['id_lesson' => $lessons->id, 'slug' => last(explode('/', request()->path()))])}}">{{$numLesson++}}. {{$lessons->name}}</a>
                     @hasanyrole('Instructor|Admin')
-                    @if(Auth::user()->id == $courseid)
+                    @if(Auth::user()->id == $usercreate->user_id)
                     <div class="px-3 flex flex-row justify-center items-center">
                         <a href="{{ route('lessons.edit',$lessons) }}" class="mr-4">
                             <i class="fa-solid fa-pen text-blue-900"></i>

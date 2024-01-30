@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Evaluation;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-
-use App\Models\Option;
 use App\Models\Courses;
+use App\Models\Evaluation;
+use App\Models\EvaluationResult;
+use App\Models\Option;
 use App\Models\Question;
 use App\Models\Section;
 use App\Models\User;
-use App\Models\EvaluationResult;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EvaluationController extends Controller
 {
@@ -46,6 +47,7 @@ class EvaluationController extends Controller
     {
         $userId = auth()->user()->id;
         $courses = Courses::where('user_id', $userId)->with('sections')->get();
+
         return view('evaluations.create', compact('courses'));
     }
 
@@ -117,7 +119,7 @@ class EvaluationController extends Controller
         }
 
         // Verifica si el instructor actual es el propietario de la evaluación
-        if (auth()->user()->id != $evaluation->instructor_id) {
+        if (auth()->user()->id != $evaluation->instructor_id && ! auth()->user()->roles->pluck('id')->contains(3)) {
             return redirect()->route('evaluations.index')
                 ->with('error', 'Esta evaluación no se encuentra en tus registros.');
         }
@@ -126,8 +128,6 @@ class EvaluationController extends Controller
 
         return view('evaluations.show', compact('questions', 'evaluation', 'course', 'section'));
     }
-
-
 
     /**
      * Show the form for editing the specified resource.
@@ -161,7 +161,7 @@ class EvaluationController extends Controller
             $question = Question::create([
                 'question' => $questionData['question'],
                 'score' => $questionData['score'],
-                'evaluation_id' => $evaluation->id
+                'evaluation_id' => $evaluation->id,
             ]);
 
             for ($i = 0; $i < count($questionData['options']); $i++) { //recorre las opciones
@@ -177,7 +177,6 @@ class EvaluationController extends Controller
 
         return redirect('/evaluations')->with('success', 'La evaluación ha sido actualizada con éxito.');
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -214,7 +213,7 @@ class EvaluationController extends Controller
         foreach ($unansweredQuestionIds as $questionId) {
             $unansweredQuestions[] = [
                 'question' => Question::find($questionId),
-                'selectedOptions' => []
+                'selectedOptions' => [],
             ];
         }
 
@@ -232,9 +231,9 @@ class EvaluationController extends Controller
                     $allCorrect = empty(array_diff($selectedOptionIds, $correctOptionIds));
 
                     // Verifica si hay opciones incorrectas seleccionadas
-                    $hasIncorrect = !empty(array_intersect($selectedOptionIds, $incorrectOptionIds));
+                    $hasIncorrect = ! empty(array_intersect($selectedOptionIds, $incorrectOptionIds));
 
-                    if ($allCorrect && !$hasIncorrect) {
+                    if ($allCorrect && ! $hasIncorrect) {
                         // Calcula el puntaje para la pregunta basándose en el número de opciones correctas seleccionadas
                         $totalScore += $question->score * (count($selectedOptionIds) / count($correctOptionIds));
                     } else {
@@ -252,6 +251,7 @@ class EvaluationController extends Controller
         $section = Section::find($request->module_id);
 
         $evaluationResults = EvaluationResult::where('user_id', $user->id)
+            ->where('evaluation_id', $evaluation->id)
             ->orderBy('created_at', 'desc')
             ->paginate(3);
 
@@ -278,5 +278,21 @@ class EvaluationController extends Controller
             'unansweredQuestions' => $unansweredQuestions,
             'evaluationResults' => $evaluationResults,
         ])->with('success', 'La evaluación ha sido finalizada con éxito.');
+    }
+
+    public function getLowScoreEvaluations()
+    {
+        $userId = Auth::id(); // Obtiene el ID del usuario autenticado
+
+        $lowScoreEvaluations = DB::table('evaluation_results')
+            ->join('courses', 'evaluation_results.course_id', '=', 'courses.id')
+            ->join('sections', 'evaluation_results.module_id', '=', 'sections.id')
+            ->where('evaluation_results.user_id', $userId) // Filtra por el user_id
+            ->where('total_score', '<', 9) // Filtra por calificación menor a nueve
+            ->select('evaluation_results.*', 'courses.title as course_name', 'sections.name as section_name')
+            ->get()
+            ->toArray();
+
+        return response()->json($lowScoreEvaluations);
     }
 }

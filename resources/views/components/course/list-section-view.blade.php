@@ -20,8 +20,8 @@ $numSection =1;
                     <div class="flex flex-row justify-between items-center w-full">
                         <div class="flex flex-row w-full">
                             <div class="h-12 w-12 mb-2 lg:mb-0 border md:mb-0 rounded-full mr-3"></div>
-                            <div class="flex flex-col">
-                                <div class="text-sm leading-3 text-gray-700 font-bold w-full">Tema #{{$numSection}}</div>
+                            <div class="flex flex-row">
+                                <div class="text-sm leading-3 text-gray-700 font-bold w-full">Seccion #{{$numSection}} :</div>
                                 <div class="text-xs text-gray-600 w-full">{{$sections->name}}</div>
                             </div>
                         </div>
