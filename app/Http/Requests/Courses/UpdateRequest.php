@@ -54,7 +54,7 @@ class UpdateRequest extends FormRequest
             'level_id' => 'required|integer',
             'category_id' => 'required|integer',
             'user_id' => 'required|integer',
-            'image' => 'required|mimes:jpg,jpeg,png|max:10240',
+            'image' => 'mimes:jpg,jpeg,png|max:10240',
             //'image' => 'required',
         ];
     }

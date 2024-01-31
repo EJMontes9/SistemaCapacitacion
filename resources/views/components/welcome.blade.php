@@ -61,7 +61,7 @@
             </x-indicadores-generales>
         </div>
         <div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
-            <x-sugerencia-temas></x-sugerencia-temas>
+            @include('components.sugerencia-temas')
             <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                 <x-progreso-cursos></x-progreso-cursos>
             </div>

@@ -13,6 +13,7 @@ use App\Models\section;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class courseController extends Controller
 {
@@ -56,7 +57,16 @@ class courseController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        courses::create($request->validated());
+        //courses::create($request->validated());
+
+        $data = $request->validated();
+
+        if (isset($data['image'])) {
+            $data['image'] = $filename = time().$data['image']->getClientOriginalName();
+            $request->validated()['image']->move(public_path('images/courses'), $filename);
+        }
+
+        courses::create($data);
 
         return redirect()->route('courses.index');
     }
@@ -140,8 +150,9 @@ class courseController extends Controller
         }
 
         $thislesson = lesson::findOrFail($id_lesson);
+        $evaluation = Evaluation::query()->where('course_id', $course->id)->get();
 
-        return view('lesson.show-lesson', compact('lesson', 'section', 'course', 'thislesson'));
+        return view('lesson.show-lesson', compact('lesson', 'section', 'course', 'thislesson', 'evaluation'));
 
     }
 
@@ -160,5 +171,20 @@ class courseController extends Controller
         $user->courses()->attach($course->id);
 
         return redirect()->back()->with('success', 'Curso agregado con éxito');
+    }
+
+    public function getLessonsCompleted()
+    {
+        $userId = Auth::id(); // Obtiene el ID del usuario autenticado
+
+        $lessonsCompleted = DB::table('lesson_user')
+            ->select(DB::raw('DATE(created_at) as date, count(*) as count'))
+            ->where('user_id', $userId) // Filtra por el user_id
+            ->groupBy('date')
+            ->get()
+            ->pluck('count', 'date')
+            ->toArray();
+
+        return response()->json($lessonsCompleted);
     }
 }

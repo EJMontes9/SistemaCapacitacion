@@ -16,7 +16,7 @@
                             <span class="ml-3">Dashboard</span>
                         </a>
                     </li>
-                    @hasanyrole('Alumno|Admin')
+                    @hasanyrole('Alumno')
                     <li>
                         <a href="/mycourses" class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ url()->current() == url('/mycourses') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
                             <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

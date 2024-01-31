@@ -55,40 +55,38 @@
 </style>
 
 <script>
-    // Data retrieved https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature
-    Highcharts.chart('container', {
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: '{{$title}}'
-        },
-        /*subtitle: {
-            text: 'Source: ' +
-                '<a href="https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature" ' +
-                'target="_blank">Wikipedia.com</a>'
-        },*/
-        xAxis: {
-            categories: {{$categories}}
-        },
-        yAxis: {
-            title: {
-                text: 'Modulos completados'
-            }
-        },
-        plotOptions: {
-            line: {
-                dataLabels: {
-                    enabled: true
+    // Fetch data from the API
+    fetch('/lessons-completed')
+        .then(response => response.json())
+        .then(data => {
+            // Create the chart with the fetched data
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column'
                 },
-                enableMouseTracking: false
-            }
-        },
-        series: [{
-            name: 'Modulos',
-            data: [2, 1, 0, 5, 10, 8, 3, 4, 5, 5,
-               10, 2]
-        }]
-    });
-
+                title: {
+                    text: '{{$title}}'
+                },
+                xAxis: {
+                    categories: {{$categories}}
+                },
+                yAxis: {
+                    title: {
+                        text: 'lecciones completadas'
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: 'Lecciones',
+                    data: Object.values(data)
+                }]
+            });
+        });
 </script>

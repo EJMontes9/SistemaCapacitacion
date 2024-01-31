@@ -25,10 +25,16 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    //Route::get('/dashboard', 'App\Http\Controllers\courseController@dashboard')->name('dashboard');
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('/lessons-completed', 'App\Http\Controllers\courseController@getLessonsCompleted');
+Route::get('/low-score-evaluations', 'App\Http\Controllers\EvaluationController@getLowScoreEvaluations');
+
+Route::post('/lesson/status', 'App\Http\Controllers\lessonsController@markLessonAsSeen');
 
 Route::get('/listcourse', 'App\Http\Controllers\courseController@index');
 

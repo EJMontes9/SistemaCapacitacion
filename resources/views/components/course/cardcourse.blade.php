@@ -12,9 +12,11 @@
       <a href="{{route('courses.show', $course->slug)}}" class="btn btn-primary mx-1">Ver detalles</a>
     </x-button>
       @if(!$course->users->contains($user))
+          @role('Alumno')
           <x-button class="mt-5">
               <a href="{{ route('courses.add', $course->id) }}" class="btn btn-primary mx-1">Agregar curso</a>
           </x-button>
+            @endrole
       @endif
   </div>
 </div>
