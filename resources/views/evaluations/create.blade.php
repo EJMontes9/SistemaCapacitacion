@@ -50,7 +50,7 @@
 
                         <div class="mb-8 w-1/2">
                             <label class=" text-lg text-gray-600" for="module_id">
-                                Módulos
+                                Secciones
                             </label> <span class="text-red-500">*</span></label></br>
                             <select name="module_id" id="module_id"
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
@@ -71,15 +71,15 @@
                     </div>
 
                     <button type="button" id="add-question-button"
-                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Agregar
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Agregar
                         pregunta</button>
                     <button type="button" id="remove-question-button"
-                        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Eliminar
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Eliminar
                         pregunta</button>
 
                     <div class="flex justify-end p-1">
                         <button role="submit"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                            class="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
                             required>Guardar</button>
                         <a href="{{ route('evaluations.index') }}"
                             onclick="event.preventDefault(); if(confirm('¿Estás seguro de que quieres cancelar?')) { window.location.href = this.href; }"

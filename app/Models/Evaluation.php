@@ -32,4 +32,9 @@ class Evaluation extends Model
     {
         return $this->belongsTo(Section::class);
     }
+
+    public function section()
+    {
+        return $this->belongsTo('App\Models\Section');
+    }
 }

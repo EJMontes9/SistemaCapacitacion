@@ -60,6 +60,8 @@
                                 class="font-bold text-lg text-center text-black bg-gray-200 dark:bg-gray-300 rounded-md">
                                 <tr>
                                     <th class="px-4 py-2 w-1/5">Título</th>
+                                    <th class="px-4 py-2 w-1/5">Curso</th>
+                                    <th class="px-4 py-2 w-1/5">Sección</th>
                                     <th class ="px-4 py-2 w-1/5">Fecha de creación</th>
                                     <th class ="px-4 py-2 w-1/5">Fecha de actualización</th>
                                     <th class="px-4 py-2 w-1/5">Acciones</th>
@@ -71,6 +73,12 @@
                                     <tr
                                         class="{{ $index % 2 == 0 ? 'bg-gray-100 text-black' : 'bg-white text-black' }}">
                                         <td class="border px-4 py-2 w-1/5">{{ $evaluation->title }}</td>
+                                        <td class="border px-4 py-2 text-center w-1/5">
+                                            {{ $evaluation->course->title }}
+                                        </td>
+                                        <td class="border px-4 py-2 text-center w-1/5">
+                                            {{ $evaluation->module ? $evaluation->module->name : 'Sin sección' }}
+                                        </td>
                                         <td class="border px-4 py-2 text-center w-1/5">
                                             {{ \Carbon\Carbon::parse($evaluation->created_at)->locale('es')->isoFormat('LL') }}
                                         </td>

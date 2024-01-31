@@ -51,7 +51,8 @@ Route::post('/evaluations/{evaluation}/finished', [EvaluationController::class, 
 
 Route::get('/evaluations/{evaluation}/finished', 'App\Http\Controllers\EvaluationController@finish')->name('evaluations.finished');
 
+Route::get('/evaluations/{evaluation}/{user}/view', 'App\Http\Controllers\EvaluationController@view')->name('evaluations.view');
+
 //Route::get('/evaluations/{evaluation}/finished', 'EvaluationController@finish')->name('evaluations.finished');
+
 Route::get('mycourses', 'App\Http\Controllers\courseController@mycourse')->name('courses.mycourse');
-
-
