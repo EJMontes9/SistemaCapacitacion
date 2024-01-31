@@ -80,7 +80,7 @@ function addQuestion({ id, question, score, options }) {
     scoreInput.className = "border-2 ml-2 w-215 h-8 rounded-lg";
     scoreInput.name = `questions[${questionIndex}][score]`;
     scoreInput.required = true;
-    scoreInput.min = 0;
+    scoreInput.min = 1;
     scoreInput.step = 1;
     scoreInput.max = 10;
     scoreInput.value = score;
@@ -235,16 +235,18 @@ document
             var scoreInput = questions[i].querySelector(
                 'input[name^="questions[' + i + '][score]"]'
             );
+            var scoreValue = parseInt(scoreInput.value);
+            var hasCorrectAnswer = false;
 
-            if (!scoreInput || scoreInput.value === "") {
+            if (scoreValue < 1) {
                 alert(
-                    "Por favor, llena el campo de Puntaje para todas las preguntas antes de guardar."
+                    "Asegúrese de que el campo de Puntaje para todas las preguntas sea al menos 1."
                 );
                 event.preventDefault();
                 return;
             }
 
-            totalScore += Number(scoreInput.value);
+            totalScore += scoreValue;
 
             if (options.length < 2) {
                 alert(
@@ -254,9 +256,28 @@ document
                 return;
             }
 
-            if (correctAnswers.length < 1) {
+            if (correctAnswers.length === options.length) {
                 alert(
-                    "Por favor, selecciona al menos una respuesta correcta para cada pregunta antes de guardar."
+                    "Debe existir al menos una respuesta falsa por cada pregunta."
+                );
+                event.preventDefault();
+                return;
+            }
+
+            // Verificar si al menos una opción tiene correct_answer = true
+            for (var j = 0; j < options.length; j++) {
+                var correctAnswerCheckbox = options[j].parentNode.querySelector(
+                    ".correct-answer-checkbox"
+                );
+                if (correctAnswerCheckbox.checked) {
+                    hasCorrectAnswer = true;
+                    break;
+                }
+            }
+
+            if (!hasCorrectAnswer) {
+                alert(
+                    "Debe marcar al menos una opción como correcta para cada pregunta."
                 );
                 event.preventDefault();
                 return;

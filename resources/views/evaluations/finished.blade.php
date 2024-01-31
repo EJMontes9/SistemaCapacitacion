@@ -1,7 +1,13 @@
 <x-app-layout>
     <div class="mt-10 ml-10">
         <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
-            {{ __('Has culminado tu evaluación del curso ') }} {{ $course->title }} del módulo {{ $section->name }}
+            @if (Route::is('evaluations.view'))
+                {{ __('Mis calificaciones del curso ') }} {{ $course->title }} {{ __(' de la sección ') }}
+                {{ $section->name }}
+            @else
+                {{ __('Has culminado tu evaluación del curso ') }} {{ $course->title }} {{ __(' de la sección ') }}
+                {{ $section->name }}
+            @endif
         </h2>
     </div>
 
@@ -17,11 +23,15 @@
                     </div>
                     <div class="card mt-11">
                         <p class="text-center text-xl font-bold">
-                            {{ $user->name }} tu calificación de la evaluación del último intento es
-                            <span
-                                class="{{ $totalScore > 7 ? 'text-green-600' : ($totalScore == 7 ? 'text-yellow-500' : 'text-red-500') }}">
-                                {{ $totalScore }}/{{ $totalEvaluationScore }}
-                            </span>
+                            @if (isset($totalScore))
+                                {{ $user->name }} tu calificación de la evaluación del último intento es
+                                <span
+                                    class="{{ $totalScore > 7 ? 'text-green-600' : ($totalScore == 7 ? 'text-yellow-500' : 'text-red-500') }}">
+                                    {{ $totalScore }}/{{ $totalEvaluationScore }}
+                                </span>
+                            @else
+                                {{ $user->name }}, aquí se muestran tus calificaciones de esta evaluación.
+                            @endif
                         </p>
                     </div>
 
@@ -32,27 +42,34 @@
                     @endphp
                     <div class="card mt-10">
                         <p class="text-justify text-lg font-bold">Historial de intentos</p>
-                        <table class="table-auto w-full mt-3 rounded-lg">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 py-2 text-center">Fecha de finalización de evaluación</th>
-                                    <th class="px-4 py-2 text-center">Calificación</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($evaluationResults as $index => $result)
-                                    <tr class="{{ $index % 2 == 0 ? 'bg-gray-100' : '' }}">
-                                        <td class="border px-4 py-2 text-center">
-                                            {{ $result->created_at->isoFormat('dddd D [de] MMMM [del] YYYY [a las] HH:mm:ss') }}
-                                            @if ($index == 0)
-                                                <span class="text-red-500">(Último intento realizado)</span>
-                                            @endif
-                                        </td>
-                                        <td class="border px-4 py-2 text-center">{{ $result->total_score }}</td>
+                        @if ($evaluationResults->isEmpty())
+                            <div class="card bg-orange-300 rounded-lg my-5 mx-5 py-4 px-4 shadow-xl">
+                                <p>Sin resultados, realiza tu primer intento en esta evaluación para poder visualizar
+                                    tus resultados aquí</p>
+                            </div>
+                        @else
+                            <table class="table-auto w-full mt-3 rounded-lg">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-2 text-center">Fecha de finalización de evaluación</th>
+                                        <th class="px-4 py-2 text-center">Calificación</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($evaluationResults as $index => $result)
+                                        <tr class="{{ $index % 2 == 0 ? 'bg-gray-100' : '' }}">
+                                            <td class="border px-4 py-2 text-center">
+                                                {{ $result->created_at->isoFormat('dddd D [de] MMMM [del] YYYY [a las] HH:mm:ss') }}
+                                                @if ($index == 0)
+                                                    <span class="text-red-500">(Último intento realizado)</span>
+                                                @endif
+                                            </td>
+                                            <td class="border px-4 py-2 text-center">{{ $result->total_score }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
                     </div>
 
                     <!-- Aquí es donde se agregan las preguntas incorrectas -->
@@ -70,18 +87,7 @@
                                         <h2 class="font-semibold mt-4">Pregunta:
                                             {{ $incorrectQuestion['question']->question }}</h2>
 
-                                        {{-- Muestra las opciones de la pregunta --}}
-                                        @foreach ($incorrectQuestion['question']->options as $option)
-                                            @if ($option->correct_answer)
-                                                {{-- Solo muestra las opciones correctas --}}
-                                                <p>
-                                                    Opción: {{ $option->options }}
-                                                    <span class="text-green-500">Respuesta correcta</span>
-                                                </p>
-                                            @endif
-                                        @endforeach
-
-                                        <p class="font-semibold">Tu selección</p>
+                                        <p class="font-semibold text-red-500">Tu selección</p>
 
                                         {{-- Muestra las opciones seleccionadas incorrectas --}}
                                         @foreach ($incorrectQuestion['selectedOptions'] as $selectedOption)
@@ -93,7 +99,6 @@
                                                 </p>
                                             @endif
                                         @endforeach
-
                                     </div>
                                 @endforeach
 
@@ -112,9 +117,14 @@
 
                     <div class="flex justify-between items-center mt-10">
                         <div
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-40 text-center">
-                            <a href="{{ route('evaluations.show', ['evaluation' => $evaluation->id]) }}">Volver a
-                                Intentar</a>
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-45 text-center">
+                            <a href="{{ route('evaluations.show', ['evaluation' => $evaluation->id]) }}">
+                                @if ($evaluationResults->isEmpty())
+                                    Realizar Evaluación
+                                @else
+                                    Volver a Intentar
+                                @endif
+                            </a>
                         </div>
                         <div
                             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-32 text-center">

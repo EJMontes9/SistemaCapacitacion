@@ -27,6 +27,7 @@ class EvaluationController extends Controller
         $perPage = $request->input('perPage', 6);
 
         $evaluations = Evaluation::query()
+            ->with('section')
             ->where('instructor_id', auth()->id())
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', "%{$search}%")
@@ -40,7 +41,10 @@ class EvaluationController extends Controller
         // Verifica si $firstEvaluation es null antes de intentar acceder a course->name
         $courseName = $firstEvaluation ? $firstEvaluation->course->name : 'Nombre del curso por defecto';
 
-        return view('evaluations.index', compact('evaluations', 'courseName'));
+        // Verifica si $firstEvaluation y $firstEvaluation->section son null antes de intentar acceder a section->name
+        $sectionName = $firstEvaluation && $firstEvaluation->section ? $firstEvaluation->section->name : 'Nombre de la sección por defecto';
+
+        return view('evaluations.index', compact('evaluations', 'courseName', 'sectionName'));
     }
 
     public function create()
@@ -280,6 +284,34 @@ class EvaluationController extends Controller
         ])->with('success', 'La evaluación ha sido finalizada con éxito.');
     }
 
+
+    public function view($evaluationId, $userId)
+    {
+        // Aquí puedes acceder a $evaluation y $user
+        $evaluation = Evaluation::find($evaluationId);
+        $user = User::find($userId);
+
+        // Aquí puedes obtener los datos que necesitas para la vista
+        $evaluationResults = EvaluationResult::where('user_id', $user->id)
+            ->where('evaluation_id', $evaluation->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(3);
+
+        // Aquí puedes obtener course, section y user->name
+        $course = $evaluation->course;
+        $section = $evaluation->module;
+        $userName = $user->name;
+
+        // Aquí puedes devolver la vista con los datos
+        return view('evaluations.finished', [
+            'evaluation' => $evaluation,
+            'user' => $user,
+            'evaluationResults' => $evaluationResults,
+            'course' => $course,
+            'section' => $section,
+            'userName' => $userName,
+        ]);
+
     public function getLowScoreEvaluations()
     {
         $userId = Auth::id(); // Obtiene el ID del usuario autenticado
@@ -294,5 +326,6 @@ class EvaluationController extends Controller
             ->toArray();
 
         return response()->json($lowScoreEvaluations);
+
     }
 }
