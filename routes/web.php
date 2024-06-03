@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EvaluationController;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,15 @@ use App\Http\Controllers\EvaluationController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/send-test-email', function () {
+    Mail::raw('This is a test email', function ($message) {
+        $message->to('guillermobaquerizo35@gmail.com')
+                ->subject('Test Email');
+    });
+
+    return 'Test email sent!';
+});
 
 Route::get('/', function () {
     return view('welcome');
@@ -52,13 +62,18 @@ Route::resource('lessons', 'App\Http\Controllers\lessonsController')->except(['c
 Route::get('lessons/create/{courseId}', 'App\Http\Controllers\lessonsController@create')->name('lessons.create');
 
 
+//Ruta para invocar el index de evaluations y mostrar todos los resultados
 
+Route::get('/evaluations', 'App\Http\Controllers\EvaluationController@index')->name('evaluations.index');
 Route::post('/evaluations/{evaluation}/finished', [EvaluationController::class, 'finish'])->name('evaluations.finished');
-
 Route::get('/evaluations/{evaluation}/finished', 'App\Http\Controllers\EvaluationController@finish')->name('evaluations.finished');
-
 Route::get('/evaluations/{evaluation}/{user}/view', 'App\Http\Controllers\EvaluationController@view')->name('evaluations.view');
+Route::get('/searchEvaluation', 'App\Http\Controllers\EvaluationController@searchEvaluation')->name('searchEvaluation');
 
 //Route::get('/evaluations/{evaluation}/finished', 'EvaluationController@finish')->name('evaluations.finished');
 
 Route::get('mycourses', 'App\Http\Controllers\courseController@mycourse')->name('courses.mycourse');
+
+//Categories
+Route::resource('admin/categories', 'Admin\CategoryController');
+

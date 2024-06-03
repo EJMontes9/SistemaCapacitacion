@@ -86,12 +86,12 @@
                         class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Agregar
                         pregunta</button>
                     <button type="button" id="remove-question-button"
-                        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Eliminar
+                        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded" hidden>Eliminar
                         pregunta</button>
 
                     <div class="flex justify-end p-1">
                         <button role="submit"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                            class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded mt-4"
                             required>Guardar</button>
                         <a href="{{ route('evaluations.index') }}"
                             onclick="event.preventDefault(); if(confirm('¿Estás seguro de que quieres cancelar?')) { window.location.href = this.href; }"

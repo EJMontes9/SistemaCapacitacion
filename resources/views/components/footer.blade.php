@@ -34,6 +34,6 @@
     </div>-->
 </footer>
 <p class="text-center text-sm text-gray-500 my-10">
-    &copy; 2023-2024 <a href="#" class="hover:underline" target="_blank">Erick Montes - Guillermo Baquerizo</a>.
-    All rights reserved.
+    &copy; 2024-2025 <a href="#" class="hover:underline" target="_blank">Erick Montes - Guillermo Baquerizo</a>.
+    All rights reserved. Reproduction without explicit permission is prohibited.
 </p>

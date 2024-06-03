@@ -116,16 +116,17 @@
                     @endif
 
                     <div class="flex justify-between items-center mt-10">
-                        <div
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-45 text-center">
-                            <a href="{{ route('evaluations.show', ['evaluation' => $evaluation->id]) }}">
-                                @if ($evaluationResults->isEmpty())
-                                    Realizar Evaluación
-                                @else
-                                    Volver a Intentar
-                                @endif
-                            </a>
-                        </div>
+                        @if (isset($totalScore) && $totalScore < $totalEvaluationScore)
+                            <div class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-45 text-center">
+                                <a href="{{ route('evaluations.show', ['evaluation' => $evaluation->id]) }}">
+                                    @if ($evaluationResults->isEmpty())
+                                        Realizar Evaluación
+                                    @else
+                                        Volver a Intentar
+                                    @endif
+                                </a>
+                            </div>
+                        @endif
                         <div
                             class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-32 text-center">
                             <a href="/listcourse">Regresar</a>

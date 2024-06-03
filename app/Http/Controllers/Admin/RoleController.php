@@ -13,7 +13,7 @@ class RoleController extends Controller
 
     public function __construct()
     {
-        $this->middleware('can:Listar Roles')->only('index');
+        $this->middleware('can:Listar Roles')->only('index', 'edit');
     }
     /**
      * Display a listing of the resource.

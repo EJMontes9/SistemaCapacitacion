@@ -23,6 +23,16 @@ class EvaluationController extends Controller
 
     public function index(Request $request)
     {
+        // Verifica si el usuario autenticado es un alumno
+        try {
+            if (auth()->user()->roles->pluck('id')->contains(5)) {
+                return redirect()->route('courses.mycourse')
+                    ->with('error', 'No tienes permiso para ver esta página.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('login');
+        }
+
         $search = $request->input('search');
         $perPage = $request->input('perPage', 6);
 
@@ -74,7 +84,7 @@ class EvaluationController extends Controller
 
         if ($validator->fails()) { //si falla la validacion
             return redirect()
-                ->route('tevaluations.create')
+                ->route('evaluations.create')
                 ->withErrors($validator)
                 ->withInput();
         }
@@ -115,15 +125,15 @@ class EvaluationController extends Controller
     {
         try {
             $evaluation = Evaluation::with('course', 'module')->findOrFail($id);
-            $course = $evaluation->course; // Asumiendo que la relación en Evaluation se llama "course"
-            $section = $evaluation->module; // Asumiendo que la relación en Evaluation se llama "module"
+            $course = $evaluation->course;
+            $section = $evaluation->module;
         } catch (ModelNotFoundException $e) {
             return redirect()->route('evaluations.index')
                 ->with('error', 'No existen registros.');
         }
 
-        // Verifica si el instructor actual es el propietario de la evaluación
-        if (auth()->user()->id != $evaluation->instructor_id && ! auth()->user()->roles->pluck('id')->contains(3)) {
+        // Verifica si el instructor actual es el propietario de la evaluación, el id 5 representa a un alumno de un curso
+        if (auth()->user()->id != $evaluation->instructor_id && !auth()->user()->roles->pluck('id')->contains(5)) {
             return redirect()->route('evaluations.index')
                 ->with('error', 'Esta evaluación no se encuentra en tus registros.');
         }
@@ -139,6 +149,13 @@ class EvaluationController extends Controller
     public function edit($id)
     {
         $evaluation = Evaluation::with('course', 'module', 'questions.options')->find($id);
+
+        // Verifica si el usuario autenticado es el instructor de la evaluación
+        if (auth()->user()->id != $evaluation->instructor_id) {
+            return redirect()->route('evaluations.index')
+                ->with('error', 'No tienes permiso para visualizar esta página');
+        }
+
         $courses = Courses::where('user_id', auth()->user()->id)->with('sections')->get();
 
         return view('evaluations.edit', ['evaluation' => $evaluation, 'courses' => $courses]);
@@ -235,9 +252,9 @@ class EvaluationController extends Controller
                     $allCorrect = empty(array_diff($selectedOptionIds, $correctOptionIds));
 
                     // Verifica si hay opciones incorrectas seleccionadas
-                    $hasIncorrect = ! empty(array_intersect($selectedOptionIds, $incorrectOptionIds));
+                    $hasIncorrect = !empty(array_intersect($selectedOptionIds, $incorrectOptionIds));
 
-                    if ($allCorrect && ! $hasIncorrect) {
+                    if ($allCorrect && !$hasIncorrect) {
                         // Calcula el puntaje para la pregunta basándose en el número de opciones correctas seleccionadas
                         $totalScore += $question->score * (count($selectedOptionIds) / count($correctOptionIds));
                     } else {
@@ -311,7 +328,7 @@ class EvaluationController extends Controller
             'section' => $section,
             'userName' => $userName,
         ]);
-
+    }
     public function getLowScoreEvaluations()
     {
         $userId = Auth::id(); // Obtiene el ID del usuario autenticado
@@ -326,6 +343,29 @@ class EvaluationController extends Controller
             ->toArray();
 
         return response()->json($lowScoreEvaluations);
+    }
 
+    //Search Evaluation by Course or Tittle and preview in the table of evaluations
+    public function searchEvaluation(Request $request)
+    {
+        $search = $request->input('search');
+        $perPage = $request->input('perPage', 6);
+
+        $evaluations = Evaluation::query()
+            ->with('section')
+            ->where('instructor_id', auth()->id())
+            ->where('title', 'like', "%{$search}%")
+            ->paginate($perPage);
+
+        // Obtiene el primer elemento de los resultados paginados
+        $firstEvaluation = collect($evaluations->items())->first();
+
+        // Verifica si $firstEvaluation es null antes de intentar acceder a course->name
+        $courseName = $firstEvaluation ? $firstEvaluation->course->name : 'Nombre del curso por defecto';
+
+        // Verifica si $firstEvaluation y $firstEvaluation->section son null antes de intentar acceder a section->name
+        $sectionName = $firstEvaluation && $firstEvaluation->section ? $firstEvaluation->section->name : 'Nombre de la sección por defecto';
+
+        return view('evaluations.index', compact('evaluations', 'courseName', 'sectionName'));
     }
 }

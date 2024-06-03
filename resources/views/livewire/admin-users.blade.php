@@ -71,6 +71,7 @@
                 <div class="card-body">
                     <strong>No hay registros...</strong>
                 </div>
+            </div>
         @endif
     </div>
 </div>

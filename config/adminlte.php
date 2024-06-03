@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
+    'title' => 'StudyApp',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -316,6 +316,13 @@ return [
             'icon'        => 'fas fa-solid fa-users',
             'can' => 'Leer Usuarios',
             'active' => ['admin/users*'],
+        ],
+        [
+            'text'        => 'Lista de Categorías',
+            'route'         => 'admin.categories.index',
+            'icon'        => 'fas fa-solid fa-window-restore',
+            'can' => 'Leer Usuarios',
+            'active' => ['admin/categories*'],
         ],
         ['header' => 'account_settings'],
         [

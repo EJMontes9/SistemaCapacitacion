@@ -3,10 +3,10 @@
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-6 bg-white border-b border-gray-200">
             <div class="container mx-auto px-4">
-                <!--<a href="{{ route('evaluations.index') }}"
+                <a href="{{ route('evaluations.index') }}"
                     class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150 mb-7">
                     Regresar
-                </a>-->
+                </a>
                 <h1 class="text-4xl font-bold my-4">{{ $evaluation->title }}</h1>
                 <p class="text-lg mb-8 mt-7">{{ $evaluation->description }}</p>
 

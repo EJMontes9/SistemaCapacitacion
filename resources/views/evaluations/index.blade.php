@@ -38,12 +38,25 @@
             </div>
             <div class="card">
                 <div class="card-header text-2xl font-bold my-3 mx-5">
-                    Laravel - Mis Evaluaciones
+                    Mis Evaluaciones
+                </div>
+                <div class="flex mx-11 items-center mt-10 mb-5">
+                    <form action="{{ route('searchEvaluation') }}" method="GET" class="flex w-full">
+                        <input type="text" name="search" class="form-input flex-grow rounded-lg mr-4" id="search" placeholder="Buscar por título de la evaluación...">
+                        <button type="submit" class="btn btn-outline-secondary flex-none mr-2" id="button-addon2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-6a8 8 0 11-16 0 8 8 0 0116 0z"></path>
+                            </svg>
+                        </button>
+                        <button class="btn btn-outline-secondary flex-none" type="button" id="clear-search" onclick="window.location.href='{{ route('evaluations.index') }}'">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
             <div class="p-6 bg-white border-b border-gray-200 mx-5">
                 <a href="{{ route('evaluations.create') }}"
-                    class="mb-4 inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    class="mb-5 inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                     Crear nueva evaluación
                 </a>
                 <!-- Tabla de evaluaciones -->
