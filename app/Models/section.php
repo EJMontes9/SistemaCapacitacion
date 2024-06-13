@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class section extends Model
 {
+    protected $fillable = [
+        'name',
+        'course_id',
+    ];
+    
     protected $guarded = ['id'];
     use HasFactory;
 

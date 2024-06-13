@@ -8,14 +8,40 @@ use App\Models\courses;
 use App\Models\platforms;
 use App\Models\section;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+
 
 class sectionsController extends Controller
 {
+
+    // metodos api based
     public function index()
     {
-
+        $sections = section::all();
+        return response()->json([
+            'sections' => $sections
+        ]);
     }
 
+
+    public function addbyApi(Request $request)
+    {
+        $section = Section::create([
+            'name' => $request->input('name'),
+            'course_id' => $request->input('course_id'),
+        ]);
+    
+        return response()->json([
+            'message' => 'section creada con exito',
+            'section' => $section
+        ]);
+    }
+
+
+
+
+
+    // monolitos
     public function create()
     {
         $courses = courses::where('user_id', Auth::id())->pluck('title', 'id');
