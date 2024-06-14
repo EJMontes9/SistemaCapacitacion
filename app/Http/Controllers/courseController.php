@@ -58,7 +58,7 @@ class courseController extends Controller
         $existingSections = section::all();
     
         // Agregar un dump para verificar los datos
-        // dump($existingSections);
+        dump($existingSections);
     
         return view('courses.create-courses', compact('categories', 'levels', 'existingSections'));
     }
@@ -90,11 +90,13 @@ class courseController extends Controller
                 }
             }
         }
-
         // Pasar los datos de las secciones a la sesión
         session(['new_course_sections' => $newCourseSections]);
-
-        return redirect()->route('courses.index');
+        
+        //redireccion anterior
+        // return redirect()->route('courses.index');
+        // Redirigir a la pantalla de edición del curso
+        return redirect()->route('courses.paso2', $course->id);
     }
 
     /**
@@ -119,6 +121,14 @@ class courseController extends Controller
         return view('courses-view', compact('course', 'section', 'lesson', 'name_user', 'evaluation'));
     }
 
+    // paso 2 de creación, las secciones
+    public function paso2(courses $course)
+    {
+        $categories = category::pluck('name', 'id');
+        $levels = level::pluck('name', 'id');
+
+        return view('courses.paso2-courses', compact('categories', 'levels', 'course'));
+    }
     /**
      * Show the form for editing a specific course.
      * The categories and levels are fetched to be used in the form.
@@ -191,13 +201,13 @@ class courseController extends Controller
         return view('listcourse', ['courses' => $courses]);
     }
 
-    public function addCourse(courses $course)
-    {
-        $user = Auth::user();
-        $user->courses()->attach($course->id);
+    // public function addCourse(courses $course)
+    // {
+    //     $user = Auth::user();
+    //     $user->courses()->attach($course->id);
 
-        return redirect()->back()->with('success', 'Curso agregado con éxito');
-    }
+    //     return redirect()->back()->with('success', 'Curso agregado con éxito');
+    // }
 
     public function getLessonsCompleted()
     {

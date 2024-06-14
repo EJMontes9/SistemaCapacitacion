@@ -48,10 +48,11 @@ Route::post('/lesson/status', 'App\Http\Controllers\lessonsController@markLesson
 
 Route::get('/listcourse', 'App\Http\Controllers\courseController@index');
 
-
 Route::resource('courses', 'App\Http\Controllers\courseController')->except([
     'show',
 ]);
+// paso 2 de creacion de curso
+Route::get('/courses/{course}/paso2', 'App\Http\Controllers\courseController@paso2')->name('courses.paso2');
 
 Route::get('courses/add/{course}', 'App\Http\Controllers\courseController@addCourse')->name('courses.add');
 Route::get('/courses/{slug}/{id_lesson}', 'App\Http\Controllers\courseController@showLesson')->name('courses.showLesson');

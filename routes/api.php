@@ -28,4 +28,4 @@ Route::delete('/modules/{id}', 'ModuleController@destroy');
 
 
 Route::get('/sections', 'App\Http\Controllers\sectionsController@index');
-Route::get('/sections2', 'App\Http\Controllers\sectionsController@addbyApi');
+Route::post('/sections2', 'App\Http\Controllers\sectionsController@addbyApi')->name('sections.addbyApi');
