@@ -13,8 +13,8 @@
                     <ul id="listado-secciones" class="space-y-2">
                         <li class="flex items-center">
                             <i class="fas fa-play-circle text-gray-500 mr-2"></i>
-                            <span class="text-sm text-gray-700">new Home</span>
-                            <span class="ml-auto text-xs text-gray-500">2 lectures • 50 sec</span>
+                            <span class="text-sm text-gray-700">A continuación se presentan las secciones del Curso</span>
+                            {{-- <span class="ml-auto text-xs text-gray-500">2 lectures • 50 sec</span> --}}
                         </li>
                         <!-- Agrega más elementos de lista aquí -->
                     </ul>
@@ -88,6 +88,7 @@ guardarSeccionButton.addEventListener('click', async () => {
         })
     });
     if (response.ok) {
+        location.reload();
         const nuevaSeccion = document.createElement('li');
         nuevaSeccion.textContent = nombreSeccion;
         listadoSecciones.appendChild(nuevaSeccion);
