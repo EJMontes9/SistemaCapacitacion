@@ -27,10 +27,10 @@ class courseController extends Controller
         $userId = Auth::id();
         $filterByUser = $request->get('filterByUser'); // Nuevo parámetro para el filtro de usuario
         //  dumpdata de secciones
-        if (session()->has('new_course_sections')) {
-            $newCourseSections = session('new_course_sections');
-            dump('Secciones del nuevo curso:', $newCourseSections);
-        }
+        // if (session()->has('new_course_sections')) {
+        //     $newCourseSections = session('new_course_sections');
+        //     dump('Secciones del nuevo curso:', $newCourseSections);
+        // }
         // fin dumpdata de secciones
         
         $courses = courses::query()
@@ -58,7 +58,7 @@ class courseController extends Controller
         $existingSections = section::all();
     
         // Agregar un dump para verificar los datos
-        dump($existingSections);
+        // dump($existingSections);
     
         return view('courses.create-courses', compact('categories', 'levels', 'existingSections'));
     }

@@ -50,9 +50,9 @@
                     </div>
                     <?php $numSection++; ?>
                     {{-- listado de lecciones de la sección --}}
-                {{-- <x-course.list-lesson-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id" 
+                <x-course.list-lesson-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id" 
                     :section_id="$sections->id" :evaluation="$evaluation" :sectionsObj="$sections" :usercreate="$course">
-                </x-course.list-lesson-view> --}}
+                </x-course.list-lesson-view>
                 {{-- fin de listado de lecciones --}}
                 @endforeach
                 </div>
