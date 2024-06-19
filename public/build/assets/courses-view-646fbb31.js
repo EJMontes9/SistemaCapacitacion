@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",t=>{document.querySelectorAll("#seccion-list").forEach(e=>{e.addEventListener("click",o=>{const n=e.nextElementSibling;n.style.display=n.style.display==="none"?"block":"none"})})});
