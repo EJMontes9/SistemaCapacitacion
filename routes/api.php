@@ -26,6 +26,9 @@ Route::post('/modules', 'ModuleController@store');
 Route::put('/modules/{id}', 'ModuleController@update');
 Route::delete('/modules/{id}', 'ModuleController@destroy');
 
-
+// creando secciones por api
 Route::get('/sections', 'App\Http\Controllers\sectionsController@index');
 Route::post('/sections2', 'App\Http\Controllers\sectionsController@addbyApi')->name('sections.addbyApi');
+
+// creeando lecciones por api
+Route::post('/lessons', 'App\Http\Controllers\LessonsController@storeLesson');

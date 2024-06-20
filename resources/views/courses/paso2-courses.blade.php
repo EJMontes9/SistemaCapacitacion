@@ -4,7 +4,13 @@
             <div class="md:col-span-1">
                 <h1 class="text-2xl font-semibold text-gray-900 mb-4">Ahora agreguemos Secciones a: {{ $course->title }}</h1>
                 <img class="w-full h-48 object-cover rounded-lg mb-4" src="../../images/courses/{{ $course->image }}" alt="">
-                
+                <div class="mt-4">
+                    <h3 id="agregar-secciones" class="text-lg font-semibold text-gray-900">Agrega las secciones que necesites en el siguiente formulario</h3>
+                </div>
+                <div id="form-secciones" class="mt-4">
+                    <input type="text" id="nombre-seccion" class="bg-gray-100 text-gray-900 py-2 px-4 w-full rounded-md" placeholder="Nombre de la sección">
+                    <button id="guardar-seccion" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-2">Agregar</button>
+                </div>
             </div>
             <div class="md:col-span-2">
                 <div class="bg-white rounded-lg shadow-md p-4">
@@ -19,50 +25,9 @@
                         <!-- Agrega más elementos de lista aquí -->
                     </ul>
                     {{-- <ul class="bg-gray-100 text-gray-900 py-2 px-4 w-full">             <!-- Secciones agregadas aquí -->         </ul>  --}}
-                    <?php $numSection = 1; ?>
-                @foreach ($section as $sections)
-                    <div class="bg-white rounded-lg shadow-md p-4 mb-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="h-12 w-12 rounded-full bg-gray-200 mr-4"></div>
-                                <div>
-                                    <div class="text-sm font-bold text-gray-700">Seccion #{{ $numSection }} :</div>
-                                    <div class="text-xs text-gray-600">{{ $sections->name }}</div>
-                                </div>
-                            </div>
-                            @hasanyrole('Instructor|Admin')
-                            @if (Auth::user()->id == $course->user_id)
-                                <div class="flex items-center">
-                                    <a href="{{ route('sections.edit', $sections) }}" class="text-blue-600 hover:text-blue-800 mr-4">
-                                        <i class="fas fa-pen"></i>
-                                    </a>
-                                    <form action="{{ route('sections.destroy', $sections->id) }}" method="post">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" class="text-red-600 hover:text-red-800">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            @endif
-                            @endhasanyrole
-                        </div>
-                    </div>
-                    <?php $numSection++; ?>
-                    {{-- listado de lecciones de la sección --}}
-                <x-course.list-lesson-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id" 
-                    :section_id="$sections->id" :evaluation="$evaluation" :sectionsObj="$sections" :usercreate="$course">
-                </x-course.list-lesson-view>
-                {{-- fin de listado de lecciones --}}
-                @endforeach
+                    <x-course.list-section-paso2-view :section="$section" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
                 </div>
-                <div class="mt-4">
-                    <button id="agregar-secciones" class="btn ">Crea las secciones en el siguiente formulario</button>
-                </div>
-                <div id="form-secciones" class="mt-4">
-                    <input type="text" id="nombre-seccion" class="bg-gray-100 text-gray-900 py-2 px-4 w-full rounded-md" placeholder="Nombre de la sección">
-                    <button id="guardar-seccion" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-2">Guardar</button>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -77,7 +42,10 @@ const listadoSecciones = document.getElementById('listado-secciones');
 guardarSeccionButton.addEventListener('click', async () => {
     const nombreSeccion = nombreSeccionInput.value;
     const cursoId = {{ $course->id }};
-    const response = await fetch(`http://sistemacapacitacion.test/api/sections2`, {
+    const url = new URL(location.href);
+    const rootUrl = `${url.protocol}://${url.host}`;
+        
+    const response = await fetch(`/api/sections2`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

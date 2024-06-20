@@ -9,7 +9,8 @@ use App\Models\platforms;
 use App\Models\section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+// use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class lessonsController extends Controller
 {
@@ -37,6 +38,31 @@ class lessonsController extends Controller
 
         return back()->with('success', 'La lección se registró correctamente');
     }
+
+    // creando la leección por api
+    public function storeLesson(Request $request)
+    {
+
+        $lesson = Lesson::create([
+            'name' => $request->input('name'),
+            'url' => $request->input('url'),
+            'section_id' => $request->input('section_id'),
+            'platform_id' => $request->input('platform_id'),
+            'iframe' => $request->input('iframe')
+        ]);
+    
+        return response()->json([
+            'message' => 'La lección se registró con exito',
+            'section' => $lesson
+        ]);
+
+        // $lesson = new Lesson();
+        // $lesson->fill($request->all());
+        // $lesson->save();
+
+        // return response()->json(['message' => 'La lección se registró correctamente'], 201);
+    }
+
 
     public function show($id)
     {

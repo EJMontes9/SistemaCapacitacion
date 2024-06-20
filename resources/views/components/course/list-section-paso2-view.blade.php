@@ -9,11 +9,9 @@ $numSection =1;
                 <h2>
                     Secciones del curso:
                 </h2>
-                @hasanyrole('Instructor|Admin')
-                @if(Auth::user()->id == $course->user_id)
-                    <a href="{{ route('sections.create') }}" ><i class="fa-solid fa-plus"></i></a>
-                @endif
-                @endhasanyrole
+                {{-- @hasanyrole('Instructor|Admin') 
+                    @if(Auth::user()->id == $course->user_id) <a href="{{ route('sections.create') }}" ><i class="fa-solid fa-plus"></i></a> @endif
+                @endhasanyrole --}}
             </div>
             @foreach ($section as $sections)
                 <div class="flex items-center justify-between w-full p-2 lg:rounded-full md:rounded-full hover:bg-gray-100 cursor-pointer border-2 rounded-lg" id="seccion-list">
@@ -46,10 +44,11 @@ $numSection =1;
                     </div>
                 </div>
 
-                <x-course.list-lesson-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id"
-                                           :section_id="$sections->id" :evaluation="$evaluation" :sectionsObj="$sections"
-                                           :usercreate="$course"></x-course.list-lesson-view>
-                    <?php $numSection++;?>
+                <x-course.list-lesson-paso2-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id" :section_id="$sections->id" 
+                    :evaluation="$evaluation" :sectionsObj="$sections"
+                    :usercreate="$course">
+                </x-course.list-lesson-paso2-view>
+                <?php $numSection++;?>
             @endforeach
         </div>
     </div>

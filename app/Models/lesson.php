@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class lesson extends Model
 {
+    protected $fillable = [
+        'name',
+        'url',
+        'section_id',
+        'platform_id',
+        'iframe'
+    ];
     protected $guarded = ['id'];
     use HasFactory;
     //relacion uno a uno
