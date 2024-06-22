@@ -65,3 +65,137 @@ guardarSeccionButton.addEventListener('click', async () => {
     }
 });
 </script>
+
+
+{{-- script de lecciones --}}
+<script>
+    document.querySelectorAll('.editarLeccion').forEach(button => {
+        button.addEventListener('click', (e) => {
+            var lessonName = button.getAttribute('data-lessonName');
+            var lessonId = button.getAttribute('data-lessonId');
+            var lessonUrl = button.getAttribute('data-lessonUrl');
+            var lessonIframe = button.getAttribute('data-lessonIframe');
+            var sectionForm = button.getAttribute('data-form');
+            var sectionId = button.getAttribute('data-secId');
+
+            var form = document.querySelector(`#${sectionForm}`);
+            form.querySelector('input[name="name"]').value = lessonName;
+            form.querySelector('input[name="lesson_id"]').value = lessonId;
+            form.querySelector('input[name="url"]').value = lessonUrl;
+            form.querySelector('#iframe').value = lessonIframe;
+
+            // Crear el objeto inicial en localStorage
+            updateLocalStorage(sectionForm);
+
+            var accordion = document.querySelector(`#acordeon-${sectionId}`);
+            accordion.click();    
+            // form.querySelector('.submit-lesson').disabled = false;
+
+            // Agregar eventos a los campos del formulario
+            addFormFieldEvents(form);
+        });
+    });
+
+    function addFormFieldEvents(form) {
+        const formId = form.id;
+        const fields = form.querySelectorAll('input, textarea');
+        fields.forEach(field => {
+            // ['focus', 'input', 'change'].forEach(eventType => {
+            ['change'].forEach(eventType => {
+                field.addEventListener(eventType, () => updateLocalStorage(formId));
+            });
+        });
+    }
+
+    function updateLocalStorage(formId) {
+        const form = document.getElementById(formId);
+        const data = {
+            name: form.querySelector('input[name="name"]').value,
+            lesson_id: form.querySelector('input[name="lesson_id"]').value,
+            url: form.querySelector('input[name="url"]').value,
+            iframe: form.querySelector('#iframe').value,
+            section_id: form.querySelector('input[name="section_id"]').value,
+            platform_id: form.querySelector('input[name="platform_id"]').value
+        };
+        localStorage.setItem(`lessonData_${formId}`, JSON.stringify(data));
+        console.log(`Datos actualizados en localStorage para ${formId}:`, data);
+    }
+
+    // Variable para controlar el tiempo de espera
+    let canSubmit = true;
+
+    // Función para manejar el envío del formulario
+    function handleSubmit(event) {
+        let canSubmit = true;
+        if (!canSubmit) return;
+
+        canSubmit = false;
+        event.target.disabled = true;
+
+        const formId = event.target.dataset.form;
+        const storedData = JSON.parse(localStorage.getItem(`lessonData_${formId}`));
+
+        if (!storedData) {
+            console.error('No se encontraron datos en localStorage');
+            return;
+        }
+
+        const formData = new FormData();
+        for (const [key, value] of Object.entries(storedData)) {
+            formData.append(key, value);
+        }
+
+        const url = new URL(location.href);
+        const rootUrl = `${url.protocol}://${url.host}`;
+
+        if (storedData.lesson_id !== '') {
+            const storedData2 = JSON.parse(localStorage.getItem(`lessonData_${formId}`)); // llamamos los datos otra vez por si acaso no esten actualizandose
+            const formData2 = new FormData(); //creamos nuevo formdata por los valores actualizados 
+        for (const [key, value] of Object.entries(storedData)) {
+            formData2.append(key, value);
+        }
+            console.log(JSON.stringify(storedData2)); //para verificar si se actualizan los datos
+            // Disparar fetch con put para editar la lección
+            fetch('/api/lessons/' + storedData2.lesson_id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }, // en laravel es muy necesario el headers json para los PUT
+                // body: formData
+                body: JSON.stringify(storedData2)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Aquí puedes agregar código para actualizar la interfaz si es necesario
+                location.reload();
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        } else {
+            // Disparar fetch con post para crear la lección
+            fetch('/api/lessons', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Aquí puedes agregar código para actualizar la interfaz si es necesario
+                location.reload();
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+        event.preventDefault();
+        setTimeout(() => {
+            canSubmit = true;
+            event.target.disabled = false;
+        }, 2000);
+    }
+
+    // Agregar el evento a todos los botones de envío
+    document.querySelectorAll('.submit-lesson').forEach(button => {
+        button.addEventListener('click', handleSubmit);
+    });
+</script>
