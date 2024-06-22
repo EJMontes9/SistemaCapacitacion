@@ -32,3 +32,4 @@ Route::post('/sections2', 'App\Http\Controllers\sectionsController@addbyApi')->n
 
 // creeando lecciones por api
 Route::post('/lessons', 'App\Http\Controllers\LessonsController@storeLesson');
+Route::put('/lessons/{id}', 'App\Http\Controllers\lessonsController@updateLesson');

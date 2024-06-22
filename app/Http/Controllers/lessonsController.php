@@ -22,27 +22,23 @@ class lessonsController extends Controller
     public function create($courseId = null)
     {
         $platform = platforms::pluck('name', 'id');
-
         if ($courseId) {
             $section = section::where('course_id', $courseId)->pluck('name', 'id');
         } else {
             $section = section::pluck('name', 'id');
         }
-
         return view('lesson.create-lesson', compact('platform', 'section'));
     }
 
     public function store(StoreRequest $request)
     {
         lesson::create($request->validated());
-
         return back()->with('success', 'La lección se registró correctamente');
     }
 
     // creando la leección por api
     public function storeLesson(Request $request)
     {
-
         $lesson = Lesson::create([
             'name' => $request->input('name'),
             'url' => $request->input('url'),
@@ -50,18 +46,26 @@ class lessonsController extends Controller
             'platform_id' => $request->input('platform_id'),
             'iframe' => $request->input('iframe')
         ]);
-    
         return response()->json([
             'message' => 'La lección se registró con exito',
             'section' => $lesson
         ]);
-
-        // $lesson = new Lesson();
-        // $lesson->fill($request->all());
-        // $lesson->save();
-
-        // return response()->json(['message' => 'La lección se registró correctamente'], 201);
     }
+
+    // editando la lección por API
+    public function updateLesson(Request $request, $id)
+    {
+        $lesson = Lesson::find($id);
+        if (!$lesson) {
+            return response()->json(['error' => 'Lesson not found'], 404);
+        }
+        $lesson->update($request->all());
+        return response()->json([
+            'message' => 'La lección se actualizó con éxito',
+            'lesson' => $lesson
+        ]);
+    }
+
 
 
     public function show($id)
