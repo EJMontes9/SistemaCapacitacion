@@ -69,8 +69,10 @@ guardarSeccionButton.addEventListener('click', async () => {
 
 {{-- script de lecciones --}}
 <script>
+    let acordeonCerrado = false; // acordeon de formulario de lecciones en estado cerrado, cambia con el boton edit o al desplegar el acordeon
     document.querySelectorAll('.editarLeccion').forEach(button => {
         button.addEventListener('click', (e) => {
+            
             var lessonName = button.getAttribute('data-lessonName');
             var lessonId = button.getAttribute('data-lessonId');
             var lessonUrl = button.getAttribute('data-lessonUrl');
@@ -86,9 +88,13 @@ guardarSeccionButton.addEventListener('click', async () => {
 
             // Crear el objeto inicial en localStorage
             updateLocalStorage(sectionForm);
-
             var accordion = document.querySelector(`#acordeon-${sectionId}`);
-            accordion.click();    
+
+            if (!acordeonCerrado){ //cada vez que se abre o cierra un acordeon cambiamos el estado para que se despliegue correctamente en cada edit
+                accordion.click();
+                acordeonCerrado = true;
+            }
+                
             // form.querySelector('.submit-lesson').disabled = false;
 
             // Agregar eventos a los campos del formulario
@@ -126,7 +132,7 @@ guardarSeccionButton.addEventListener('click', async () => {
 
     // Función para manejar el envío del formulario
     function handleSubmit(event) {
-        let canSubmit = true;
+        // let canSubmit = true;
         if (!canSubmit) return;
 
         canSubmit = false;

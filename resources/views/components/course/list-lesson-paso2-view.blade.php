@@ -67,7 +67,7 @@
             <!-- item 1-->
             <div class="bg-blue-500 bg-opacity-50 rounded-xl shadow-sm mb-2">
                 <div x-data="{ open: false }">
-                <div class="p-4 cursor-pointer" id="acordeon-{{$sectionsObj->id}}" @click="open = !open">
+                <div class="p-4 cursor-pointer" id="acordeon-{{$sectionsObj->id}}" @click="open = !open; acordeonCerrado = !acordeonCerrado">
                     <h4 class="text-sm font-medium flex justify-between items-center">
                     <span>Agregar Lección a {{$sectionsObj->name}}</span>
                     <svg x-show="!open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
