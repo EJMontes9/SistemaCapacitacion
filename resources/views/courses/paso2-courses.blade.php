@@ -69,6 +69,9 @@ guardarSeccionButton.addEventListener('click', async () => {
 
 {{-- script de lecciones --}}
 <script>
+    //Aqui borramos las keys de edicion antes de actualizar la vista
+    Object.keys(localStorage).forEach(key => { if (key.includes("lessonData_lesson-form")) { delete localStorage[key]; }});
+
     let acordeonCerrado = false; // acordeon de formulario de lecciones en estado cerrado, cambia con el boton edit o al desplegar el acordeon
     document.querySelectorAll('.editarLeccion').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -107,7 +110,7 @@ guardarSeccionButton.addEventListener('click', async () => {
         const fields = form.querySelectorAll('input, textarea');
         fields.forEach(field => {
             // ['focus', 'input', 'change'].forEach(eventType => {
-            ['change'].forEach(eventType => {
+            ['input','change'].forEach(eventType => {
                 field.addEventListener(eventType, () => updateLocalStorage(formId));
             });
         });
@@ -140,8 +143,27 @@ guardarSeccionButton.addEventListener('click', async () => {
 
         const formId = event.target.dataset.form;
         const storedData = JSON.parse(localStorage.getItem(`lessonData_${formId}`));
-
+        
         if (!storedData) {
+            // si no se encuentra id en el formulario de la lección creara una 
+            const newformData = new FormData(document.getElementById(formId));;
+            const formDataJson = Object.fromEntries(newformData.entries());
+            // Disparar fetch con post para crear la lección
+            fetch('/api/lessons', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formDataJson)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // console.log(data);
+                // Aquí puedes agregar código para actualizar la interfaz si es necesario
+                
+                location.reload();
+            })
+            .catch(error => {
+                console.error(error);
+            });
             console.error('No se encontraron datos en localStorage');
             return;
         }
@@ -171,6 +193,8 @@ guardarSeccionButton.addEventListener('click', async () => {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+                //Aqui borramos las keys de edicion antes de actualizar la vista
+                Object.keys(localStorage).forEach(key => { if (key.includes("lessonData_lesson-form")) { delete localStorage[key]; }});
                 // Aquí puedes agregar código para actualizar la interfaz si es necesario
                 location.reload();
             })
@@ -181,13 +205,14 @@ guardarSeccionButton.addEventListener('click', async () => {
             // Disparar fetch con post para crear la lección
             fetch('/api/lessons', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 console.log(data);
                 // Aquí puedes agregar código para actualizar la interfaz si es necesario
-                location.reload();
+                // location.reload();
             })
             .catch(error => {
                 console.error(error);

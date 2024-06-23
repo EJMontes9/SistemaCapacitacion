@@ -31,9 +31,9 @@ $numSection =1;
                         @if(Auth::user()->id == $course->user_id)
                         <div>
                             <div class="px-3 flex flex-row justify-center items-center">
-                                <a href="{{route('sections.edit',$sections)}}" class="mr-4">
+                                {{-- <a href="{{route('sections.edit',$sections)}}" class="mr-4">
                                     <i class="fa-solid fa-pen text-blue-900"></i>
-                                </a>
+                                </a> --}}
                                 <form action="{{route('sections.destroy',$sections->id)}}" method="post" class="flex flex-row items-center">
                                     @csrf
                                     @method('delete')
