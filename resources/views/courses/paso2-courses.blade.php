@@ -10,7 +10,8 @@
                 </div>
                 <div id="form-secciones" class="mt-4">
                     <input type="text" id="nombre-seccion" class="bg-gray-100 text-gray-900 py-2 px-4 w-full rounded-md" placeholder="Nombre de la nueva sección">
-                    <button id="guardar-seccion" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-2">Agregar</button>
+                    <button id="guardar-seccion" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-2">Agregar Sección</button>
+                    <a href="{{route('courses.show',$course->slug)}}" id="finalizar-curso" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 flex justify-center rounded w-100 mt-4">Finalizar</a>
                 </div>
             </div>
             <div class="md:col-span-2">
