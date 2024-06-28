@@ -52,6 +52,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 -- ejecutar php artisan migrate
 -- ejecutar php artisan db:seed
 
+# Actualización --- (para reconstruir modificaciones a la base, y los seeders)
+-- php artisan migrate:fresh --seed 
 
 ## Considerar lo siguiente para el módulo de seguridad
 
