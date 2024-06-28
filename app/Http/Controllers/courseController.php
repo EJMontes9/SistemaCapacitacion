@@ -11,6 +11,7 @@ use App\Models\lesson;
 use App\Models\level;
 use App\Models\section;
 use App\Models\User;
+use App\Models\Resource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -105,20 +106,23 @@ class courseController extends Controller
     public function show(string $slug)
     {
         $lesson = [];
+        $resources = [];
         $numSection = 1;
         $course = courses::where('slug', $slug)->firstOrFail();
         $section = section::where('course_id', $course->id)->get();
         $section_id = section::where('course_id', $course->id)->pluck('id');
         $user = User::findOrFail($course->user_id);
         $name_user = $user->name;
+        
         foreach ($section_id as $id) {
             $lesson[$numSection] = lesson::where('section_id', $id)->get();
+            $resources[$numSection] = Resource::where('section_id', $id)->get();
             $numSection++;
         }
 
         $evaluation = Evaluation::query()->where('course_id', $course->id)->get();
 
-        return view('courses-view', compact('course', 'section', 'lesson', 'name_user', 'evaluation'));
+        return view('courses-view', compact('course', 'section', 'lesson', 'name_user', 'evaluation', 'resources'));
     }
 
     // paso 2 de creación, las secciones
@@ -128,17 +132,21 @@ class courseController extends Controller
         $levels = level::pluck('name', 'id');
 
         $lesson = [];
+        $resources = [];
         $numSection = 1;
         $course = courses::where('id', $course->id)->firstOrFail();
         $section = section::where('course_id', $course->id)->get();
         $section_id = section::where('course_id', $course->id)->pluck('id');
+        
         foreach ($section_id as $id) {
             $lesson[$numSection] = lesson::where('section_id', $id)->get();
+            $resources[$numSection] = Resource::where('section_id', $id)->get();
             $numSection++;
         }
+        
         $evaluation = Evaluation::query()->where('course_id', $course->id)->get();
 
-        return view('courses.paso2-courses', compact('course', 'section', 'lesson', 'categories', 'levels', 'evaluation'));
+        return view('courses.paso2-courses', compact('course', 'section', 'lesson', 'categories', 'levels', 'evaluation', 'resources'));
         // return view('courses.paso2-courses', compact('categories', 'levels', 'course'));
     }
     /**

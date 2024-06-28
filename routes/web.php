@@ -60,6 +60,8 @@ Route::get('courses/{slug}', 'App\Http\Controllers\courseController@show')->name
 Route::resource('sections', 'App\Http\Controllers\sectionsController');
 Route::resource('lessons', 'App\Http\Controllers\lessonsController')->except(['create']);
 
+Route::resource('resources', 'App\Http\Controllers\ResourceController')->except(['create']);
+
 Route::get('lessons/create/{courseId}', 'App\Http\Controllers\lessonsController@create')->name('lessons.create');
 
 

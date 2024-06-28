@@ -18,8 +18,9 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        // el orden de los seeders es importante 
         $this->call(levelSeeder::class);
-        $this->call(SectionsTableSeeder::class);
         $this->call(categoriesSeeder::class);
         $this->call(usersSeeder::class);
         $this->call(coursesSeeder::class);
@@ -28,5 +29,8 @@ class DatabaseSeeder extends Seeder
         $this->call(platformsSeeder::class);
         $this->call(roles_has_permissionsSeeder::class);
         $this->call(model_has_rolesSeeder::class);
+        $this->call(SectionsTableSeeder::class);
+        $this->call(ResourceSeeder::class);
+        $this->call(LessonSeeder::class);
     }
 }

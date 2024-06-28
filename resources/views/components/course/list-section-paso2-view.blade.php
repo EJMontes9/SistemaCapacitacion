@@ -50,7 +50,7 @@ $numSection =1;
                     
                 </div>
 
-                <x-course.list-lesson-paso2-view :lesson="$lesson" :sections="$numSection" :courseid="$sections->course_id" :section_id="$sections->id" 
+                <x-course.list-lesson-paso2-view :lesson="$lesson"  :resources="$resources" :sections="$numSection" :courseid="$sections->course_id" :section_id="$sections->id" 
                     :evaluation="$evaluation" :sectionsObj="$sections"
                     :usercreate="$course">
                 </x-course.list-lesson-paso2-view>

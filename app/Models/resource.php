@@ -5,12 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class resource extends Model
+class Resource extends Model
 {
-    protected $guarded = ['id'];
     use HasFactory;
 
-    public function resourceable(){
-        return $this->morphTo();
+    protected $fillable = [
+        'name',
+        'url',
+        'section_id',
+        'type'
+    ];
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
     }
 }

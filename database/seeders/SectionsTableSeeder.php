@@ -12,8 +12,9 @@ class SectionsTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $sections = [
             [
                 'name' => 'Introducción',
@@ -32,6 +33,7 @@ class SectionsTableSeeder extends Seeder
                 'course_id' => 2,
             ],
         ];
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         DB::table('sections')->insert($sections);
     }

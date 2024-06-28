@@ -33,3 +33,8 @@ Route::post('/sections2', 'App\Http\Controllers\sectionsController@addbyApi')->n
 // creeando lecciones por api
 Route::post('/lessons', 'App\Http\Controllers\LessonsController@storeLesson');
 Route::put('/lessons/{id}', 'App\Http\Controllers\lessonsController@updateLesson');
+
+// creeando recursos por api
+Route::post('/resources', 'App\Http\Controllers\ResourceController@store');
+Route::put('/resources/{id}','App\Http\Controllers\ResourceController@update');
+Route::delete('/resources/{id}', 'App\Http\Controllers\ResourceController@destroy')->name('sections.addbyApi');;

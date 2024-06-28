@@ -5,6 +5,7 @@
     </div>
     
     <div class="w-full">
+        <!-- botonera de los tabs -->
         <div class="flex justify-center mb-4">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-6" aria-label="Tabs">
@@ -27,7 +28,7 @@
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow">
                 <div>
                     {{-- componente de secciones --}}
-                    <x-course.list-section-view :section="$section" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
+                    <x-course.list-section-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
                 </div>
             </div>
     
@@ -43,29 +44,29 @@
 <script>
     // script que hacen funcionar los tabs
     document.addEventListener('DOMContentLoaded', function() {
-    const tabs = document.querySelectorAll('a[role="tab"]');
-    const tabContents = document.querySelectorAll('div[role="tabpanel"]');
-    function hideAllTabContents() {// Función para ocultar todos los contenidos de los tabs
-        tabContents.forEach(content => {
-            content.classList.add('hidden');
+        const tabs = document.querySelectorAll('a[role="tab"]');
+        const tabContents = document.querySelectorAll('div[role="tabpanel"]');
+        function hideAllTabContents() {// Función para ocultar todos los contenidos de los tabs
+            tabContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            tabs.forEach(content => {
+                content.classList.remove('text-indigo-600');
+            });
+        }
+        function showActiveTabContent(index) {// Función para mostrar el contenido del tab activo
+            hideAllTabContents();
+            tabContents[index].classList.remove('hidden');
+            tabs[index].classList.add('text-indigo-600');
+        }
+        tabs.forEach((tab, index) => {// Agregar eventos de clic a los enlaces de los tabs
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                showActiveTabContent(index);
+            });
         });
-        tabs.forEach(content => {
-            content.classList.remove('text-indigo-600');
-        });
-    }
-    function showActiveTabContent(index) {// Función para mostrar el contenido del tab activo
-        hideAllTabContents();
-        tabContents[index].classList.remove('hidden');
-        tabs[index].classList.add('text-indigo-600');
-    }
-    tabs.forEach((tab, index) => {// Agregar eventos de clic a los enlaces de los tabs
-        tab.addEventListener('click', (e) => {
-            e.preventDefault();
-            showActiveTabContent(index);
-        });
+        showActiveTabContent(0);// Mostrar el contenido del primer tab por defecto
     });
-    showActiveTabContent(0);// Mostrar el contenido del primer tab por defecto
-});
 </script>
 
     {{-- <section class="bg-gray-100 py-8">
