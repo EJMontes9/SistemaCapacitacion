@@ -25,7 +25,7 @@
                         <!-- Agrega más elementos de lista aquí -->
                     </ul>
                     {{-- <ul class="bg-gray-100 text-gray-900 py-2 px-4 w-full">             <!-- Secciones agregadas aquí -->         </ul>  --}}
-                    <x-course.list-section-paso2-view :section="$section" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
+                    <x-course.list-section-paso2-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
                 </div>
                 
             </div>
@@ -229,5 +229,113 @@ guardarSeccionButton.addEventListener('click', async () => {
     // Agregar el evento a todos los botones de envío
     document.querySelectorAll('.submit-lesson').forEach(button => {
         button.addEventListener('click', handleSubmit);
+    });
+</script>
+
+{{-- script de lecciones --}}
+
+{{-- Script de recursos --}}
+<script>
+    // Función para manejar la creación de recursos
+    function handleResourceSubmit(event) {
+        event.preventDefault();
+        const button = event.target;
+        const formId = button.getAttribute('data-form');
+        const form = document.getElementById(formId);
+        const formData = new FormData(form);
+
+        button.disabled = true;
+
+        fetch('/api/resources', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Recurso creado:', data);
+            form.reset();
+            location.reload(); // Recarga la página para mostrar el nuevo recurso
+        })
+        .catch(error => {
+            console.error('Error al crear el recurso:', error);
+        })
+        .finally(() => {
+            button.disabled = false;
+        });
+    }
+
+    // Función para manejar la eliminación de recursos
+    function handleResourceDelete(event) {
+        event.preventDefault();
+        if (!confirm('¿Estás seguro de que quieres eliminar este recurso?')) {
+            return;
+        }
+
+        const button = event.target;
+        const resourceId = button.getAttribute('data-resource-id');
+
+        button.disabled = true;
+
+        fetch(`/api/resources/${resourceId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Recurso eliminado:', data);
+            // Eliminar el elemento del DOM
+            button.closest('li').remove();
+        })
+        .catch(error => {
+            console.error('Error al eliminar el recurso:', error);
+        })
+        .finally(() => {
+            button.disabled = false;
+        });
+    }
+
+    // Agregar event listeners a los botones de crear y eliminar
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.submit-resource').forEach(button => {
+            button.addEventListener('click', handleResourceSubmit);
+        });
+
+        document.querySelectorAll('.delete-resource').forEach(button => {
+            button.addEventListener('click', handleResourceDelete);
+        });
+    });
+</script>
+
+<script>
+    // script que hacen funcionar los tabs
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('a[role="tab"]');
+        const tabContents = document.querySelectorAll('div[role="tabpanel"]');
+        function hideAllTabContents() {// Función para ocultar todos los contenidos de los tabs
+            tabContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            tabs.forEach(content => {
+                content.classList.remove('text-indigo-600');
+            });
+        }
+        function showActiveTabContent(index) {// Función para mostrar el contenido del tab activo
+            hideAllTabContents();
+            tabContents[index].classList.remove('hidden');
+            tabs[index].classList.add('text-indigo-600');
+        }
+        tabs.forEach((tab, index) => {// Agregar eventos de clic a los enlaces de los tabs
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                showActiveTabContent(index);
+            });
+        });
+        showActiveTabContent(0);// Mostrar el contenido del primer tab por defecto
     });
 </script>
