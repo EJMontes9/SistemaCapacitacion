@@ -35,29 +35,49 @@
         @endforeach
 
         @foreach ($resources[$sections] ?? [] as $resource)
-            <li>
-                <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
-                    <a class="ml-4" href="{{ $resource->url }}" target="_blank">
-                        <i class="fa-solid fa-file-alt mr-2"></i>{{ $resource->name }}
+        <li>
+            <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
+                <div class="flex items-center ml-4">
+                    <a href="{{ $resource->url }}" target="_blank" class="flex items-center">
+                        <i class="fa-solid fa-file-alt mr-2"></i>
+                        <span>{{ $resource->name }}</span>
                     </a>
-                    @hasanyrole('Instructor|Admin')
-                    @if(Auth::user()->id == $usercreate->user_id)
-                    <div class="px-3 flex flex-row justify-center items-center">
-                        <button data-resourceId="{{ $resource->id }}" data-resourceTitulo="{{ $resource->titulo }}" data-resourceDescripcion="{{ $resource->descripcion }}" data-resourceTipo="{{ $resource->tipo }}" data-secId="{{$sectionsObj->id}}" data-form="resource-form-{{$sectionsObj->id}}" class="btn editarRecurso mr-4">
-                            <i class="fa-solid fa-pen text-blue-900"></i>
-                        </button>
-                        <form action="{{ route('resources.destroy', $resource->id) }}" method="post" class="flex flex-row items-center m-auto">
-                            @csrf
-                            @method('delete')
-                            <button type="submit" class="delete-resource mx-0 p-0 my-auto" data-resource-id="{{ $resource->id }}">
-                                <i class="fa-solid fa-trash text-red-600"></i>
-                            </button>
-                        </form>
-                    </div>
-                    @endif
-                    @endhasanyrole
+                    <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full
+                        @switch($resource->type)
+                            @case('documento')
+                                bg-blue-100 text-blue-600
+                                @break
+                            @case('imagen')
+                                bg-green-100 text-green-600
+                                @break
+                            @case('url')
+                                bg-green-400 bg-opacity-50 text-green-600
+                                @break
+                            @case('video')
+                                bg-red-100 text-red-600
+                                @break
+                            @default
+                                bg-gray-100 text-gray-600
+                        @endswitch
+                    ">
+                        {{ ucfirst($resource->type) }}
+                    </span>
                 </div>
-            </li>
+                @hasanyrole('Instructor|Admin')
+                @if(Auth::user()->id == $usercreate->user_id)
+                <div class="px-3 flex flex-row justify-center items-center">
+                    <form action="{{ route('resources.destroy', $resource->id) }}" method="post" class="flex flex-row items-center m-auto">
+                        @csrf
+                        @method('delete')
+                        <button type="submit" class="delete-resource mx-0 p-0 my-auto" data-resource-id="{{ $resource->id }}">
+                            <i class="fa-solid fa-trash text-red-600"></i>
+                        </button>
+                    </form>
+                </div>
+                @endif
+                @endhasanyrole
+            </div>
+        </li>
         @endforeach
     @endif
 
@@ -86,13 +106,13 @@
                                 <div class="border-b border-gray-200">
                                     <nav class="-mb-px flex space-x-6" aria-label="Tabs">
                                         <!-- Tab 1 -->
-                                        <a href="#" role="tab" class="tab-button group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none text-indigo-600 hover:text-indigo-800" aria-current="page" data-tab="lesson">
-                                            <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Formulario de Lección</span>
+                                        <a href="#" role="tab" class="tab-button group inline-flex items-center px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none text-indigo-600 hover:text-indigo-800" aria-current="page" data-tab="lesson">
+                                            <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Gestión de Lecciones</span>
                                         </a>
                 
                                         <!-- Tab 2 -->
-                                        <a href="#" role="tab" class="tab-button group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none" data-tab="resource">
-                                            <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Formulario de Recursos</span>
+                                        <a href="#" role="tab" class="tab-button group inline-flex items-center px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none" data-tab="resource">
+                                            <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Gestión de Recursos</span>
                                         </a>
                                     </nav>
                                 </div>
@@ -143,39 +163,55 @@
                         
                                 <!-- Tab 2 RECURSOS -->
                                 <div role="tabpanel" class="tab-content p-4 bg-white rounded-lg shadow mt-4 hidden" id="resource-tab">
-                                    <h2 class="text-2xl font-bold mb-6 text-gray-800">Subir Nuevo Recurso</h2>
-                                    <form id="resource-form-{{$sectionsObj->id}}">
-                                        <div class="mb-4">
-                                            <input type="hidden" value="" id="resource_id" name="resource_id">
-                                            <label for="titulo" class="block text-gray-700 text-sm font-bold mb-2">Título del Recurso</label>
-                                            <input type="text" id="titulo" name="titulo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <div>
+                                        <div class="bg-blue-500 bg-opacity-50 rounded-xl shadow-sm mb-2">
+                                            <div x-data="{ open: false }">
+                                                <div class="p-4 cursor-pointer" id="acordeon2-{{$sectionsObj->id}}" @click="open = !open; acordeonCerrado = !acordeonCerrado">
+                                                    <h4 class="text-sm font-medium flex justify-between items-center">
+                                                        <span>Agregar Recursos a {{$sectionsObj->name}}</span>
+                                                        <svg x-show="!open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                        </svg>
+                                                        <svg x-show="open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                                        </svg>
+                                                    </h4>
+                                                </div>
+                                                <div x-show="open" x-transition>
+                                                    <div class="p-4 border-t">
+                                                        <form id="resource-form-{{$sectionsObj->id}}" enctype="multipart/form-data">
+                                                            <div class="mb-4">
+                                                                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nombre del Recurso</label>
+                                                                <input type="text" id="name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                                            </div>
+                                                            <div class="mb-4">
+                                                                <label for="type" class="block text-gray-700 text-sm font-bold mb-2">Tipo de Recurso</label>
+                                                                <select id="type" name="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                                                    <option value="">Seleccione un tipo</option>
+                                                                    <option value="documento">Documento</option>
+                                                                    <option value="imagen">Imagen</option>
+                                                                    <option value="url">URL</option>
+                                                                    <option value="video">Video</option>
+                                                                </select>
+                                                            </div>
+                                                            <div id="file-input" class="mb-4 hidden">
+                                                                <label for="file" class="block text-gray-700 text-sm font-bold mb-2">Archivo</label>
+                                                                <input type="file" id="file" name="file" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                            </div>
+                                                            <div id="url-input" class="mb-4 hidden">
+                                                                <label for="url" class="block text-gray-700 text-sm font-bold mb-2">URL</label>
+                                                                <input type="url" id="url" name="url" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                            </div>
+                                                            <input type="hidden" name="section_id" value="{{$sectionsObj->id}}">
+                                                            
+                                                            
+                                                        </form>
+                                                        <button type="button" data-form="resource-form-{{$sectionsObj->id}}" class="submit-resource bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full mt-2 rounded">Enviar lección</button>    
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="mb-4">
-                                            <label for="descripcion" class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
-                                            <textarea id="descripcion" name="descripcion" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></textarea>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label for="tipo" class="block text-gray-700 text-sm font-bold mb-2">Tipo de Recurso</label>
-                                            <select id="tipo" name="tipo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                                <option value="">Seleccione un tipo</option>
-                                                <option value="documento">Documento</option>
-                                                <option value="video">Video</option>
-                                                <option value="imagen">Imagen</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-6">
-                                            <label for="archivo" class="block text-gray-700 text-sm font-bold mb-2">Archivo</label>
-                                            <input type="file" id="archivo" name="archivo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <button type="button" class="submit-resource bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                                Subir Recurso
-                                            </button>
-                                            <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                                Cancelar
-                                            </button>
-                                        </div>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>

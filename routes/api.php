@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ResourceController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,4 +37,8 @@ Route::put('/lessons/{id}', 'App\Http\Controllers\lessonsController@updateLesson
 // creeando recursos por api
 Route::post('/resources', 'App\Http\Controllers\ResourceController@store');
 Route::put('/resources/{id}','App\Http\Controllers\ResourceController@update');
-Route::delete('/resources/{id}', 'App\Http\Controllers\ResourceController@destroy')->name('sections.addbyApi');;
+Route::delete('/resources/{id}', 'App\Http\Controllers\ResourceController@destroy')->name('sections.addbyApi');
+
+// Route::post('/resources', [ResourceController::class, 'store']);
+// Route::put('/resources/{id}', [ResourceController::class, 'update']);
+// Route::delete('/resources/{id}', [ResourceController::class, 'destroy']);
