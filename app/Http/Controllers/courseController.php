@@ -243,4 +243,10 @@ class courseController extends Controller
 
         return response()->json($lessonsCompleted);
     }
+
+
+    public function surveys()
+    {
+        return view('surveys.manage');
+    }
 }

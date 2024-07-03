@@ -81,11 +81,6 @@
                     <a href="{{ route('lessons.create', $courseid) }}" class="ml-4">Agregar lección</a>
                 </div>
             </li>
-            <li>
-                <div class="flex flex-row justify-between border-2 ml-12 py-2 rounded-xl mt-3">
-                    <a href="{{ route('resources.create', ['section_id' => $section_id]) }}" class="ml-4">Agregar recurso</a>
-                </div>
-            </li>
         @endif
     @endhasanyrole
 </ul>

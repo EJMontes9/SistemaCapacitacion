@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\SurveyController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -42,3 +43,5 @@ Route::delete('/resources/{id}', 'App\Http\Controllers\ResourceController@destro
 // Route::post('/resources', [ResourceController::class, 'store']);
 // Route::put('/resources/{id}', [ResourceController::class, 'update']);
 // Route::delete('/resources/{id}', [ResourceController::class, 'destroy']);
+
+Route::resource('surveys', SurveyController::class)->except(['create', 'edit', 'show']);
