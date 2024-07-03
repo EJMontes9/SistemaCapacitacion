@@ -21,14 +21,24 @@
     @livewireStyles
 </head>
 
+{{-- redirigir al path principal si no hay sesion --}}
+@php $isAuthenticated = Auth::check(); @endphp {{-- Crear una variable para almacenar el estado de autenticación --}}
+@if($isAuthenticated && isset(Auth::user()->name)) {{-- la sesion existe --}}  @endif
+<script>
+    // Obtener el valor de la variable $isAuthenticated desde PHP
+    var isAuthenticated = {{ $isAuthenticated ? 'true' : 'false' }};
+    // Verificar el estado de autenticación y redirigir si es necesario
+    if (!isAuthenticated) {  window.location.href = "{{ route('raiz') }}"; }
+</script>
+
+
 <body class="font-sans antialiased">
     <x-banner />
-
     <div class="min-h-screen bg-gray-100">
         @livewire('navigation-menu')
 
         <!-- Page Heading -->
-        @if (isset($header))
+        @if (isset($header)) 
             <nav class="bg-white border-b border-gray-200 fixed z-30 w-full">
                 <div class="px-3 py-3 lg:px-5 lg:pl-3">
                     <div class="flex items-center justify-between">
@@ -106,12 +116,16 @@
                                 class="lg:hidden text-gray-500 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-lg">
                             </button>
                         </div>
-                        @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
+                        {{-- @if (Laravel\Jetstream\Jetstream::managesProfilePhotos()) --}}
+                        @if(Auth::user() && Auth::user()->name)
                             <div class="flex">
                                 <span class="inline-flex rounded-md">
                                     <button type="button"
                                         class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                                        @if(isset(Auth::user()->name)) 
                                         {{ Auth::user()->name }}
+                                        @else 
+                                        @endif
                                     </button>
                                     <button
                                         class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
@@ -125,7 +139,10 @@
                             <span class="inline-flex rounded-md">
                                 <button type="button"
                                     class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                                    {{ Auth::user()->name }}
+                                    @if(isset(Auth::user()->name)) 
+                                        {{ Auth::user()->name }}
+                                        @else 
+                                        @endif
                                 </button>
                             </span>
                         @endif

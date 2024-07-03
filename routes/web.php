@@ -27,7 +27,7 @@ Route::get('/send-test-email', function () {
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('raiz');
 
 Route::resource('evaluations', EvaluationController::class)->middleware('auth');
 
