@@ -206,7 +206,7 @@
                                                             
                                                             
                                                         </form>
-                                                        <button type="button" data-form="resource-form-{{$sectionsObj->id}}" class="submit-resource bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full mt-2 rounded">Enviar lección</button>    
+                                                        <button type="button" data-form="resource-form-{{$sectionsObj->id}}" class="submit-resource bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full mt-2 rounded">Enviar Recurso</button>    
                                                     </div>
                                                 </div>
                                             </div>

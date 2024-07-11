@@ -28,7 +28,8 @@
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow">
                 <div>
                     {{-- componente de secciones --}}
-                    <x-course.list-section-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
+                    {{-- <x-course.list-section-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/> --}}
+                    <x-course.list-section-new-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
                 </div>
             </div>
     
