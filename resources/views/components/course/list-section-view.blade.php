@@ -46,9 +46,9 @@ $numSection =1;
                     </div>
                 </div>
 
-                <x-course.list-lesson-view :lesson="$lesson" :resources="$resources" :sections="$numSection" :courseid="$sections->course_id"
+                {{-- <x-course.list-lesson-new-view :lesson="$lesson" :resources="$resources" :sections="$numSection" :courseid="$sections->course_id"
                                            :section_id="$sections->id" :evaluation="$evaluation" :sectionsObj="$sections"
-                                           :usercreate="$course"></x-course.list-lesson-view>
+                                           :usercreate="$course"></x-course.list-lesson-new-view> --}}
                     <?php $numSection++;?>
             @endforeach
         </div>

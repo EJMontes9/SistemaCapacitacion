@@ -9,14 +9,20 @@ class Survey extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['course_id', 'title', 'description', 'questions'];
-
-    protected $casts = [
-        'questions' => 'array',
+    protected $fillable = [
+        'title',
+        'description',
+        'category',
+        'target_type',
+        'target_id',
+        'has_yes_no',
+        'has_rating',
+        'has_comment'
     ];
 
-    public function course()
-    {
-        return $this->belongsTo(Courses::class);
-    }
+    protected $casts = [
+        'has_yes_no' => 'boolean',
+        'has_rating' => 'boolean',
+        'has_comment' => 'boolean',
+    ];
 }

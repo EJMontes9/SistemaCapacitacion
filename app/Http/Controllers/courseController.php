@@ -249,4 +249,35 @@ class courseController extends Controller
     {
         return view('surveys.manage');
     }
+
+    // metodos para apis 
+
+    public function list() // listado de cursos
+    {
+        $courses = Courses::select('id', 'title')->get();
+        return response()->json($courses);
+    }
+    public function sections($courseId) //listado de secciones
+    {
+        $sections = Section::where('course_id', $courseId)->select('id', 'name')->get();
+        return response()->json($sections);
+    }
+
+    public function lessons($sectionId) // listado de lecciones
+    {
+        $lessons = Lesson::where('section_id', $sectionId)->select('id', 'name')->get();
+        return response()->json($lessons);
+    }
+    
+    public function getSection($id) //datos de una seccion
+    {
+        $section = Section::findOrFail($id);
+        return response()->json($section);
+    }
+
+    public function getLesson($id) //datos de una leccion
+    {
+        $lesson = Lesson::findOrFail($id);
+        return response()->json($lesson);
+    }
 }

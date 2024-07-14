@@ -46,6 +46,15 @@
                     </li>
                     @role('Instructor')
                         <li>
+                            <a href="{{ route('surveys.index') }}"
+                                class="text-base font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ Route::is('surveys.*') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
+                                <i class="fa-solid fa-comments ml-1 font-bold"></i>
+                                <span class="ml-3 flex-1 whitespace-nowrap">Encuestas</span>
+                            </a>
+                        </li>
+                    @endrole
+                    @role('Instructor')
+                        <li>
                             <a href="{{ route('evaluations.index') }}"
                                 class="text-base font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ Route::is('evaluations.*') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
                                 <i class="fa-solid fa-list-check ml-1 font-bold"></i>

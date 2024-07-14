@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\CourseController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,6 +19,12 @@ use App\Http\Controllers\SurveyController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/courses/list', [CourseController::class, 'list']); // api de listado de cursos
+Route::get('/courses/{courseId}/sections', [CourseController::class, 'sections']);// api de listado de secciones
+Route::get('/sections/{sectionId}/lessons', [CourseController::class, 'lessons']);// api de listado de lecciones
+Route::get('/sections/{id}', [CourseController::class, 'getSection']); //api de datos de seccion
+Route::get('/lessons/{id}', [CourseController::class, 'getLesson']); //api de datos de lección
 
 
 // Route::get('/modules2', 'App\Http\Controllers\LessonsController@index2');
@@ -44,4 +51,10 @@ Route::delete('/resources/{id}', 'App\Http\Controllers\ResourceController@destro
 // Route::put('/resources/{id}', [ResourceController::class, 'update']);
 // Route::delete('/resources/{id}', [ResourceController::class, 'destroy']);
 
-Route::resource('surveys', SurveyController::class)->except(['create', 'edit', 'show']);
+// Route::resource('surveys', SurveyController::class)->except(['create', 'edit', 'show']);
+
+Route::get('/surveys', [SurveyController::class, 'list']);
+Route::post('/surveys', [SurveyController::class, 'store']);
+Route::get('/surveys/{id}', [SurveyController::class, 'show']);
+Route::put('/surveys/{id}', [SurveyController::class, 'update']);
+Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy']);

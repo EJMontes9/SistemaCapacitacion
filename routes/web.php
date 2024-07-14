@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\SurveyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,4 +83,9 @@ Route::get('mycourses', 'App\Http\Controllers\courseController@mycourse')->name(
 Route::resource('admin/categories', 'Admin\CategoryController');
 
 // encuesta de satisfacción 
-Route::get('/surveys', 'App\Http\Controllers\courseController@surveys');
+// Route::get('/surveys', 'App\Http\Controllers\courseController@surveys');
+Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
+
+// Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+// Route::get('/surveys/create', 'App\Http\Controllers\courseController@create')->name('surveys.create');
