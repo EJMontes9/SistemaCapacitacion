@@ -8,6 +8,7 @@ use App\Models\Courses;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SurveyResponseController extends Controller
 {
@@ -96,20 +97,38 @@ class SurveyResponseController extends Controller
 
     public function getCourseStatistics($courseId)
     {
-        $course = Courses::with(['sections.lessons.surveyResponses'])->findOrFail($courseId);
+        try {
+            $course = Courses::with(['sections.lessons.surveyResponses'])
+                ->findOrFail($courseId);
 
-        $statistics = [];
+            $statistics = [];
 
-        foreach ($course->sections as $section) {
-            $sectionStats = [];
-            foreach ($section->lessons as $lesson) {
-                $yesCount = $lesson->surveyResponses()->where('response', 'yes')->count();
-                $noCount = $lesson->surveyResponses()->where('response', 'no')->count();
-                $sectionStats[$lesson->name] = ['yes' => $yesCount, 'no' => $noCount];
+            foreach ($course->sections as $section) {
+                $sectionStats = [];
+                foreach ($section->lessons as $lesson) {
+                    $yesCount = $lesson->surveyResponses->where('response', 'yes')->count();
+                    $noCount = $lesson->surveyResponses->where('response', 'no')->count();
+                    $sectionStats[$lesson->name] = ['yes' => $yesCount, 'no' => $noCount];
+                }
+                $statistics[$section->name] = $sectionStats;
             }
-            $statistics[$section->name] = $sectionStats;
-        }
 
-        return response()->json($statistics);
+            return response()->json([
+                'success' => true,
+                'data' => $statistics
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::error('Curso no encontrado: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Curso no encontrado',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Error en getCourseStatistics: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ha ocurrido un error al obtener las estadísticas del curso',
+            ], 500);
+        }
     }
 }
