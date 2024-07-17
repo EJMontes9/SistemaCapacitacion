@@ -36,110 +36,115 @@
 
 
 <script>
-  // Datos de ejemplo (esto vendría de un endpoint en una implementación real)
-  const surveyData = {
-      "Fundamentos de HTML": {
-          "Introducción a HTML": { yes: 45, no: 5 },
-          "Estructura básica": { yes: 42, no: 8 },
-          "Elementos y atributos": { yes: 38, no: 12 }
-      },
-      "CSS Esencial": {
-          "Selectores CSS": { yes: 40, no: 10 },
-          "Modelo de caja": { yes: 35, no: 15 },
-          "Flexbox y Grid": { yes: 30, no: 20 }
-      },
-      "JavaScript Básico": {
-          "Variables y tipos de datos": { yes: 48, no: 2 },
-          "Estructuras de control": { yes: 43, no: 7 },
-          "Funciones": { yes: 39, no: 11 }
-      }
-  };
+          const courseId = document.getElementById('identificador').getAttribute('data-course');
 
-  function prepareChartData(sectionData) {
-      const categories = [];
-      const yesData = [];
-      const noData = [];
+async function fetchSurveyData() {
+    try {
+        const response = await fetch(`http://sistemacapacitacion.test/api/course-statistics/${courseId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching survey data:", error);
+        return null;
+    }
+}
 
-      Object.entries(sectionData).forEach(([lesson, responses]) => {
-          categories.push(lesson);
-          yesData.push(responses.yes);
-          noData.push(responses.no);
-      });
+function prepareChartData(sectionData) {
+    const categories = [];
+    const yesData = [];
+    const noData = [];
 
-      return { categories, yesData, noData };
-  }
+    Object.entries(sectionData).forEach(([lesson, responses]) => {
+        categories.push(lesson);
+        yesData.push(parseInt(responses.yes));
+        noData.push(parseInt(responses.no));
+    });
 
-  function renderChart(containerId, sectionName, sectionData) {
-      const { categories, yesData, noData } = prepareChartData(sectionData);
+    return { categories, yesData, noData };
+}
 
-      Highcharts.chart(containerId, {
-          chart: {
-              type: 'column'
-          },
-          title: {
-              text: `¿Recomendarías esta clase? Sí/No - ${sectionName}`
-          },
-          xAxis: {
-              categories: categories,
-              crosshair: true
-          },
-          yAxis: {
-              min: 0,
-              title: {
-                  text: 'Número de respuestas'
-              }
-          },
-          tooltip: {
-              headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-              pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                  '<td style="padding:0"><b>{point.y}</b></td></tr>',
-              footerFormat: '</table>',
-              shared: true,
-              useHTML: true
-          },
-          plotOptions: {
-              column: {
-                  pointPadding: 0.2,
-                  borderWidth: 0
-              }
-          },
-          series: [{
-              name: 'Sí',
-              data: yesData,
-              color: '#50B432'
-          }, {
-              name: 'No',
-              data: noData,
-              color: '#DF5353'
-          }]
-      });
-  }
+function renderChart(containerId, sectionName, sectionData) {
+    const { categories, yesData, noData } = prepareChartData(sectionData);
 
-  function createCharts(data) {
-      const container = document.getElementById('chartsContainer');
-      container.innerHTML = ''; // Limpiar el contenedor
+    Highcharts.chart(containerId, {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: sectionName
+        },
+        xAxis: {
+            categories: categories,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Número de respuestas'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y}</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Sí',
+            data: yesData,
+            color: '#50B432'
+        }, {
+            name: 'No',
+            data: noData,
+            color: '#DF5353'
+        }]
+    });
+}
 
-      Object.entries(data).forEach(([sectionName, sectionData], index) => {
-          const sectionDiv = document.createElement('div');
-          sectionDiv.className = 'bg-white p-6 rounded-lg shadow-md';
-          sectionDiv.innerHTML = `<div id="chart-${index}" style="height: 400px;"></div>`;
-          container.appendChild(sectionDiv);
+function createCharts(data) {
+    const container = document.getElementById('chartsContainer');
+    container.innerHTML = ''; // Limpiar el contenedor
 
-          renderChart(`chart-${index}`, sectionName, sectionData);
-      });
-  }
+    Object.entries(data).forEach(([sectionName, sectionData], index) => {
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = 'bg-white p-6 rounded-lg shadow-md';
+        sectionDiv.innerHTML = `<div id="chart-${index}" style="height: 400px;"></div>`;
+        container.appendChild(sectionDiv);
 
-  // Asegurarnos de que Highcharts esté cargado antes de renderizar los gráficos
-  function checkHighchartsAndRender() {
-      if (typeof Highcharts !== 'undefined') {
-          createCharts(surveyData);
-      } else {
-          setTimeout(checkHighchartsAndRender, 50);
-      }
-  }
+        renderChart(`chart-${index}`, sectionName, sectionData);
+    });
+}
 
-  // Iniciar el proceso de renderizado cuando la página esté cargada
-  document.addEventListener('DOMContentLoaded', checkHighchartsAndRender);
+async function initializeCharts() {
+    const surveyData = await fetchSurveyData();
+    if (surveyData) {
+        createCharts(surveyData);
+    } else {
+        document.getElementById('chartsContainer').innerHTML = '<p class="text-red-500">Error al cargar los datos de la encuesta.</p>';
+    }
+}
+
+// Asegurarnos de que Highcharts esté cargado antes de renderizar los gráficos
+function checkHighchartsAndRender() {
+    if (typeof Highcharts !== 'undefined') {
+        initializeCharts();
+    } else {
+        setTimeout(checkHighchartsAndRender, 50);
+    }
+}
+
+// Iniciar el proceso de renderizado cuando la página esté cargada
+document.addEventListener('DOMContentLoaded', checkHighchartsAndRender);
 </script>
 
 

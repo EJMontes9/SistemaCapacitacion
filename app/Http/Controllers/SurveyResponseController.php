@@ -9,6 +9,7 @@ use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class SurveyResponseController extends Controller
 {
@@ -98,37 +99,30 @@ class SurveyResponseController extends Controller
     public function getCourseStatistics($courseId)
     {
         try {
-            $course = Courses::with(['sections.lessons.surveyResponses'])
-                ->findOrFail($courseId);
+            $statistics = DB::table('sections')
+                ->join('lessons', 'sections.id', '=', 'lessons.section_id')
+                ->leftJoin('survey_responses', 'lessons.id', '=', 'survey_responses.lesson_id')
+                ->where('sections.course_id', $courseId)
+                ->select(
+                    'sections.name as section_name',
+                    'lessons.name as lesson_name',
+                    DB::raw('SUM(CASE WHEN survey_responses.response = "yes" THEN 1 ELSE 0 END) as yes_count'),
+                    DB::raw('SUM(CASE WHEN survey_responses.response = "no" THEN 1 ELSE 0 END) as no_count')
+                )
+                ->groupBy('sections.name', 'lessons.name')
+                ->get();
 
-            $statistics = [];
-
-            foreach ($course->sections as $section) {
-                $sectionStats = [];
-                foreach ($section->lessons as $lesson) {
-                    $yesCount = $lesson->surveyResponses->where('response', 'yes')->count();
-                    $noCount = $lesson->surveyResponses->where('response', 'no')->count();
-                    $sectionStats[$lesson->name] = ['yes' => $yesCount, 'no' => $noCount];
-                }
-                $statistics[$section->name] = $sectionStats;
+            $formattedStats = [];
+            foreach ($statistics as $stat) {
+                $formattedStats[$stat->section_name][$stat->lesson_name] = [
+                    'yes' => $stat->yes_count,
+                    'no' => $stat->no_count
+                ];
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $statistics
-            ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            Log::error('Curso no encontrado: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Curso no encontrado',
-            ], 404);
+            return response()->json($formattedStats);
         } catch (\Exception $e) {
-            Log::error('Error en getCourseStatistics: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Ha ocurrido un error al obtener las estadísticas del curso',
-            ], 500);
+            return response()->json(['error' => 'Error al obtener estadísticas'], 500);
         }
     }
 }

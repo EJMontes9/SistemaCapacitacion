@@ -33,6 +33,7 @@
                 <p class="mt-4 text-lg leading-relaxed text-blueGray-500">
                     {{$course->description}}
                 </p>
+                <div class="d-none" id="identificador" data-course="{{$course->id}}">{{$course->id}}</div>
                 <ul class="list-none mt-6">
                     <li class="py-2">
                         <div class="flex items-center">
