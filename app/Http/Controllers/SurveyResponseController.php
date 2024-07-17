@@ -57,12 +57,14 @@ class SurveyResponseController extends Controller
                 'survey_id' => 'required|exists:surveys,id',
                 'lesson_id' => 'required|exists:lessons,id',
                 'response' => 'required|in:yes,no',
+                'user_id' => 'required|exists:users,id'
             ]);
 
             $response = SurveyResponse::updateOrCreate(
                 [
                     'survey_id' => $validatedData['survey_id'],
-                    'user_id' => Auth::id(),
+                    // 'user_id' => Auth::id(),
+                    'user_id' => $validatedData['user_id'],
                     'lesson_id' => $validatedData['lesson_id'],
                 ],
                 [
@@ -82,10 +84,11 @@ class SurveyResponseController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Error al guardar la respuesta de la encuesta: ' . $e->getMessage());
+            // Log::error('Error al guardar la respuesta de la encuesta: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Ha ocurrido un error al guardar la respuesta'
+                'message' => 'Ha ocurrido un error al guardar la respuesta',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
