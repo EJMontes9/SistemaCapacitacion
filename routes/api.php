@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\SurveyResponseController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -58,3 +59,9 @@ Route::post('/surveys', [SurveyController::class, 'store']);
 Route::get('/surveys/{id}', [SurveyController::class, 'show']);
 Route::put('/surveys/{id}', [SurveyController::class, 'update']);
 Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy']);
+
+
+
+Route::get('/check-survey/{lessonId}', [SurveyResponseController::class, 'checkSurvey']);
+Route::post('/survey-responses', [SurveyResponseController::class, 'store']);
+Route::get('/course-statistics/{courseId}', [SurveyResponseController::class, 'getCourseStatistics']);
