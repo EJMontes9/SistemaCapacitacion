@@ -177,342 +177,359 @@
     </div>
 
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSurveys();
-            setupEventListeners();
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSurveys();
+        setupEventListeners();
+    });
+
+    function setupEventListeners() {
+        setupFormListeners('edit');
+        setupFormListeners('create');
+
+        document.querySelectorAll('#closeModalButton').forEach(button => {
+            button.addEventListener('click', closeModals);
         });
-        
-        function setupEventListeners() {
-            setupFormListeners('edit');
-            setupFormListeners('create');
-        
-            document.getElementById('closeModalButton').addEventListener('click', closeModals);
-            document.getElementById('saveEditButton').addEventListener('click', saveEditSurvey);
-            document.getElementById('saveCreateButton').addEventListener('click', saveCreateSurvey);
-        }
-        
-        function setupFormListeners(prefix) {
-            document.getElementById(`${prefix}-category`).addEventListener('change', function() {
-                handleCategoryChange(prefix);
-            });
-        
-            document.getElementById(`${prefix}-course-id`).addEventListener('change', function() {
-                handleCourseChange(prefix);
-            });
-        
-            document.getElementById(`${prefix}-section-id`).addEventListener('change', function() {
-                handleSectionChange(prefix);
-            });
-        
-            document.getElementById(`${prefix}-lesson-id`).addEventListener('change', function() {
-                document.getElementById(`${prefix}-target_id`).value = this.value;
-            });
-        }
-        
-        function openCreateModal() {
-            resetForm('create-survey-form');
-            document.getElementById('createModal').classList.remove('hidden');
-        }
-        
-        function resetForm(formId) {
-            document.getElementById(formId).reset();
-            const categorySelect = document.getElementById(`${formId.split('-')[0]}-category`);
-            if (categorySelect) {
-                categorySelect.dispatchEvent(new Event('change'));
-            }
-        }
-        
-        function closeModals() {
-            document.getElementById('editModal').classList.add('hidden');
-            document.getElementById('createModal').classList.add('hidden');
-        }
-        
-        function handleCategoryChange(prefix) {
-            const category = document.getElementById(`${prefix}-category`).value;
-            const containers = ['course', 'section', 'lesson'].map(type => 
-                document.getElementById(`${prefix}-${type}-select-container`)
-            );
-        
-            containers.forEach(container => container.classList.add('hidden'));
-        
-            if (['course', 'section', 'lesson'].includes(category)) {
-                containers[0].classList.remove('hidden');
-                loadCourses(prefix);
-            }
-        }
-        
-        function handleCourseChange(prefix) {
-            const category = document.getElementById(`${prefix}-category`).value;
-            const courseId = document.getElementById(`${prefix}-course-id`).value;
-        
-            if (category === 'course') {
-                document.getElementById(`${prefix}-target_id`).value = courseId;
-            } else if (['section', 'lesson'].includes(category)) {
-                document.getElementById(`${prefix}-section-select-container`).classList.remove('hidden');
-                loadSections(prefix, courseId);
-            }
-        }
-        
-        function handleCategoryChange(prefix) {
-            const category = document.getElementById(`${prefix}-category`).value;
-            const containerIds = ['course', 'section', 'lesson'].map(type => `${prefix}-${type}-select-container`);
+        document.getElementById('saveEditButton').addEventListener('click', saveEditSurvey);
+        document.getElementById('saveCreateButton').addEventListener('click', saveCreateSurvey);
+    }
 
-            containerIds.forEach(id => {
-                const container = document.getElementById(id);
-                if (container) {
-                    container.classList.add('hidden');
-                }
-            });
+    function setupFormListeners(prefix) {
+        const categorySelect = document.getElementById(`${prefix}-category`);
+        const courseSelect = document.getElementById(`${prefix}-course-id`);
+        const sectionSelect = document.getElementById(`${prefix}-section-id`);
+        const lessonSelect = document.getElementById(`${prefix}-lesson-id`);
 
-            if (['course', 'section', 'lesson'].includes(category)) {
-                const courseContainer = document.getElementById(`${prefix}-course-select-container`);
-                if (courseContainer) {
-                    courseContainer.classList.remove('hidden');
-                }
-                loadCourses(prefix);
+        if (categorySelect) {
+            categorySelect.addEventListener('change', () => handleCategoryChange(prefix));
+        }
+        if (courseSelect) {
+            courseSelect.addEventListener('change', () => handleCourseChange(prefix));
+        }
+        if (sectionSelect) {
+            sectionSelect.addEventListener('change', () => handleSectionChange(prefix));
+        }
+        if (lessonSelect) {
+            lessonSelect.addEventListener('change', () => {
+                document.getElementById(`${prefix}-target_id`).value = lessonSelect.value;
+            });
+        }
+    }
+
+    function handleCategoryChange(prefix) {
+        const category = document.getElementById(`${prefix}-category`).value;
+        const containers = ['course', 'section', 'lesson'].map(type => 
+            document.getElementById(`${prefix}-${type}-select-container`)
+        );
+
+        containers.forEach(container => {
+            if (container) container.classList.add('hidden');
+        });
+
+        if (['course', 'section', 'lesson'].includes(category)) {
+            const courseContainer = document.getElementById(`${prefix}-course-select-container`);
+            if (courseContainer) {
+                courseContainer.classList.remove('hidden');
             }
+            loadCourses(prefix);
         }
-        
-        function loadSurveys() {
-            fetch('/api/surveys')
-                .then(response => response.json())
-                .then(surveys => {
-                    const surveysList = document.getElementById('surveys-list');
-                    surveysList.innerHTML = surveys.map(survey => `
-                        <tr>
-                            <td class="py-2 px-4 border-b">${survey.title}</td>
-                            <td class="py-2 px-4 border-b">${survey.category}</td>
-                            <td class="py-2 px-4 border-b">
-                                <button onclick="openEditModal(${survey.id})" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
-                                <button onclick="deleteSurvey(${survey.id})" class="text-red-500 hover:text-red-700">Eliminar</button>
-                            </td>
-                        </tr>
-                    `).join('');
-                });
+    }
+
+    function handleCourseChange(prefix) {
+        const category = document.getElementById(`${prefix}-category`).value;
+        const courseId = document.getElementById(`${prefix}-course-id`).value;
+        const targetIdInput = document.getElementById(`${prefix}-target_id`);
+
+        if (category === 'course') {
+            if (targetIdInput) targetIdInput.value = courseId;
+        } else if (['section', 'lesson'].includes(category)) {
+            const sectionContainer = document.getElementById(`${prefix}-section-select-container`);
+            if (sectionContainer) {
+                sectionContainer.classList.remove('hidden');
+            }
+            loadSections(prefix, courseId);
         }
-        
-        function loadCourses(prefix) {
-            fetch('/api/courses/list')
-                .then(response => response.json())
-                .then(courses => {
-                    const select = document.getElementById(`${prefix}-course-id`);
+    }
+
+    function handleSectionChange(prefix) {
+        const category = document.getElementById(`${prefix}-category`).value;
+        const sectionId = document.getElementById(`${prefix}-section-id`).value;
+        const targetIdInput = document.getElementById(`${prefix}-target_id`);
+
+        if (category === 'section') {
+            if (targetIdInput) targetIdInput.value = sectionId;
+        } else if (category === 'lesson') {
+            const lessonContainer = document.getElementById(`${prefix}-lesson-select-container`);
+            if (lessonContainer) {
+                lessonContainer.classList.remove('hidden');
+            }
+            loadLessons(prefix, sectionId);
+        }
+    }
+
+    function loadSurveys() {
+        fetch('/api/surveys')
+            .then(response => response.json())
+            .then(surveys => {
+                const surveysList = document.getElementById('surveys-list');
+                surveysList.innerHTML = surveys.map(survey => `
+                    <tr>
+                        <td class="py-2 px-4 border-b">${survey.title}</td>
+                        <td class="py-2 px-4 border-b">${survey.category}</td>
+                        <td class="py-2 px-4 border-b">
+                            <button onclick="openEditModal(${survey.id})" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
+                            <button onclick="deleteSurvey(${survey.id})" class="text-red-500 hover:text-red-700">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            });
+    }
+
+    function loadCourses(prefix) {
+        fetch('/api/courses/list')
+            .then(response => response.json())
+            .then(courses => {
+                const select = document.getElementById(`${prefix}-course-id`);
+                if (select) {
                     select.innerHTML = '<option value="">Seleccione un curso</option>' + 
                         courses.map(course => `<option value="${course.id}">${course.title}</option>`).join('');
-                });
-        }
-        
-        function loadSections(prefix, courseId) {
-            fetch(`/api/courses/${courseId}/sections`)
-                .then(response => response.json())
-                .then(sections => {
-                    const select = document.getElementById(`${prefix}-section-id`);
+                }
+            });
+    }
+
+    function loadSections(prefix, courseId) {
+        fetch(`/api/courses/${courseId}/sections`)
+            .then(response => response.json())
+            .then(sections => {
+                const select = document.getElementById(`${prefix}-section-id`);
+                if (select) {
                     select.innerHTML = '<option value="">Seleccione una sección</option>' + 
                         sections.map(section => `<option value="${section.id}">${section.name}</option>`).join('');
-                });
-        }
-        
-        function loadLessons(prefix, sectionId) {
-            fetch(`/api/sections/${sectionId}/lessons`)
-                .then(response => response.json())
-                .then(lessons => {
-                    const select = document.getElementById(`${prefix}-lesson-id`);
+                }
+            });
+    }
+
+    function loadLessons(prefix, sectionId) {
+        fetch(`/api/sections/${sectionId}/lessons`)
+            .then(response => response.json())
+            .then(lessons => {
+                const select = document.getElementById(`${prefix}-lesson-id`);
+                if (select) {
                     select.innerHTML = '<option value="">Seleccione una lección</option>' + 
                         lessons.map(lesson => `<option value="${lesson.id}">${lesson.name}</option>`).join('');
-                });
-        }
-        
-        async function openEditModal(surveyId) {
-            const survey = await fetch(`/api/surveys/${surveyId}`).then(response => response.json());
-            
-            const elements = [
-                { id: 'edit-survey-id', property: 'value', value: survey.id },
-                { id: 'edit-title', property: 'value', value: survey.title },
-                { id: 'edit-description', property: 'value', value: survey.description },
-                { id: 'edit-category', property: 'value', value: survey.category },
-                { id: 'edit-target_id', property: 'value', value: survey.target_id },
-                { id: 'edit-has_yes_no', property: 'checked', value: survey.has_yes_no },
-                { id: 'edit-has_rating', property: 'checked', value: survey.has_rating },
-                { id: 'edit-has_comment', property: 'checked', value: survey.has_comment },
-            ];
-
-            elements.forEach(({ id, property, value }) => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element[property] = value;
                 }
             });
+    }
+
+    async function openEditModal(surveyId) {
+        const survey = await fetch(`/api/surveys/${surveyId}`).then(response => response.json());
+        
+        const elements = [
+            { id: 'edit-survey-id', property: 'value', value: survey.id },
+            { id: 'edit-title', property: 'value', value: survey.title },
+            { id: 'edit-description', property: 'value', value: survey.description },
+            { id: 'edit-category', property: 'value', value: survey.category },
+            { id: 'edit-target_id', property: 'value', value: survey.target_id },
+            { id: 'edit-has_yes_no', property: 'checked', value: survey.has_yes_no },
+            { id: 'edit-has_rating', property: 'checked', value: survey.has_rating },
+            { id: 'edit-has_comment', property: 'checked', value: survey.has_comment },
+        ];
+
+        elements.forEach(({ id, property, value }) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element[property] = value;
+            }
+        });
+        
+        await loadRelatedData('edit', survey.category, survey.target_id);
+        
+        const editModal = document.getElementById('editModal');
+        if (editModal) {
+            editModal.classList.remove('hidden');
+        }
+    }
+
+    async function loadRelatedData(prefix, category, targetId) {
+        const courseSelect = document.getElementById(`${prefix}-course-id`);
+        const sectionSelect = document.getElementById(`${prefix}-section-id`);
+        const lessonSelect = document.getElementById(`${prefix}-lesson-id`);
+
+        if (courseSelect) courseSelect.innerHTML = '<option value="">Cargando...</option>';
+        if (sectionSelect) sectionSelect.innerHTML = '<option value="">Cargando...</option>';
+        if (lessonSelect) lessonSelect.innerHTML = '<option value="">Cargando...</option>';
+
+        const courses = await fetch('/api/courses/list').then(response => response.json());
+        if (courseSelect) populateSelect(courseSelect, courses, 'id', 'title');
+
+        if (category === 'course') {
+            if (courseSelect) courseSelect.value = targetId;
+        } else if (category === 'section' || category === 'lesson') {
+            const courseId = await getCourseIdFromTarget(category, targetId);
+            if (courseSelect) courseSelect.value = courseId;
             
-            await loadRelatedData('edit', survey.category, survey.target_id);
-            
-            const editModal = document.getElementById('editModal');
-            if (editModal) {
-                editModal.classList.remove('hidden');
-            }
-        }
-        
-        async function loadRelatedData(prefix, category, targetId) {
-            const courseSelect = document.getElementById(`${prefix}-course-id`);
-            const sectionSelect = document.getElementById(`${prefix}-section-id`);
-            const lessonSelect = document.getElementById(`${prefix}-lesson-id`);
+            const sections = await fetch(`/api/courses/${courseId}/sections`).then(response => response.json());
+            if (sectionSelect) populateSelect(sectionSelect, sections, 'id', 'name');
 
-            if (courseSelect) courseSelect.innerHTML = '<option value="">Cargando...</option>';
-            if (sectionSelect) sectionSelect.innerHTML = '<option value="">Cargando...</option>';
-            if (lessonSelect) lessonSelect.innerHTML = '<option value="">Cargando...</option>';
-
-            const courses = await fetch('/api/courses/list').then(response => response.json());
-            if (courseSelect) populateSelect(courseSelect, courses, 'id', 'title');
-
-            if (category === 'course') {
-                if (courseSelect) courseSelect.value = targetId;
-            } else if (category === 'section' || category === 'lesson') {
-                const courseId = await getCourseIdFromTarget(category, targetId);
-                if (courseSelect) courseSelect.value = courseId;
-                
-                const sections = await fetch(`/api/courses/${courseId}/sections`).then(response => response.json());
-                if (sectionSelect) populateSelect(sectionSelect, sections, 'id', 'name');
-
-                if (category === 'section') {
-                    if (sectionSelect) sectionSelect.value = targetId;
-                } else if (category === 'lesson') {
-                    const sectionId = await getSectionIdFromLesson(targetId);
-                    if (sectionSelect) sectionSelect.value = sectionId;
-
-                    const lessons = await fetch(`/api/sections/${sectionId}/lessons`).then(response => response.json());
-                    if (lessonSelect) {
-                        populateSelect(lessonSelect, lessons, 'id', 'name');
-                        lessonSelect.value = targetId;
-                    }
-                }
-            }
-
-            const categorySelect = document.getElementById(`${prefix}-category`);
-            if (categorySelect) {
-                categorySelect.dispatchEvent(new Event('change'));
-            }
-        }
-        
-        function populateSelect(select, options, valueKey, textKey) {
-            select.innerHTML = options.map(option => 
-                `<option value="${option[valueKey]}">${option[textKey]}</option>`
-            ).join('');
-            select.insertAdjacentHTML('afterbegin', '<option value="">Seleccione una opción</option>');
-        }
-        
-        async function getCourseIdFromTarget(category, targetId) {
             if (category === 'section') {
-                const section = await fetch(`/api/sections/${targetId}`).then(response => response.json());
-                return section.course_id;
+                if (sectionSelect) sectionSelect.value = targetId;
             } else if (category === 'lesson') {
-                const lesson = await fetch(`/api/lessons/${targetId}`).then(response => response.json());
-                const section = await fetch(`/api/sections/${lesson.section_id}`).then(response => response.json());
-                return section.course_id;
+                const sectionId = await getSectionIdFromLesson(targetId);
+                if (sectionSelect) sectionSelect.value = sectionId;
+
+                const lessons = await fetch(`/api/sections/${sectionId}/lessons`).then(response => response.json());
+                if (lessonSelect) {
+                    populateSelect(lessonSelect, lessons, 'id', 'name');
+                    lessonSelect.value = targetId;
+                }
             }
         }
-        
-        async function getSectionIdFromLesson(lessonId) {
-            const lesson = await fetch(`/api/lessons/${lessonId}`).then(response => response.json());
-            return lesson.section_id;
+
+        const categorySelect = document.getElementById(`${prefix}-category`);
+        if (categorySelect) {
+            categorySelect.dispatchEvent(new Event('change'));
         }
-        
-        function saveEditSurvey() {
-            const surveyId = document.getElementById('edit-survey-id').value;
-            const formData = new FormData(document.getElementById('edit-survey-form'));
-            const data = Object.fromEntries(formData.entries());
-        
-            // Convierte los checkboxes a booleanos
-            data.has_yes_no = !!data.has_yes_no;
-            data.has_rating = !!data.has_rating;
-            data.has_comment = !!data.has_comment;
-        
-            // Asegúrate de que target_id sea un número
-            data.target_id = parseInt(data.target_id);
-        
-            fetch(`/api/surveys/${surveyId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(survey => {
-                alert('Encuesta actualizada con éxito');
-                document.getElementById('editModal').classList.add('hidden');
-                loadSurveys();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert(`Error al actualizar la encuesta: ${error.message}`);
-            });
+    }
+
+    function populateSelect(select, options, valueKey, textKey) {
+        select.innerHTML = options.map(option => 
+            `<option value="${option[valueKey]}">${option[textKey]}</option>`
+        ).join('');
+        select.insertAdjacentHTML('afterbegin', '<option value="">Seleccione una opción</option>');
+    }
+
+    async function getCourseIdFromTarget(category, targetId) {
+        if (category === 'section') {
+            const section = await fetch(`/api/sections/${targetId}`).then(response => response.json());
+            return section.course_id;
+        } else if (category === 'lesson') {
+            const lesson = await fetch(`/api/lessons/${targetId}`).then(response => response.json());
+            const section = await fetch(`/api/sections/${lesson.section_id}`).then(response => response.json());
+            return section.course_id;
         }
-        
-        function saveCreateSurvey() {
-            const formData = new FormData(document.getElementById('create-survey-form'));
-            const data = Object.fromEntries(formData.entries());
-        
-            // Convierte los checkboxes a booleanos
-            data.has_yes_no = !!data.has_yes_no;
-            data.has_rating = !!data.has_rating;
-            data.has_comment = !!data.has_comment;
-        
-            // Asegúrate de que target_id sea un número
-            data.target_id = parseInt(data.target_id);
-        
-            fetch('/api/surveys', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(survey => {
-                alert('Encuesta creada con éxito');
-                document.getElementById('createModal').classList.add('hidden');
-                loadSurveys();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert(`Error al crear la encuesta: ${error.message}`);
-            });
-        }
-        
-        function deleteSurvey(id) {
-            if (confirm('¿Estás seguro de querer eliminar esta encuesta?')) {
-                fetch(`/api/surveys/${id}`, { 
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        loadSurveys();
-                    } else {
-                        alert('Error al eliminar la encuesta');
-                    }
+    }
+
+    async function getSectionIdFromLesson(lessonId) {
+        const lesson = await fetch(`/api/lessons/${lessonId}`).then(response => response.json());
+        return lesson.section_id;
+    }
+
+    function saveEditSurvey() {
+        const surveyId = document.getElementById('edit-survey-id').value;
+        const formData = new FormData(document.getElementById('edit-survey-form'));
+        const data = Object.fromEntries(formData.entries());
+
+        // Convierte los checkboxes a booleanos
+        data.has_yes_no = !!data.has_yes_no;
+        data.has_rating = !!data.has_rating;
+        data.has_comment = !!data.has_comment;
+
+        // Asegúrate de que target_id sea un número
+        data.target_id = parseInt(data.target_id);
+
+        fetch(`/api/surveys/${surveyId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
                 });
             }
+            return response.json();
+        })
+        .then(survey => {
+            alert('Encuesta actualizada con éxito');
+            document.getElementById('editModal').classList.add('hidden');
+            loadSurveys();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(`Error al actualizar la encuesta: ${error.message}`);
+        });
+    }
+
+    function saveCreateSurvey() {
+        const formData = new FormData(document.getElementById('create-survey-form'));
+        const data = Object.fromEntries(formData.entries());
+
+        // Convierte los checkboxes a booleanos
+        data.has_yes_no = !!data.has_yes_no;
+        data.has_rating = !!data.has_rating;
+        data.has_comment = !!data.has_comment;
+
+        // Asegúrate de que target_id sea un número
+        data.target_id = parseInt(data.target_id);
+
+        fetch('/api/surveys', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                });
+            }
+            return response.json();
+        })
+        .then(survey => {
+            alert('Encuesta creada con éxito');
+            document.getElementById('createModal').classList.add('hidden');
+            loadSurveys();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(`Error al crear la encuesta: ${error.message}`);
+        });
+    }
+
+    function deleteSurvey(id) {
+        if (confirm('¿Estás seguro de querer eliminar esta encuesta?')) {
+            fetch(`/api/surveys/${id}`, { 
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadSurveys();
+                } else {
+                    alert('Error al eliminar la encuesta');
+                }
+            });
         }
-        </script>
+    }
+
+    function openCreateModal() {
+        resetForm('create-survey-form');
+        document.getElementById('createModal').classList.remove('hidden');
+    }
+
+    function resetForm(formId) {
+        document.getElementById(formId).reset();
+        const categorySelect = document.getElementById(`${formId.split('-')[0]}-category`);
+        if (categorySelect) {
+            categorySelect.dispatchEvent(new Event('change'));
+        }
+    }
+
+    function closeModals() {
+        document.getElementById('editModal').classList.add('hidden');
+        document.getElementById('createModal').classList.add('hidden');
+    }
+</script>
 </x-app-layout>
