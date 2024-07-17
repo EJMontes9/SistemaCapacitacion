@@ -102,27 +102,30 @@ class SurveyResponseController extends Controller
             $statistics = DB::table('sections')
                 ->join('lessons', 'sections.id', '=', 'lessons.section_id')
                 ->leftJoin('survey_responses', 'lessons.id', '=', 'survey_responses.lesson_id')
+                ->leftJoin('surveys', 'survey_responses.survey_id', '=', 'surveys.id')
                 ->where('sections.course_id', $courseId)
                 ->select(
                     'sections.name as section_name',
                     'lessons.name as lesson_name',
+                    'surveys.title as survey_title',
                     DB::raw('SUM(CASE WHEN survey_responses.response = "yes" THEN 1 ELSE 0 END) as yes_count'),
                     DB::raw('SUM(CASE WHEN survey_responses.response = "no" THEN 1 ELSE 0 END) as no_count')
                 )
-                ->groupBy('sections.name', 'lessons.name')
+                ->groupBy('sections.name', 'lessons.name', 'surveys.title')
                 ->get();
 
             $formattedStats = [];
             foreach ($statistics as $stat) {
                 $formattedStats[$stat->section_name][$stat->lesson_name] = [
                     'yes' => $stat->yes_count,
-                    'no' => $stat->no_count
+                    'no' => $stat->no_count,
+                    'survey_title' => $stat->survey_title ?? 'Aún no tiene encuestas'
                 ];
             }
 
             return response()->json($formattedStats);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al obtener estadísticas'], 500);
+            return response()->json(['error' => 'Error al obtener estadísticas: ' . $e->getMessage()], 500);
         }
     }
 }
