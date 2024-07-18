@@ -368,4 +368,30 @@ class EvaluationController extends Controller
 
         return view('evaluations.index', compact('evaluations', 'courseName', 'sectionName'));
     }
+
+    // metodo para endpoint de data estadistica
+    public function getCourseGrades($courseId)
+    {
+        $grades = EvaluationResult::where('course_id', $courseId)
+            ->select(DB::raw('
+                CASE
+                    WHEN total_score BETWEEN 0 AND 5 THEN "0-5"
+                    WHEN total_score BETWEEN 6 AND 8 THEN "5-8"
+                    ELSE "8-10"
+                END AS range
+            '), DB::raw('COUNT(*) as count'))
+            ->groupBy('range')
+            ->pluck('count', 'range')
+            ->toArray();
+
+        // Asegurar que todas las categorías estén presentes
+        $categories = ['0-5', '5-8', '8-10'];
+        foreach ($categories as $category) {
+            if (!isset($grades[$category])) {
+                $grades[$category] = 0;
+            }
+        }
+
+        return response()->json($grades);
+    }
 }

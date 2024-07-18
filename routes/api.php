@@ -6,6 +6,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\SurveyResponseController;
+use App\Http\Controllers\EvaluationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -65,3 +66,6 @@ Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy']);
 Route::get('/check-survey/{lessonId}', [SurveyResponseController::class, 'checkSurvey']);
 Route::post('/survey-responses', [SurveyResponseController::class, 'store']);
 Route::get('/course-statistics/{courseId}', [SurveyResponseController::class, 'getCourseStatistics']);
+
+//endpoint de estadística de lecciones
+Route::get('/course/{courseId}/grades', [EvaluationController::class, 'getCourseGrades']);
