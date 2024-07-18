@@ -36,7 +36,7 @@
 
 
 <script>
-          const courseId = document.getElementById('identificador').getAttribute('data-course');
+  const courseId = document.getElementById('identificador').getAttribute('data-course');
 
 async function fetchSurveyData() {
     try {
@@ -55,18 +55,20 @@ function prepareChartData(sectionData) {
     const categories = [];
     const yesData = [];
     const noData = [];
+    const titles = [];
 
     Object.entries(sectionData).forEach(([lesson, responses]) => {
         categories.push(lesson);
         yesData.push(parseInt(responses.yes));
         noData.push(parseInt(responses.no));
+        titles.push(responses.survey_title);
     });
 
-    return { categories, yesData, noData };
+    return { categories, yesData, noData, titles };
 }
 
 function renderChart(containerId, sectionName, sectionData) {
-    const { categories, yesData, noData } = prepareChartData(sectionData);
+    const { categories, yesData, noData, titles } = prepareChartData(sectionData);
 
     Highcharts.chart(containerId, {
         chart: {
@@ -82,7 +84,7 @@ function renderChart(containerId, sectionName, sectionData) {
         yAxis: {
             min: 0,
             title: {
-                text: 'Número de respuestas'
+                text: 'Respuestas'
             }
         },
         tooltip: {
@@ -109,6 +111,17 @@ function renderChart(containerId, sectionName, sectionData) {
             color: '#DF5353'
         }]
     });
+
+    // Agregar los títulos de las encuestas debajo del gráfico
+    const titlesContainer = document.createElement('div');
+    titlesContainer.className = 'mt-4';
+    titles.forEach((title, index) => {
+        const titleElement = document.createElement('p');
+        titleElement.className = 'text-sm mb-2';
+        titleElement.innerHTML = `<strong>${categories[index]}:</strong> ${title}`;
+        titlesContainer.appendChild(titleElement);
+    });
+    document.getElementById(containerId).parentNode.appendChild(titlesContainer);
 }
 
 function createCharts(data) {
@@ -117,7 +130,7 @@ function createCharts(data) {
 
     Object.entries(data).forEach(([sectionName, sectionData], index) => {
         const sectionDiv = document.createElement('div');
-        sectionDiv.className = 'bg-white p-6 rounded-lg shadow-md';
+        sectionDiv.className = 'bg-white p-6 rounded-lg shadow-md mb-8';
         sectionDiv.innerHTML = `<div id="chart-${index}" style="height: 400px;"></div>`;
         container.appendChild(sectionDiv);
 
