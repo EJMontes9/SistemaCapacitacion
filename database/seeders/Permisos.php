@@ -55,5 +55,10 @@ class Permisos extends Seeder
             'name' => 'Leer Usuarios',
             'guard_name' => 'web',
         ]);
+
+        DB::table('permissions')->insert([
+            'name' => 'Leer categorias',
+            'guard_name' => 'web',
+        ]);
     }
 }

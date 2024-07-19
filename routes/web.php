@@ -82,10 +82,13 @@ Route::get('mycourses', 'App\Http\Controllers\courseController@mycourse')->name(
 //Categories
 Route::resource('admin/categories', 'Admin\CategoryController');
 
-// encuesta de satisfacción 
+// encuesta de satisfacción
 // Route::get('/surveys', 'App\Http\Controllers\courseController@surveys');
 Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
 Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
 
 // Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
 // Route::get('/surveys/create', 'App\Http\Controllers\courseController@create')->name('surveys.create');
+
+//Ruta para evaluations unlink
+Route::get('/evaluations/{evaluation}/unlink', 'App\Http\Controllers\EvaluationController@unlink')->name('evaluations.unlink');

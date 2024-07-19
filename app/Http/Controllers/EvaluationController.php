@@ -25,7 +25,7 @@ class EvaluationController extends Controller
     {
         // Verifica si el usuario autenticado es un alumno
         try {
-            if (auth()->user()->roles->pluck('id')->contains(5)) {
+            if (auth()->user()->roles->pluck('id')->contains(3)) {
                 return redirect()->route('courses.mycourse')
                     ->with('error', 'No tienes permiso para ver esta página.');
             }
@@ -133,7 +133,7 @@ class EvaluationController extends Controller
         }
 
         // Verifica si el instructor actual es el propietario de la evaluación, el id 5 representa a un alumno de un curso
-        if (auth()->user()->id != $evaluation->instructor_id && !auth()->user()->roles->pluck('id')->contains(5)) {
+        if (auth()->user()->id != $evaluation->instructor_id && !auth()->user()->roles->pluck('id')->contains(3)) {
             return redirect()->route('evaluations.index')
                 ->with('error', 'Esta evaluación no se encuentra en tus registros.');
         }
@@ -393,5 +393,15 @@ class EvaluationController extends Controller
         }
 
         return response()->json($grades);
+    }
+        //Evaluation unlink from section
+    public function unlink($evaluationId)
+    {
+        $evaluation = Evaluation::find($evaluationId);
+
+        $evaluation->module_id = null;
+        $evaluation->save();
+
+        return redirect()->route('evaluations.index')->with('success', 'La evaluación ha sido desvinculada de la sección.');
     }
 }

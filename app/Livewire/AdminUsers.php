@@ -11,7 +11,6 @@ class AdminUsers extends Component
 {
     use WithPagination;
 
-    // Para que la paginación sea de bootstrap
     protected $paginationTheme = "bootstrap";
 
     public $search = '';
@@ -47,7 +46,7 @@ class AdminUsers extends Component
         $this->perPage = min((int)$value, $totalUsers);
     }
 
-    public function mount() //esta funcion con mount se ejecuta cuando se carga el componente 
+    public function mount() //esta funcion con mount se ejecuta cuando se carga el componente
     {
         $this->perPage = request()->query('perPage', 5); //trae por defecto 5 registros
     }
