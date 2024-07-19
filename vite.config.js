@@ -8,6 +8,9 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/courses-view.js',
+                'resources/js/createevaluation.js',
+                'resources/js/alert.js'
+                
             ],
             refresh: [
                 ...refreshPaths,

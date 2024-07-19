@@ -372,28 +372,50 @@ class EvaluationController extends Controller
     // metodo para endpoint de data estadistica
     public function getCourseGrades($courseId)
     {
-        $grades = EvaluationResult::where('course_id', $courseId)
-            ->select(DB::raw('
-                CASE
-                    WHEN total_score BETWEEN 0 AND 5 THEN "0-5"
-                    WHEN total_score BETWEEN 6 AND 8 THEN "5-8"
-                    ELSE "8-10"
-                END AS range
-            '), DB::raw('COUNT(*) as count'))
-            ->groupBy('range')
-            ->pluck('count', 'range')
-            ->toArray();
+        // Verificar si el curso existe
+        if (!Courses::find($courseId)) {
+            return response()->json([
+                'message' => 'El curso especificado no existe.',
+                'data' => null
+            ], 404);
+        }
 
-        // Asegurar que todas las categorías estén presentes
-        $categories = ['0-5', '5-8', '8-10'];
-        foreach ($categories as $category) {
-            if (!isset($grades[$category])) {
-                $grades[$category] = 0;
+        // Obtener todos los resultados de evaluación para el curso
+        $results = EvaluationResult::where('course_id', $courseId)
+                    ->select('total_score')
+                    ->get();
+
+        // Inicializar las categorías
+        $grades = [
+            '0-5' => 0,
+            '5-8' => 0,
+            '8-10' => 0
+        ];
+
+        // Contar manualmente los resultados en cada categoría
+        foreach ($results as $result) {
+            if ($result->total_score >= 0 && $result->total_score <= 5) {
+                $grades['0-5']++;
+            } elseif ($result->total_score > 5 && $result->total_score <= 8) {
+                $grades['5-8']++;
+            } else {
+                $grades['8-10']++;
             }
         }
 
-        return response()->json($grades);
+        if (empty($results)) {
+            return response()->json([
+                'message' => 'No hay datos de evaluaciones disponibles para este curso.',
+                'data' => $grades
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Métricas de evaluaciones obtenidas con éxito.',
+            'data' => $grades
+        ]);
     }
+
         //Evaluation unlink from section
     public function unlink($evaluationId)
     {

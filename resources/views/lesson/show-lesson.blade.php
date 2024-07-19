@@ -102,22 +102,22 @@
                 });
             }
 
-function updateSurveyUI(response) {
-    const thumbsUp = document.getElementById('thumbsUp');
-    const thumbsDown = document.getElementById('thumbsDown');
+            function updateSurveyUI(response) {
+                const thumbsUp = document.getElementById('thumbsUp');
+                const thumbsDown = document.getElementById('thumbsDown');
 
-    thumbsUp.classList.toggle('bg-green-600', response === 'yes');
-    thumbsDown.classList.toggle('bg-red-600', response === 'no');
+                thumbsUp.classList.toggle('bg-green-600', response === 'yes');
+                thumbsDown.classList.toggle('bg-red-600', response === 'no');
 
-    thumbsUp.disabled = true;
-    thumbsDown.disabled = true;
+                thumbsUp.disabled = true;
+                thumbsDown.disabled = true;
 
-    // Mostrar un mensaje de confirmación
-    const confirmationMessage = document.createElement('p');
-    confirmationMessage.textContent = '¡Gracias por tu respuesta!';
-    confirmationMessage.className = 'text-green-600 mt-2';
-    document.querySelector('.survey-container').appendChild(confirmationMessage);
-}
+                // Mostrar un mensaje de confirmación
+                const confirmationMessage = document.createElement('p');
+                confirmationMessage.textContent = '¡Gracias por tu respuesta!';
+                confirmationMessage.className = 'text-green-600 mt-2';
+                document.querySelector('.survey-container').appendChild(confirmationMessage);
+            }
 
         </script>
     @endpush

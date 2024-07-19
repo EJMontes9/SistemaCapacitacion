@@ -166,11 +166,21 @@
 
 {{-- scripts de estadisticas de estudiantes --}}
 <script>
-  const calificacionesData = {
-            '0-5': 15,
-            '5-8': 30,
-            '8-10': 25
-        };
+        // Función para obtener los datos de la API
+        function fetchCalificacionesData(courseId) {
+            return fetch(`http://sistemacapacitacion.test/api/course/${courseId}/grades`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(result => result.data)
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                    return null;
+                });
+        }
 
         const progresoAlumnosData = {
             'Empezado': 100,
@@ -179,7 +189,7 @@
         };
 
         // Función para crear el gráfico de calificaciones
-        function crearGraficoCalificaciones() {
+        function crearGraficoCalificaciones(data) {
             Highcharts.chart('calificacionesChart', {
                 chart: {
                     type: 'column'
@@ -188,7 +198,7 @@
                     text: 'Distribución de Calificaciones'
                 },
                 xAxis: {
-                    categories: Object.keys(calificacionesData),
+                    categories: Object.keys(data),
                     title: {
                         text: 'Rango de Calificaciones'
                     }
@@ -200,7 +210,7 @@
                 },
                 series: [{
                     name: 'Estudiantes',
-                    data: Object.values(calificacionesData),
+                    data: Object.values(data),
                     color: '#4299E1'
                 }]
             });
@@ -233,9 +243,22 @@
             });
         }
 
+        // Función principal que inicializa el gráfico
+        function initializeChart(courseId) {
+            fetchCalificacionesData(courseId)
+                .then(calificacionesData => {
+                    if (calificacionesData) {
+                        crearGraficoCalificaciones(calificacionesData);
+                    } else {
+                        document.getElementById('calificacionesChart').innerHTML = '<p class="text-red-500">Error al cargar los datos de calificaciones.</p>';
+                    }
+                });
+        }
+
         // Crear los gráficos cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', () => {
-            crearGraficoCalificaciones();
+            var courseId = document.getElementById('identificador').getAttribute('data-course');
+            initializeChart(courseId);
             crearGraficoProgresoAlumnos();
         });
 </script>
