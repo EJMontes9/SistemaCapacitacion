@@ -2,10 +2,10 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <x-app-layout>
-    <div class="flex flex-column">
+    <div class="flex flex-column" id="dataLesson"  data-course="{{$course->id}}"  data-lessonId="{{ $thislesson->id }}">
         <div class="w-full mt-9">
-            <h1 class="text-2xl font-semibold text-gray-900 mb-4">{{$thislesson->name}}</h1>
-            <div class="p-4 w-[500px] h-[400px]">
+            <h1 class="text-2xl  text-gray-900 mb-4">Está viendo la clase: <b> {{$thislesson->name}}</b></h1>
+            <div class="py-4 w-[500px] h-[400px]">
                 {!! $thislesson->iframe !!}
             </div>
 
@@ -13,13 +13,20 @@
                 <x-course.list-section-view :section="$section" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
             </div>
         </div>
-
-        <div class="lesson-content" id="encuesta" data-userId='{{ Auth::user()->id }}'>
-            
-            <!-- El script insertará los botones de la encuesta aquí si es necesario -->
+        <div class="w-25 mt-9">
+            <h2 class="text-2xl  text-gray-900 mb-4">FeedBack</h2>
+            <div class="lesson-content" id="encuesta" data-userId='{{ Auth::user()->id }}'>
+                <!-- El script insertará los botones de la encuesta aquí si es necesario -->
+            </div>
+            <h2 class="text-2xl  text-gray-900 my-4">Valoraciones</h2>
+            <div id="lesson-rating" class="mt-4">
+                <!-- El widget de calificación se insertará aquí dinámicamente -->
+            </div>
         </div>
+        
     </div>
     @push('scripts')
+        {{-- script detector  de encuesta tipo yes/no --}}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const pathParts = window.location.pathname.split('/');
@@ -28,27 +35,19 @@
                 fetch(`/api/check-survey/${lessonId}`)
                     .then(response => response.json())
                     .then(data => {
-                        if (data.hasSurvey) {
-                            const textoSurvey = data.surveyTitle;                            ;
+                        if (data.hasSurvey && data.surveys.length > 0) {
                             const surveyContainer = document.createElement('div');
-                            surveyContainer.className = 'mt-4 p-4 bg-gray-100 rounded-lg';
-                            surveyContainer.innerHTML = `
-                                <h3 class="text-lg font-semibold mb-2">${textoSurvey}</h3>
-                                <div class="flex space-x-4">
-                                    <button id="thumbsUp" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded ${data.response === 'yes' ? 'opacity-50 cursor-not-allowed' : ''}">
-                                        <i class="fas fa-thumbs-up"></i> Sí
-                                    </button>
-                                    <button id="thumbsDown" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded ${data.response === 'no' ? 'opacity-50 cursor-not-allowed' : ''}">
-                                        <i class="fas fa-thumbs-down"></i> No
-                                    </button>
-                                </div>
-                            `;
+                            surveyContainer.className = 'mt-4 space-y-4';
 
-                            document.querySelector('.lesson-content').appendChild(surveyContainer);
+                            data.surveys.forEach(survey => {
+                                if (survey.hasYesNo) {
+                                    const surveyWidget = createSurveyWidget(survey, lessonId);
+                                    surveyContainer.appendChild(surveyWidget);
+                                }
+                            });
 
-                            if (!data.hasResponded) {
-                                document.getElementById('thumbsUp').addEventListener('click', () => sendResponse('yes', data.surveyId, lessonId));
-                                document.getElementById('thumbsDown').addEventListener('click', () => sendResponse('no', data.surveyId, lessonId));
+                            if (surveyContainer.children.length > 0) {
+                                document.querySelector('.lesson-content').appendChild(surveyContainer);
                             }
                         }
                     })
@@ -56,69 +55,188 @@
             });
 
             function sendResponse(response, surveyId, lessonId) {
-                userId =   document.querySelector('#encuesta').getAttribute('data-userId');
-                // console.log('el user Id es '+userId);
-                fetch('/api/survey-responses', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        survey_id: surveyId,
-                        lesson_id: lessonId,
-                        response: response,
-                        user_id : userId
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        console.log('Respuesta enviada:', data.message);
-                        // Actualizar la UI para reflejar la respuesta enviada
-                        updateSurveyUI(response);
-                    } else {
-                        console.error('Error al enviar la respuesta:', data.message);
-                        // alert('Hubo un problema al enviar tu respuesta. Por favor, intenta de nuevo.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    if (error.errors) {
-                        let errorMessage = 'Por favor, corrige los siguientes errores:\n';
-                        Object.values(error.errors).forEach(err => {
-                            errorMessage += `- ${err[0]}\n`;
-                        });
-                        alert(errorMessage);
-                    } else {
-                        // alert('Hubo un problema al enviar tu respuesta. Por favor, intenta de nuevo.');
-                    }
-                });
-            }
+    const userId = document.querySelector('#encuesta').getAttribute('data-userId');
+    fetch('/api/survey-responses', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            survey_id: surveyId,
+            lesson_id: lessonId,
+            response: response,
+            user_id: userId
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => Promise.reject(err));
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            console.log('Respuesta enviada:', data.message);
+            updateSurveyUI(response, surveyId);
+        } else {
+            console.error('Error al enviar la respuesta:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (error.errors) {
+            let errorMessage = 'Por favor, corrige los siguientes errores:\n';
+            Object.values(error.errors).forEach(err => {
+                errorMessage += `- ${err[0]}\n`;
+            });
+            alert(errorMessage);
+        }
+    });
+}
 
-            function updateSurveyUI(response) {
-                const thumbsUp = document.getElementById('thumbsUp');
-                const thumbsDown = document.getElementById('thumbsDown');
+function updateSurveyUI(response, surveyId) {
+    const widget = document.querySelector(`#survey_widget_${surveyId}`);
+    if (widget) {
+        const yesButton = widget.querySelector(`#thumbsUp_${surveyId}`);
+        const noButton = widget.querySelector(`#thumbsDown_${surveyId}`);
 
-                thumbsUp.classList.toggle('bg-green-600', response === 'yes');
-                thumbsDown.classList.toggle('bg-red-600', response === 'no');
+        // Deshabilitar ambos botones
+        yesButton.disabled = true;
+        noButton.disabled = true;
+        yesButton.classList.add('opacity-50', 'cursor-not-allowed');
+        noButton.classList.add('opacity-50', 'cursor-not-allowed');
 
-                thumbsUp.disabled = true;
-                thumbsDown.disabled = true;
+        // Resaltar el botón seleccionado
+        if (response === 'yes') {
+            yesButton.classList.add('bg-green-700');
+            noButton.classList.remove('bg-red-600');
+            noButton.classList.add('bg-red-400');
+        } else {
+            noButton.classList.add('bg-red-700');
+            yesButton.classList.remove('bg-green-600');
+            yesButton.classList.add('bg-green-400');
+        }
 
-                // Mostrar un mensaje de confirmación
-                const confirmationMessage = document.createElement('p');
-                confirmationMessage.textContent = '¡Gracias por tu respuesta!';
-                confirmationMessage.className = 'text-green-600 mt-2';
-                document.querySelector('.survey-container').appendChild(confirmationMessage);
-            }
+        // Opcional: Añadir un mensaje de confirmación
+        const confirmationMessage = document.createElement('p');
+        confirmationMessage.textContent = 'Gracias por tu respuesta!';
+        confirmationMessage.className = 'mt-2 text-sm text-gray-600';
+        widget.appendChild(confirmationMessage);
+    }
+}
+
+function createSurveyWidget(survey, lessonId) {
+    const widget = document.createElement('div');
+    widget.id = `survey_widget_${survey.surveyId}`;
+    widget.className = 'p-4 bg-gray-100 rounded-lg mt-4';
+    widget.innerHTML = `
+        <h3 class="text-lg font-semibold mb-2">${survey.surveyTitle}</h3>
+        <div class="flex space-x-4">
+            <button id="thumbsUp_${survey.surveyId}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded ${survey.response === 'yes' ? 'opacity-50 cursor-not-allowed' : ''}">
+                <i class="fas fa-thumbs-up"></i> Sí
+            </button>
+            <button id="thumbsDown_${survey.surveyId}" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded ${survey.response === 'no' ? 'opacity-50 cursor-not-allowed' : ''}">
+                <i class="fas fa-thumbs-down"></i> No
+            </button>
+        </div>
+    `;
+
+    if (!survey.hasResponded) {
+        widget.querySelector(`#thumbsUp_${survey.surveyId}`).addEventListener('click', () => sendResponse('yes', survey.surveyId, lessonId));
+        widget.querySelector(`#thumbsDown_${survey.surveyId}`).addEventListener('click', () => sendResponse('no', survey.surveyId, lessonId));
+    } else {
+        updateSurveyUI(survey.response, survey.surveyId);
+    }
+
+    return widget;
+}
 
         </script>
     @endpush
+
+    {{-- script de widget rating --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const courseId = parseInt(document.querySelector('#dataLesson').getAttribute('data-course'));
+        const lessonId = parseInt(document.querySelector('#dataLesson').getAttribute('data-lessonId'));
+        const userId = parseInt(document.querySelector('#encuesta').getAttribute('data-userId'));
+        const ratingContainer = document.getElementById('lesson-rating');
+
+        if (!ratingContainer) return;
+
+        fetch(`/api/course/${courseId}/lesson-ratings`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.data && Array.isArray(data.data)) {
+                    const lessonRating = data.data.find(item => item.lesson_id === lessonId);
+                    if (lessonRating) {
+                        showRatingWidget(lessonRating);
+                    } else {
+                        ratingContainer.innerHTML = '<p>No hay calificaciones disponibles para esta lección.</p>';
+                    }
+                } else {
+                    ratingContainer.innerHTML = '<p>No se encontraron datos de calificaciones.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching ratings:', error);
+                ratingContainer.innerHTML = '<p>Error al cargar las calificaciones.</p>';
+            });
+
+        function showRatingWidget(ratingData) {
+            const { averageRating, ratingCount, userRating, survey_id } = ratingData;
+            ratingContainer.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <div class="flex items-center space-x-1">
+                        ${[1, 2, 3, 4, 5].map(star => `
+                            <button type="button" class="star ${star <= Math.round(averageRating) ? 'text-yellow-400' : 'text-gray-300'}" data-value="${star}">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <p class="text-sm mt-2">Promedio: ${averageRating.toFixed(1)} (${ratingCount} valoraciones)</p>
+                    <p class="text-sm hidden">Tu calificación: ${userRating ?? 'No has calificado aún'}</p>
+                </div>
+            `;
+
+            ratingContainer.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.dataset.value;
+                    submitRating(rating, survey_id);
+                });
+            });
+        }
+
+        function submitRating(rating, surveyId) {
+            fetch('/api/lesson-ratings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    lesson_id: lessonId,
+                    survey_id: surveyId,
+                    rating: rating
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Rating submitted:', data);
+                showRatingWidget({
+                    averageRating: data.averageRating,
+                    ratingCount: data.ratingCount,
+                    userRating: data.userRating,
+                    survey_id: surveyId
+                });
+            })
+            .catch(error => console.error('Error submitting rating:', error));
+        }
+    });
+</script>
 </x-app-layout>

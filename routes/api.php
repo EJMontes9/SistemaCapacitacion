@@ -68,6 +68,7 @@ Route::get('/check-survey/{lessonId}', [SurveyResponseController::class, 'checkS
 Route::post('/survey-responses', [SurveyResponseController::class, 'store']);
 Route::get('/course-statistics/{courseId}', [SurveyResponseController::class, 'getCourseStatistics']);
 
+Route::get('/course/{courseId}/lesson-ratings', [LessonRatingController::class, 'getLessonRatings']);
 Route::post('/lesson-ratings', [LessonRatingController::class, 'store']);
 Route::get('/course-statistics-rating/{courseId}', [LessonRatingController::class, 'getCourseStatistics']);
 
