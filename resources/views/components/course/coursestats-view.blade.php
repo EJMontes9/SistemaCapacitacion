@@ -21,7 +21,7 @@
         <div id="calificacionesChart" style="height: 400px;"></div>
     </div>
     <div class="bg-white p-6 rounded-lg shadow-md">
-        <div id="progresoAlumnosChart" style="height: 400px;"></div>
+        <div id="valoracionesChart" style="height: 400px;"></div>
     </div>
 </div>
 
@@ -165,102 +165,162 @@
 
 
 {{-- scripts de estadisticas de estudiantes --}}
-<script>
-        // Función para obtener los datos de la API
-        function fetchCalificacionesData(courseId) {
-            return fetch(`http://sistemacapacitacion.test/api/course/${courseId}/grades`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(result => result.data)
-                .catch(error => {
-                    console.error("Error fetching data:", error);
-                    return null;
-                });
-        }
-
-        const progresoAlumnosData = {
-            'Empezado': 100,
-            'Terminado lecciones': 70,
-            'Completado curso': 50
-        };
-
-        // Función para crear el gráfico de calificaciones
-        function crearGraficoCalificaciones(data) {
-            Highcharts.chart('calificacionesChart', {
-                chart: {
-                    type: 'column'
-                },
-                title: {
-                    text: 'Distribución de Calificaciones'
-                },
-                xAxis: {
-                    categories: Object.keys(data),
-                    title: {
-                        text: 'Rango de Calificaciones'
-                    }
-                },
-                yAxis: {
-                    title: {
-                        text: 'Número de Estudiantes'
-                    }
-                },
-                series: [{
-                    name: 'Estudiantes',
-                    data: Object.values(data),
-                    color: '#4299E1'
-                }]
+<script>// Función para obtener los datos de la API
+    function fetchCalificacionesData(courseId) {
+        return fetch(`http://sistemacapacitacion.test/api/course/${courseId}/grades`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(result => result.data)
+            .catch(error => {
+                console.error("Error fetching data:", error);
+                return null;
             });
-        }
-
-        // Función para crear el gráfico de progreso de alumnos
-        function crearGraficoProgresoAlumnos() {
-            Highcharts.chart('progresoAlumnosChart', {
-                chart: {
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Progreso de Alumnos en el Curso'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: true,
-                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                        }
-                    }
-                },
-                series: [{
-                    name: 'Alumnos',
-                    colorByPoint: true,
-                    data: Object.entries(progresoAlumnosData).map(([name, y]) => ({ name, y }))
-                }]
+    }
+    
+    // Función para obtener los datos de valoración del curso
+    function fetchValoracionesData(courseId) {
+        return fetch(`http://sistemacapacitacion.test/api/course-statistics-rating/${courseId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error("Error fetching valoraciones data:", error);
+                return null;
             });
-        }
-
-        // Función principal que inicializa el gráfico
-        function initializeChart(courseId) {
-            fetchCalificacionesData(courseId)
-                .then(calificacionesData => {
-                    if (calificacionesData) {
-                        crearGraficoCalificaciones(calificacionesData);
-                    } else {
-                        document.getElementById('calificacionesChart').innerHTML = '<p class="text-red-500">Error al cargar los datos de calificaciones.</p>';
-                    }
-                });
-        }
-
-        // Crear los gráficos cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', () => {
-            var courseId = document.getElementById('identificador').getAttribute('data-course');
-            initializeChart(courseId);
-            crearGraficoProgresoAlumnos();
+    }
+    
+    // Función para crear el gráfico de calificaciones
+    function crearGraficoCalificaciones(data) {
+        Highcharts.chart('calificacionesChart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Distribución de Calificaciones'
+            },
+            xAxis: {
+                categories: Object.keys(data),
+                title: {
+                    text: 'Rango de Calificaciones'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Número de Estudiantes'
+                }
+            },
+            series: [{
+                name: 'Estudiantes',
+                data: Object.values(data),
+                color: '#4299E1'
+            }]
         });
+    }
+    
+    // Función para procesar los datos de valoraciones
+    function procesarDatosValoraciones(data) {
+        const series = [
+            { name: '1 Estrella', data: [] },
+            { name: '2 Estrellas', data: [] },
+            { name: '3 Estrellas', data: [] },
+            { name: '4 Estrellas', data: [] },
+            { name: '5 Estrellas', data: [] }
+        ];
+        const categories = [];
+    
+        Object.entries(data).forEach(([seccion, lecciones]) => {
+            Object.entries(lecciones).forEach(([leccion, valoraciones]) => {
+                categories.push(`${seccion} - ${leccion}`);
+                for (let i = 0; i < 5; i++) {
+                    series[i].data.push(parseInt(valoraciones[i + 1]) || 0);
+                }
+            });
+        });
+    
+        return { series, categories };
+    }
+    
+    // Función para crear el gráfico de valoraciones
+    function crearGraficoValoraciones(data) {
+        const { series, categories } = procesarDatosValoraciones(data);
+    
+        Highcharts.chart('valoracionesChart', {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'Valoraciones por Secciones y Lecciones'
+            },
+            xAxis: {
+                categories: categories,
+                title: {
+                    text: null
+                },
+                labels: {
+                    style: {
+                        fontSize: '10px'
+                    }
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Número de Valoraciones',
+                    align: 'high'
+                },
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: 'gray'
+                    }
+                }
+            },
+            legend: {
+                reversed: true
+            },
+            plotOptions: {
+                series: {
+                    stacking: 'normal'
+                }
+            },
+            series: series
+        });
+    }
+    
+    // Función principal que inicializa los gráficos
+    function initializeCharts2(courseId) {
+        fetchCalificacionesData(courseId)
+            .then(calificacionesData => {
+                if (calificacionesData) {
+                    crearGraficoCalificaciones(calificacionesData);
+                } else {
+                    document.getElementById('calificacionesChart').innerHTML = '<p class="text-red-500">Error al cargar los datos de calificaciones.</p>';
+                }
+            });
+    
+        fetchValoracionesData(courseId)
+            .then(valoracionesData => {
+                if (valoracionesData) {
+                    crearGraficoValoraciones(valoracionesData);
+                } else {
+                    document.getElementById('valoracionesChart').innerHTML = '<p class="text-red-500">Error al cargar los datos de valoraciones.</p>';
+                }
+            });
+    }
+    
+    // Crear los gráficos cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', () => {
+        var courseId = document.getElementById('identificador').getAttribute('data-course');
+        initializeCharts2(courseId);
+    });
 </script>
 
 {{-- Fin scripts de estadisticas de estudiantes --}}
