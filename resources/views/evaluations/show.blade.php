@@ -3,7 +3,7 @@
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-6 bg-white border-b border-gray-200">
             <div class="container mx-auto px-4">
-                <a href="{{ route('evaluations.index') }}"
+                <a href="#" onclick="goBack()"
                     class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150 mb-7">
                     Regresar
                 </a>
@@ -86,6 +86,10 @@
 
             function confirmCancel() {
                 return confirm('¿Estás seguro de que quieres salir?');
+            }
+
+            function goBack() {
+                window.history.back();
             }
         </script>
     @endpush
