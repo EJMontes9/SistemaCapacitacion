@@ -92,3 +92,6 @@ Route::get('/surveys/create', [SurveyController::class, 'create'])->name('survey
 
 //Ruta para evaluations unlink
 Route::get('/evaluations/{evaluation}/unlink', 'App\Http\Controllers\EvaluationController@unlink')->name('evaluations.unlink');
+
+//ruta reporteria de evalauciones
+Route::get('reportePorAlumno/{courseId}/{sectionId}', 'App\Http\Controllers\EvaluationController@reportePorAlumno')->name('reportePorAlumno');

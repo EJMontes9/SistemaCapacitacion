@@ -270,6 +270,10 @@ class EvaluationController extends Controller
         $user = User::find($request->user_id);
         $course = Courses::find($request->course_id);
         $section = Section::find($request->module_id);
+        $rolId = auth()->user()->roles->pluck('id')->first();
+
+        //dd($rolId);
+
 
         $evaluationResults = EvaluationResult::where('user_id', $user->id)
             ->where('evaluation_id', $evaluation->id)
@@ -298,9 +302,9 @@ class EvaluationController extends Controller
             'incorrectQuestions' => $incorrectQuestions,
             'unansweredQuestions' => $unansweredQuestions,
             'evaluationResults' => $evaluationResults,
+            'rolId' => $rolId,
         ])->with('success', 'La evaluación ha sido finalizada con éxito.');
     }
-
 
     public function view($evaluationId, $userId)
     {
@@ -308,18 +312,21 @@ class EvaluationController extends Controller
         $evaluation = Evaluation::find($evaluationId);
         $user = User::find($userId);
 
-        // Aquí puedes obtener los datos que necesitas para la vista
+        //obtener el id del rol del usuario autenticado
+        $rolId = auth()->user()->roles->pluck('id')->first();
+
+        //dd($rolId);
+
         $evaluationResults = EvaluationResult::where('user_id', $user->id)
             ->where('evaluation_id', $evaluation->id)
             ->orderBy('created_at', 'desc')
             ->paginate(3);
 
-        // Aquí puedes obtener course, section y user->name
         $course = $evaluation->course;
         $section = $evaluation->module;
         $userName = $user->name;
 
-        // Aquí puedes devolver la vista con los datos
+        // Devolver la vista con los datos
         return view('evaluations.finished', [
             'evaluation' => $evaluation,
             'user' => $user,
@@ -327,8 +334,10 @@ class EvaluationController extends Controller
             'course' => $course,
             'section' => $section,
             'userName' => $userName,
+            'rolId' => $rolId, // Agregando rolId a los datos devueltos a la vista
         ]);
     }
+
     public function getLowScoreEvaluations()
     {
         $userId = Auth::id(); // Obtiene el ID del usuario autenticado
@@ -416,7 +425,7 @@ class EvaluationController extends Controller
         ]);
     }
 
-        //Evaluation unlink from section
+    //Evaluation unlink from section
     public function unlink($evaluationId)
     {
         $evaluation = Evaluation::find($evaluationId);
@@ -425,5 +434,55 @@ class EvaluationController extends Controller
         $evaluation->save();
 
         return redirect()->route('evaluations.index')->with('success', 'La evaluación ha sido desvinculada de la sección.');
+    }
+
+    //Reportería de evaluaciones por alumno
+    public function reportePorAlumno($courseId, $sectionId)
+    {
+        // Obtener los resultados de las evaluaciones para el curso y sección específicos
+        $evaluaciones = EvaluationResult::with(['user', 'evaluation'])
+            ->whereHas('evaluation', function ($query) use ($courseId, $sectionId) {
+                $query->where('course_id', $courseId)->where('module_id', $sectionId);
+            })
+            ->get()
+            ->groupBy('user_id');
+
+        // Obtener el título del curso y el nombre de la sección
+        $course = courses::find($courseId);
+        $section = Section::find($sectionId);
+        $title = $course->title;
+
+        // Obtener el nombre de la evaluación
+        $nameEvaluation = Evaluation::where('course_id', $courseId)->where('module_id', $sectionId)->first()->title;
+
+        $rolId = auth()->user()->roles->pluck('id')->first();
+        //dd($rolId);
+
+        // Preparar los datos para la vista
+        $datosParaVista = [];
+        foreach ($evaluaciones as $userId => $resultados) {
+            $datosParaVista[] = [
+                'alumno' => $resultados->first()->user->name,
+                'resultados' => $resultados->map(function ($resultado) {
+                    return [
+                        //acceder al tittle de evaluation mediante el evaluation_id de la tabla de evaluation_results
+                        'evaluacion' => $resultado->evaluation->title,
+                        'puntuacion' => $resultado->total_score,
+                        'fecha' => $resultado->created_at->format('d/m/Y'),
+                    ];
+                }),
+            ];
+            //dd($datosParaVista);
+        }
+
+        // Retornar la vista con los datos, incluyendo course->title, section->name, y rolId
+        return view('evaluations.finished', [
+            'datos' => $datosParaVista,
+            'course' => $course->title,
+            'section' => $section->name,
+            'rolId' => $rolId,
+            'title' => $title,
+            'nameEvaluation' => $nameEvaluation,
+        ]);
     }
 }
