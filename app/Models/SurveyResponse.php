@@ -10,7 +10,7 @@ class SurveyResponse extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['survey_id', 'user_id', 'lesson_id', 'response'];
+    protected $fillable = ['survey_id', 'user_id', 'lesson_id', 'response_text', 'response_number'];
 
     public function survey()
     {
@@ -25,5 +25,19 @@ class SurveyResponse extends Model
     public function lesson()
     {
         return $this->belongsTo(Lesson::class);
+    }
+
+    public function getResponseAttribute()
+    {
+        return $this->response_number ?? $this->response_text;
+    }
+
+    public function setResponseAttribute($value)
+    {
+        if (is_numeric($value)) {
+            $this->attributes['response_number'] = $value;
+        } else {
+            $this->attributes['response_text'] = $value;
+        }
     }
 }

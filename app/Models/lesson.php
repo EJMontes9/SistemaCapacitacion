@@ -50,5 +50,10 @@ class lesson extends Model
         return $this->morphMany('App\Models\reaction','reactionable');
     }
 
+    
+    public function survey()
+    {
+        return $this->morphOne(Survey::class, 'target');
+    }
 
 }
