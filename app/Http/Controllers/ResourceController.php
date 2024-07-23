@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Resource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ResourceController extends Controller
 {
@@ -12,7 +13,7 @@ class ResourceController extends Controller
         try {
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'section_id' => 'required|exists:sections,id',
+                'lesson_id' => 'required|exists:lessons,id',
                 'type' => 'required|string|in:documento,imagen,url,video',
                 'file' => 'nullable|file|max:10240', // 10MB max
                 'url' => 'nullable|url',
@@ -20,7 +21,7 @@ class ResourceController extends Controller
 
             $resource = new Resource();
             $resource->name = $validatedData['name'];
-            $resource->section_id = $validatedData['section_id'];
+            $resource->lesson_id = $validatedData['lesson_id'];
             $resource->type = $validatedData['type'];
 
             if ($request->hasFile('file')) {
@@ -75,7 +76,6 @@ class ResourceController extends Controller
             ], 404);
         }
 
-        // Si el recurso es un archivo local, lo eliminamos del sistema de archivos
         if (strpos($resource->url, asset('resources/')) === 0) {
             $path = str_replace(asset('resources/'), 'resources/', $resource->url);
             if (file_exists(public_path($path))) {
@@ -88,5 +88,14 @@ class ResourceController extends Controller
         return response()->json([
             'message' => 'Recurso eliminado exitosamente'
         ]);
+    }
+
+    public function getResourcesByLesson($lessonId)
+    {
+        $resources = DB::table('resources')
+                        ->where('lesson_id', $lessonId)
+                        ->get();
+
+        return response()->json($resources);
     }
 }

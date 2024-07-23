@@ -50,6 +50,8 @@ Route::post('/resources', 'App\Http\Controllers\ResourceController@store');
 Route::put('/resources/{id}','App\Http\Controllers\ResourceController@update');
 Route::delete('/resources/{id}', 'App\Http\Controllers\ResourceController@destroy')->name('sections.addbyApi');
 
+Route::get('/lessons/{lessonId}/resources', [ResourceController::class, 'getResourcesByLesson']);
+
 // Route::post('/resources', [ResourceController::class, 'store']);
 // Route::put('/resources/{id}', [ResourceController::class, 'update']);
 // Route::delete('/resources/{id}', [ResourceController::class, 'destroy']);

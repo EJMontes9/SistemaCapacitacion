@@ -1,7 +1,7 @@
 @vite(['resources/js/courses-view.js'])
 <x-app-layout>
     <div>
-        <x-course.hero-view :course="$course"  :name="$name_user"/>
+        <x-course.hero-view :course="$course" :name="$name_user"/>
     </div>
     
     <div class="w-full">
@@ -9,15 +9,20 @@
         <div class="flex justify-center mb-4">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-6" aria-label="Tabs">
-                    <!-- Tab 1 -->
+                    <!-- Tab 1 - Contenido -->
                     <a href="#" role="tab" class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none text-indigo-600 hover:text-indigo-800" aria-current="page">
                         <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Contenido del curso</span>
                     </a>
-    
-                    <!-- Tab 2 -->
+                    <!-- Tab 2 Estadísticas Generales -->
                     <a href="#" role="tab" class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none">
-                        <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Estadísticas de Alumnos</span>
+                        <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Estadísticas Generales</span>
                     </a>
+                    <!-- Tab 3 Estadísticas para el Instructor -->
+                    @hasanyrole('Instructor|Admin') 
+                    <a href="#" role="tab" class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none">
+                        <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Estadísticas Para el Instructor</span>
+                    </a>
+                    @endhasanyrole
                 </nav>
             </div>
         </div>
@@ -27,21 +32,23 @@
             <!-- Tab 1 Content -->
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow">
                 <div>
-                    {{-- componente de secciones --}}
-                    {{-- <x-course.list-section-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/> --}}
-                    <x-course.list-section-new-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
+                    <x-course.list-section-new-view  :sections="$sections"  :lessons="$lessons"  :resources="$resources"  :course="$course"  :evaluation="$evaluation"/>
                 </div>
             </div>
-    
             <!-- Tab 2 Content -->
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow mt-4 hidden">
                 <x-course.coursestats-view />
             </div>
-    
+            <!-- Tab 3 Content -->
+            @hasanyrole('Instructor|Admin') 
+            <div role="tabpanel" class="p-4 bg-white rounded-lg shadow mt-4 hidden">
+                <x-course.coursegeneralstats-view />
+            </div>
+            @endhasanyrole
         </div>
     </div>
 
-
+{{-- // script que hacen funcionar los tabs --}}
 <script>
     // script que hacen funcionar los tabs
     document.addEventListener('DOMContentLoaded', function() {

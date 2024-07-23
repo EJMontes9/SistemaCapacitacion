@@ -15,7 +15,7 @@
 }
 </style>
 
-<h3 class="text-lg font-medium leading-6 text-gray-900">Estadísticas generales</h3>
+<h3 class="text-lg font-medium leading-6 text-gray-900">Valoración del Curso</h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
     <div class="bg-white p-6 rounded-lg shadow-md">
         <div id="calificacionesChart" style="height: 400px;"></div>
