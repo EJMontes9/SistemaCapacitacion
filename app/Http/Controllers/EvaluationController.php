@@ -396,18 +396,21 @@ class EvaluationController extends Controller
 
         // Inicializar las categorías
         $grades = [
-            '0-5' => 0,
-            '5-8' => 0,
+            '0-4' => 0,
+            '4-6' => 0,
+            '6-8' => 0,
             '8-10' => 0
         ];
 
         // Contar manualmente los resultados en cada categoría
         foreach ($results as $result) {
-            if ($result->total_score >= 0 && $result->total_score <= 5) {
-                $grades['0-5']++;
-            } elseif ($result->total_score > 5 && $result->total_score <= 8) {
-                $grades['5-8']++;
-            } else {
+            if ($result->total_score >= 0 && $result->total_score <= 4) {
+                $grades['0-4']++;
+            } elseif ($result->total_score > 4 && $result->total_score <= 6) {
+                $grades['4-6']++;
+            } elseif ($result->total_score > 6 && $result->total_score <= 8) {
+                $grades['6-8']++;
+            }else {
                 $grades['8-10']++;
             }
         }
