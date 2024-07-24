@@ -11,12 +11,11 @@
     <x-button class="mt-5">
       <a href="{{route('courses.show', $course->slug)}}" class="btn btn-primary mx-1">Ver detalles</a>
     </x-button>
-      @if(!$course->users->contains($user))
-          @role('Alumno')
-          <x-button class="mt-5">
-              <a href="{{ route('courses.add', $course->id) }}" class="btn btn-primary mx-1">Agregar curso</a>
-          </x-button>
-            @endrole
-      @endif
+    @role('Alumno')
+        <div class="course-subscription-container" data-course-id="{{ $course->id }}"  data-course-slug="{{ $course->slug }}" data-user-id="{{ $user->id }}">
+            <button class="subscribe-button btn btn-primary bg-blue-500 text-white rounded px-3 py-1 mx-1 mt-5 {{ $course->users->contains($user) ? 'hidden' : '' }}">AGREGAR CURSO</button>
+            <button class="go-to-course-button btn btn-primary bg-green-500 text-white rounded px-3 py-1 mx-1 mt-5 {{ $course->users->contains($user) ? '' : 'hidden' }}">IR AL CURSO</button>
+        </div>
+    @endrole
   </div>
 </div>

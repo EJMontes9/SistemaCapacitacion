@@ -8,6 +8,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\SurveyResponseController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\LessonRatingController;
+use App\Http\Controllers\CourseUserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -76,3 +77,11 @@ Route::get('/course-statistics-rating/{courseId}', [LessonRatingController::clas
 
 //endpoint de estadística de lecciones
 Route::get('/course/{courseId}/grades', [EvaluationController::class, 'getCourseGrades']);
+
+//apis de matriculación
+
+Route::get('/course-user/search', [CourseUserController::class, 'search']);
+Route::get('/user/{userId}/courses', [CourseUserController::class, 'userCourses']);
+Route::get('/course/{courseId}/users', [CourseUserController::class, 'courseUsers']);
+Route::post('/course-user/subscribe', [CourseUserController::class, 'subscribeUser']);
+Route::get('/course-user/{courseId}/{userId}', [CourseUserController::class, 'subscribeUser2']);

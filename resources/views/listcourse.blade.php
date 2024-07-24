@@ -36,3 +36,65 @@
         {{$courses->links()}}
     </div>
 </x-app-layout>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const containers = document.querySelectorAll('.course-subscription-container');
+
+    containers.forEach(container => {
+        const courseId = container.dataset.courseId;
+        const courseSlug = container.dataset.courseSlug;
+        const userId = container.dataset.userId;
+        const subscribeButton = container.querySelector('.subscribe-button');
+        const goToCourseButton = container.querySelector('.go-to-course-button');
+
+        function checkSubscription() {
+            fetch(`/api/user/${userId}/courses`)
+                .then(response => response.json())
+                .then(courses => {
+                    const isSubscribed = courses.some(course => course.id == courseId);
+                    if (isSubscribed) {
+                        subscribeButton.classList.add('hidden');
+                        goToCourseButton.classList.remove('hidden');
+                    } else {
+                        subscribeButton.classList.remove('hidden');
+                        goToCourseButton.classList.add('hidden');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function subscribeToCourse() {
+            fetch(`/api/course-user/${courseId}/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.subscription) {
+                    alert('Te has suscrito al curso exitosamente.');
+                    checkSubscription();
+                } else {
+                    alert('Ya estás suscrito a este curso.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al suscribirte al curso. Por favor, intenta de nuevo.');
+            });
+        }
+
+        subscribeButton.addEventListener('click', subscribeToCourse);
+        goToCourseButton.addEventListener('click', function() {
+            window.location.href = `/courses/${courseSlug}`;
+        });
+
+        checkSubscription();
+    });
+});
+
+
+</script>
