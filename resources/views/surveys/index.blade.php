@@ -79,7 +79,7 @@
                                     <input type="checkbox" id="edit-has_rating" name="has_rating" value="1">
                                     <label for="edit-has_rating">Calificación (1-5)</label>
                                 </div>
-                                <div>
+                                <div class="hidden">
                                     <input type="checkbox" id="edit-has_comment" name="has_comment" value="1">
                                     <label for="edit-has_comment">Comentario</label>
                                 </div>
@@ -149,14 +149,14 @@
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Tipos de preguntas:</label>
                                 <div>
-                                    <input type="checkbox" id="create-has_yes_no" name="has_yes_no" value="1">
+                                    <input type="radio" id="create-has_yes_no" name="has_yes_no" value="1">
                                     <label for="create-has_yes_no">Sí/No</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" id="create-has_rating" name="has_rating" value="1">
+                                    <input type="radio" id="create-has_rating" name="has_yes_no" value="1">
                                     <label for="create-has_rating">Calificación (1-5)</label>
                                 </div>
-                                <div>
+                                <div class="hidden">
                                     <input type="checkbox" id="create-has_comment" name="has_comment" value="1">
                                     <label for="create-has_comment">Comentario</label>
                                 </div>
