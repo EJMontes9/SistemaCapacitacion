@@ -18,17 +18,9 @@
             <div class="md:col-span-2">
                 <div class="bg-white rounded-lg shadow-md p-0">
                     <ul id="listado-secciones" class="p-0">
-                        {{-- <li class="flex items-center"> --}}
-                            {{-- <i class="fas fa-play-circle text-gray-500 mr-2"></i> --}}
-                            {{-- <span class="text-sm text-gray-700">A continuación se presentan las secciones del Curso</span> --}}
-                            {{-- <span class="ml-auto text-xs text-gray-500">2 lectures • 50 sec</span> --}}
-                        {{-- </li> --}}
-                        <!-- Agrega más elementos de lista aquí -->
                     </ul>
-                    {{-- <ul class="bg-gray-100 text-gray-900 py-2 px-4 w-full">             <!-- Secciones agregadas aquí -->         </ul>  --}}
                     <x-course.list-section-paso2-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
                 </div>
-                
             </div>
         </div>
     </div>
@@ -237,182 +229,286 @@ guardarSeccionButton.addEventListener('click', async () => {
 
 {{-- Script de recursos --}}
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Manejar cambios en el tipo de recurso
-    const typeSelects = document.querySelectorAll('select[name="type"]');
-    typeSelects.forEach(select => {
-        select.addEventListener('change', function() {
-            const form = this.closest('form');
-            const fileInput = form.querySelector('#file-input');
-            const urlInput = form.querySelector('#url-input');
-            
-            if (this.value === 'documento' || this.value === 'imagen') {
-                fileInput.classList.remove('hidden');
-                urlInput.classList.add('hidden');
-            } else if (this.value === 'url' || this.value === 'video') {
-                urlInput.classList.remove('hidden');
-                fileInput.classList.add('hidden');
-            } else {
-                fileInput.classList.add('hidden');
-                urlInput.classList.add('hidden');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Manejar cambios en el tipo de recurso
+        document.body.addEventListener('change', function(e) {
+            if (e.target && e.target.name === 'type') {
+                const form = e.target.closest('form');
+                const fileInput = form.querySelector('.file-input');
+                const urlInput = form.querySelector('.url-input');
+                
+                if (e.target.value === 'documento' || e.target.value === 'imagen') {
+                    fileInput.classList.remove('hidden');
+                    urlInput.classList.add('hidden');
+                } else if (e.target.value === 'url' || e.target.value === 'video') {
+                    urlInput.classList.remove('hidden');
+                    fileInput.classList.add('hidden');
+                } else {
+                    fileInput.classList.add('hidden');
+                    urlInput.classList.add('hidden');
+                }
+            }
+        });
+
+        // Agregar event listener para el botón de crear recurso
+        document.body.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('submit-resource')) {
+                handleResourceSubmit(e);
+            }
+        });
+
+        // Agregar event listener para los botones de eliminar recurso
+        document.body.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('delete-resource')) {
+                handleResourceDelete(e);
             }
         });
     });
 
-    // Agregar event listener para el botón de crear recurso
-    document.querySelectorAll('.submit-resource').forEach(button => {
-        button.addEventListener('click', handleResourceSubmit);
-    });
+    function handleResourceSubmit(event) {
+        event.preventDefault();
+        const button = event.target;
+        const formId = button.getAttribute('data-form');
+        const form = document.getElementById(formId);
+        const formData = new FormData(form);
 
-    // Agregar event listener para los botones de eliminar recurso
-    document.querySelectorAll('.delete-resource').forEach(button => {
-        button.addEventListener('click', handleResourceDelete);
-    });
+        button.disabled = true;
 
-});
-
-function handleResourceSubmit(event) {
-    event.preventDefault();
-    const button = event.target;
-    const formId = button.getAttribute('data-form');
-    const form = document.getElementById(formId);
-    const formData = new FormData(form);
-
-    button.disabled = true;
-
-    fetch('/api/resources', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(text);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Recurso creado:', data);
-        form.reset();
-        location.reload(); // Recarga la página para mostrar el nuevo recurso
-    })
-    .catch(error => {
-        console.error('Error al crear el recurso:', error);
-        // Mostrar el error en la interfaz de usuario
-        alert('Error al crear el recurso: ' + error.message);
-    })
-    .finally(() => {
-        button.disabled = false;
-    });
-}
-
-function handleResourceDelete(event) {
-    event.preventDefault();
-    if (!confirm('¿Estás seguro de que quieres eliminar este recurso?')) {
-        return;
+        fetch('/api/resources', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Recurso creado:', data);
+            form.reset();
+            location.reload(); // Recarga la página para mostrar el nuevo recurso
+        })
+        .catch(error => {
+            console.error('Error al crear el recurso:', error);
+            alert('Error al crear el recurso: ' + error.message);
+        })
+        .finally(() => {
+            button.disabled = false;
+        });
     }
 
-    const button = event.currentTarget;
-    const resourceId = button.getAttribute('data-resource-id');
-
-    button.disabled = true;
-
-    fetch(`/api/resources/${resourceId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(text);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Recurso eliminado:', data);
-        // Eliminar el elemento del DOM
-        button.closest('li').remove();
-    })
-    .catch(error => {
-        console.error('Error al eliminar el recurso:', error);
-        alert('Error al eliminar el recurso: ' + error.message);
-    })
-    .finally(() => {
-        button.disabled = false;
-    });
-}
-
-function createRemoveButton(filePath) {
-    const button = document.createElement('button');
-    button.textContent = 'Eliminar archivo';
-    button.addEventListener('click', (event) => {
+    function handleResourceDelete(event) {
         event.preventDefault();
-        removeFile(filePath, event.target);
-    });
-    return button;
-}
+        if (!confirm('¿Estás seguro de que quieres eliminar este recurso?')) {
+            return;
+        }
 
-function removeFile(filePath, button) {
-    fetch('/api/resources/remove', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        },
-        body: JSON.stringify({ file_path: filePath })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Archivo eliminado:', data);
-        // Actualizar la UI para mostrar que el archivo se eliminó
-        const form = button.closest('form');
-        form.querySelector('input[type="file"]').value = '';
-        form.querySelector('input[name="url"]').value = '';
-        form.querySelector('input[name="file_path"]').value = '';
-        button.remove();
-    })
-    .catch(error => {
-        console.error('Error al eliminar el archivo:', error);
-        alert('Error al eliminar el archivo: ' + error.message);
-    });
-}
+        const button = event.currentTarget;
+        const resourceId = button.getAttribute('data-resource-id');
+
+        button.disabled = true;
+
+        fetch(`/api/resources/${resourceId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Recurso eliminado:', data);
+            button.closest('li').remove();
+        })
+        .catch(error => {
+            console.error('Error al eliminar el recurso:', error);
+            alert('Error al eliminar el recurso: ' + error.message);
+        })
+        .finally(() => {
+            button.disabled = false;
+        });
+    }
 
 </script>
 
 <script>
     // script que hacen funcionar los tabs
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('a[role="tab"]');
-        const tabContents = document.querySelectorAll('div[role="tabpanel"]');
-        function hideAllTabContents() {// Función para ocultar todos los contenidos de los tabs
-            tabContents.forEach(content => {
-                content.classList.add('hidden');
-            });
-            tabs.forEach(content => {
-                content.classList.remove('text-indigo-600');
-            });
-        }
-        function showActiveTabContent(index) {// Función para mostrar el contenido del tab activo
-            hideAllTabContents();
-            tabContents[index].classList.remove('hidden');
-            tabs[index].classList.add('text-indigo-600');
-        }
-        tabs.forEach((tab, index) => {// Agregar eventos de clic a los enlaces de los tabs
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                showActiveTabContent(index);
-            });
-        });
-        showActiveTabContent(0);// Mostrar el contenido del primer tab por defecto
-    });
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     const tabs = document.querySelectorAll('a[role="tab"]');
+    //     const tabContents = document.querySelectorAll('div[role="tabpanel"]');
+    //     function hideAllTabContents() {// Función para ocultar todos los contenidos de los tabs
+    //         tabContents.forEach(content => {
+    //             content.classList.add('hidden');
+    //         });
+    //         tabs.forEach(content => {
+    //             content.classList.remove('text-indigo-600');
+    //         });
+    //     }
+    //     function showActiveTabContent(index) {// Función para mostrar el contenido del tab activo
+    //         hideAllTabContents();
+    //         tabContents[index].classList.remove('hidden');
+    //         tabs[index].classList.add('text-indigo-600');
+    //     }
+    //     tabs.forEach((tab, index) => {// Agregar eventos de clic a los enlaces de los tabs
+    //         tab.addEventListener('click', (e) => {
+    //             e.preventDefault();
+    //             showActiveTabContent(index);
+    //         });
+    //     });
+    //     showActiveTabContent(0);// Mostrar el contenido del primer tab por defecto
+    // });
 </script>
+
+{{-- scripts de procesamiento de recursos en lecciones --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cargar recursos para cada lección
+        document.querySelectorAll('.resources-list').forEach(resourceList => {
+            const lessonId = resourceList.getAttribute('data-lesson-id');
+            fetch(`/api/lessons/${lessonId}/resources`)
+                .then(response => response.json())
+                .then(resources => {
+                    resourceList.innerHTML = resources.map(resource => `
+                        <li>
+                            <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
+                                <div class="flex items-center ml-4">
+                                    <a href="${resource.url}" target="_blank" class="flex items-center">
+                                        <i class="fa-solid fa-file-alt mr-2"></i>
+                                        <span>${resource.name}</span>
+                                    </a>
+                                    <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-${getResourceTypeColor(resource.type)}">${resource.type}</span>
+                                </div>
+                                <div class="px-3 flex flex-row justify-center items-center">
+                                    <button class="delete-resource mx-0 p-0 my-auto" data-resource-id="${resource.id}">
+                                        <i class="fa-solid fa-trash text-red-600"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    `).join('');
+                });
+        });
+    
+        // Función para obtener el color del tipo de recurso
+        function getResourceTypeColor(type) {
+            switch(type) {
+                case 'documento': return 'blue-100 text-blue-600';
+                case 'imagen': return 'green-100 text-green-600';
+                case 'url': return 'green-400 bg-opacity-50 text-green-600';
+                case 'video': return 'red-100 text-red-600';
+                default: return 'gray-100 text-gray-600';
+            }
+        }
+    
+        // Manejar cambios en el tipo de recurso
+        document.body.addEventListener('change', function(e) {
+            if (e.target && e.target.name === 'type') {
+                const form = e.target.closest('form');
+                const fileInput = form.querySelector('input[name="file"]');
+                const urlInput = form.querySelector('input[name="url"]');
+                
+                if (e.target.value === 'documento' || e.target.value === 'imagen') {
+                    fileInput.classList.remove('hidden');
+                    urlInput.classList.add('hidden');
+                } else if (e.target.value === 'url' || e.target.value === 'video') {
+                    urlInput.classList.remove('hidden');
+                    fileInput.classList.add('hidden');
+                } else {
+                    fileInput.classList.add('hidden');
+                    urlInput.classList.add('hidden');
+                }
+            }
+        });
+    
+        // Manejar envío de formulario de recursos
+        document.body.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('submit-resource')) {
+                e.preventDefault();
+                const form = document.getElementById(e.target.getAttribute('data-form'));
+                const formData = new FormData(form);
+    
+                fetch('/api/resources', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Recurso creado:', data);
+                    // Recargar la lista de recursos
+                    const lessonId = form.querySelector('input[name="lesson_id"]').value;
+                    const resourceList = document.querySelector(`.resources-list[data-lesson-id="${lessonId}"]`);
+                    fetch(`/api/lessons/${lessonId}/resources`)
+                        .then(response => response.json())
+                        .then(resources => {
+                            resourceList.innerHTML = resources.map(resource => `
+                                <li>
+                                    <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
+                                        <div class="flex items-center ml-4">
+                                            <a href="${resource.url}" target="_blank" class="flex items-center">
+                                                <i class="fa-solid fa-file-alt mr-2"></i>
+                                                <span>${resource.name}</span>
+                                            </a>
+                                            <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-${getResourceTypeColor(resource.type)}">${resource.type}</span>
+                                        </div>
+                                        <div class="px-3 flex flex-row justify-center items-center">
+                                            <button class="delete-resource mx-0 p-0 my-auto" data-resource-id="${resource.id}">
+                                                <i class="fa-solid fa-trash text-red-600"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                            `).join('');
+                        });
+                    form.reset();
+                })
+                .catch(error => {
+                    console.error('Error al crear el recurso:', error);
+                });
+            }
+        });
+    
+        // Manejar eliminación de recursos
+        document.body.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('delete-resource')) {
+                e.preventDefault();
+                const resourceId = e.target.getAttribute('data-resource-id');
+                if (confirm('¿Estás seguro de que quieres eliminar este recurso?')) {
+                    fetch(`/api/resources/${resourceId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Recurso eliminado:', data);
+                        // Eliminar el elemento del DOM
+                        e.target.closest('li').remove();
+                    })
+                    .catch(error => {
+                        console.error('Error al eliminar el recurso:', error);
+                    });
+                }
+            }
+        });
+    });
+    </script>

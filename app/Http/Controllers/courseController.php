@@ -105,24 +105,17 @@ class courseController extends Controller
      */
     public function show(string $slug)
     {
-        $lesson = [];
-        $resources = [];
-        $numSection = 1;
         $course = courses::where('slug', $slug)->firstOrFail();
-        $section = section::where('course_id', $course->id)->get();
-        $section_id = section::where('course_id', $course->id)->pluck('id');
+        $sections = section::where('course_id', $course->id)->get();
         $user = User::findOrFail($course->user_id);
         $name_user = $user->name;
         
-        foreach ($section_id as $id) {
-            $lesson[$numSection] = lesson::where('section_id', $id)->get();
-            $resources[$numSection] = Resource::where('section_id', $id)->get();
-            $numSection++;
-        }
+        $lessons = lesson::whereIn('section_id', $sections->pluck('id'))->get()->groupBy('section_id');
+        $resources = Resource::whereIn('lesson_id', $lessons->flatten()->pluck('id'))->get()->groupBy('lesson_id');
+        
+        $evaluation = Evaluation::where('course_id', $course->id)->get();
 
-        $evaluation = Evaluation::query()->where('course_id', $course->id)->get();
-
-        return view('courses-view', compact('course', 'section', 'lesson', 'name_user', 'evaluation', 'resources'));
+        return view('courses-view', compact('course', 'sections', 'lessons', 'name_user', 'evaluation', 'resources'));
     }
 
     // paso 2 de creación, las secciones
@@ -140,7 +133,7 @@ class courseController extends Controller
         
         foreach ($section_id as $id) {
             $lesson[$numSection] = lesson::where('section_id', $id)->get();
-            $resources[$numSection] = Resource::where('section_id', $id)->get();
+            // $resources[$numSection] = Resource::where('lesson_id', $id)->get();
             $numSection++;
         }
         

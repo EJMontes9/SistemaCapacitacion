@@ -12,12 +12,12 @@ class Resource extends Model
     protected $fillable = [
         'name',
         'url',
-        'section_id',
+        'lesson_id',
         'type'
     ];
 
-    public function section()
+    public function lesson()
     {
-        return $this->belongsTo(Section::class);
+        return $this->belongsTo(Lesson::class);
     }
 }
