@@ -74,31 +74,55 @@
             </li>
         @endforeach
     @endif
+    <ul>
+        @forelse ($evaluation as $evl)
+            <li>
+                <div class="flex flex-row justify-between border-2 ml-12 py-2 rounded-xl mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
+                    <a href="{{ route('evaluations.show', $evl->id) }}" class="ml-4">Ver evaluación</a>
+                    @php
+                        $roleId = Auth::user()->roles->pluck('id')->first();
+                    @endphp
 
-    @if ($evaluation->where('module_id', $section->id)->first())
-        <li>
-            <div class="flex flex-row justify-between border-2 mx-3 py-1 rounded-xl mt-2 bg-cyan-200 text-cyan-900 border-cyan-300">
-                <a href="{{ route('evaluations.show', $evaluation->where('module_id', $section->id)->first()->id) }}" class="ml-4">Ver evaluación</a>
-                @php
-                    $roleId = Auth::user()->roles->pluck('id')->first();
-                @endphp
-
-                @if ($roleId == 3)
-                    <a href="{{ route('evaluations.view', ['evaluation' => $evaluation->where('module_id', $section->id)->first()->id, 'user' => Auth::id()]) }}"
-                        class="flex items-center text-blue-700 hover:text-blue-900 font-bold mr-4">
-                        <span>Ver Resultados</span>
-                        <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                @elseif($roleId == 2 || $roleId == 1)
-                    <div class="flex justify-end mr-5">
-                        <a href="{{ route('reportePorAlumno', ['courseId' => $course->id, 'sectionId' => $section->id]) }}"
-                            class="flex items-center text-blue-700 hover:text-blue-900 font-bold mr-2">
-                            <i class="fas fa-square-poll-vertical"></i>
-                            <span class="ml-2">Ver Resultados</span>
+                    @if ($roleId == 3)
+                        {{-- Alumno --}}
+                        <a href="{{ route('evaluations.view', ['evaluation' => $evl->id, 'user' => Auth::id()]) }}"
+                            class="flex items-center text-blue-700 hover:text-blue-900 font-bold mr-4">
+                            <span>Ver Resultados</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
                         </a>
-                    </div>
-                @endif
-            </div>
-        </li>
-    @endif
+                    @elseif($roleId == 2 || $roleId == 1)
+                        {{-- Instructor --}}
+                        <div class="flex justify-end mr-5">
+                            <a href="{{ route('reportePorAlumno', ['courseId' => $courseid, 'sectionId' => $sectionId]) }}"
+                                class="flex items-center text-blue-700 hover:text-blue-900 font-bold mr-2">
+                                <i class="fas fa-square-poll-vertical"></i>
+                                <span class="ml-2">Ver Resultados</span>
+                            </a>
+                            <p class="mx-2">|</p>
+                            <a href="{{ route('evaluations.edit', ['evaluation' => $evl->id]) }}"
+                                class="flex items-center text-green-700 hover:text-green-900 font-bold mr-2">
+                                <i class="fas fa-edit"></i> {{-- Icono de editar --}}
+                            </a>
+                            <p class="mx-2">|</p>
+                            <a href="{{ route('evaluations.unlink', ['evaluation' => $evl->id]) }}"
+                                class="flex items-center text-red-700 hover:text-red-900 font-bold ml-1"
+                                onclick="return confirm('¿Estás seguro de querer desvincular esta evaluación?');">
+                                <i class="fas fa-trash"></i> {{-- Icono de eliminar --}}
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </li>
+        @empty
+            <li>
+                <div class="flex flex-row justify-between border-2 ml-12 py-2 rounded-xl pl-5 mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
+                    No hay evaluaciones disponibles para esta sección . . .
+                </div>
+            </li>
+        @endforelse
+    </ul>
+
+
+
 </ul>
+
