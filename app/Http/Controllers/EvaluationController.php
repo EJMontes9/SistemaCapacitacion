@@ -121,27 +121,58 @@ class EvaluationController extends Controller
     /**
      * Display the specified resource.
      */
+    // public function show($id)
+    // {
+    //     try {
+    //         $evaluation = Evaluation::with('course', 'module')->findOrFail($id);
+    //         $course = $evaluation->course;
+    //         $section = $evaluation->module;
+    //     } catch (ModelNotFoundException $e) {
+    //         return redirect()->route('evaluations.index')
+    //             ->with('error', 'No existen registros.');
+    //     }
+
+    //     // Verifica si el instructor actual es el propietario de la evaluación, el id 5 representa a un alumno de un curso
+    //     if (auth()->user()->id != $evaluation->instructor_id && !auth()->user()->roles->pluck('id')->contains(3)) {
+    //         return redirect()->route('evaluations.index')
+    //             ->with('error', 'Esta evaluación no se encuentra en tus registros.');
+    //     }
+
+    //     $questions = Question::where('evaluation_id', $id)->with('options')->get();
+
+    //     return view('evaluations.show', compact('questions', 'evaluation', 'course', 'section'));
+    // }
+
     public function show($id)
     {
         try {
             $evaluation = Evaluation::with('course', 'module')->findOrFail($id);
             $course = $evaluation->course;
-            $section = $evaluation->module;
+            $section = $evaluation->module;  // Sección a la que pertenece la evaluación actual
         } catch (ModelNotFoundException $e) {
             return redirect()->route('evaluations.index')
                 ->with('error', 'No existen registros.');
         }
 
-        // Verifica si el instructor actual es el propietario de la evaluación, el id 5 representa a un alumno de un curso
+        // Verifica si el instructor actual es el propietario de la evaluación
         if (auth()->user()->id != $evaluation->instructor_id && !auth()->user()->roles->pluck('id')->contains(3)) {
             return redirect()->route('evaluations.index')
                 ->with('error', 'Esta evaluación no se encuentra en tus registros.');
         }
 
-        $questions = Question::where('evaluation_id', $id)->with('options')->get();
+        // Obtener todas las evaluaciones que pertenecen al mismo módulo (sección)
+        $evaluations = Evaluation::where('module_id', $evaluation->module_id)
+            ->with('questions.options')
+            ->get();
 
-        return view('evaluations.show', compact('questions', 'evaluation', 'course', 'section'));
+        // Preparar las preguntas de todas las evaluaciones agrupadas
+        $questions = $evaluations->flatMap(function ($evaluation) {
+            return $evaluation->questions;
+        });
+
+        return view('evaluations.show', compact('questions', 'evaluation', 'course', 'section', 'evaluations'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -391,8 +422,8 @@ class EvaluationController extends Controller
 
         // Obtener todos los resultados de evaluación para el curso
         $results = EvaluationResult::where('course_id', $courseId)
-                    ->select('total_score')
-                    ->get();
+            ->select('total_score')
+            ->get();
 
         // Inicializar las categorías
         $grades = [
@@ -447,7 +478,6 @@ class EvaluationController extends Controller
             ->get()
             ->groupBy('user_id');
 
-        // Obtener el título del curso y el nombre de la sección
         $course = courses::find($courseId);
         $section = Section::find($sectionId);
         $title = $course->title;
