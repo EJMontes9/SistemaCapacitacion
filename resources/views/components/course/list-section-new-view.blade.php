@@ -28,12 +28,18 @@ $numSection = 1;
                         </div>
                     </div>
 
+                    @php
+                        $filteredEvaluations = $evaluation->filter(function($eval) use ($section) {
+                            return $eval->module_id == $section->id;
+                        });
+                    @endphp
+
                     <x-course.list-lesson-new-view 
                         :lessons="$lessons[$section->id] ?? collect()" 
                         :resources="$resources" 
                         :section="$section"
                         :course="$course" 
-                        :evaluation="$evaluation" 
+                        :evaluation="$filteredEvaluations"
                     />
                 </div>
             @endforeach

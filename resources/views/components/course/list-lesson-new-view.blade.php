@@ -77,7 +77,7 @@
     <ul>
         @forelse ($evaluation as $evl)
             <li>
-                <div class="flex flex-row justify-between border-2 ml-12 py-2 rounded-xl mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
+                <div class="flex flex-row justify-between border-2  py-2 rounded-xl mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
                     <a href="{{ route('evaluations.show', $evl->id) }}" class="ml-4">Ver evaluación</a>
                     @php
                         $roleId = Auth::user()->roles->pluck('id')->first();
@@ -93,7 +93,7 @@
                     @elseif($roleId == 2 || $roleId == 1)
                         {{-- Instructor --}}
                         <div class="flex justify-end mr-5">
-                            <a href="{{ route('reportePorAlumno', ['courseId' => $courseid, 'sectionId' => $sectionId]) }}"
+                            <a href="{{ route('reportePorAlumno', ['courseId' => $course->id, 'sectionId' => $section->id]) }}"
                                 class="flex items-center text-blue-700 hover:text-blue-900 font-bold mr-2">
                                 <i class="fas fa-square-poll-vertical"></i>
                                 <span class="ml-2">Ver Resultados</span>
@@ -115,7 +115,7 @@
             </li>
         @empty
             <li>
-                <div class="flex flex-row justify-between border-2 ml-12 py-2 rounded-xl pl-5 mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
+                <div class="flex flex-row justify-between border-2  py-2 rounded-xl pl-5 mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
                     No hay evaluaciones disponibles para esta sección . . .
                 </div>
             </li>
