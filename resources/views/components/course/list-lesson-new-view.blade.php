@@ -1,5 +1,13 @@
 @props(['lessons', 'resources', 'section', 'course', 'evaluation'])
 
+@php
+    $userId = Auth::id();
+    $isEnrolled = DB::table('course_user')
+                    ->where('user_id', $userId)
+                    ->where('course_id', $course->id)
+                    ->exists() || $course->user_id == $userId;
+@endphp
+
 <ul class="lesson-menu" id="lesson-list">
     @if ($lessons->isEmpty() && empty($resources))
         <li>
@@ -10,22 +18,13 @@
     @else
         @foreach ($lessons as $lesson)
             <li class="mb-4">
-
-                {{-- <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-gray-300 bg-opacity-50 rounded-xl">
-                    <a class="ml-4"
-                        href="{{ route('courses.showLesson', ['id_lesson' => $lesson->id, 'slug' => $course->slug]) }}">
-                        {{ $loop->iteration }}. {{ $lesson->name }}
-                    </a>
-                </div> --}}
                 <div class="bg-gray-200 bg-opacity-100 rounded-xl px-2 pt-2 mb-0">
                     <div class="flex bg-gray-300 bg-opacity-50 hover:bg-gray-100 items-center justify-between w-full p-2 cursor-pointer border-2 rounded-xl" id="seccion-list">
                         <div class="flex flex-row justify-between items-center w-full">
                             <div class="flex flex-row flex-wrap ml-2">
                                 <div class="text-sm my-auto leading-3 text-gray-700 font-bold w-full">
-                                    {{-- titulo --}}
-                                    <a class="ml-4"
-                                        href="{{ route('courses.showLesson', ['id_lesson' => $lesson->id, 'slug' => $course->slug]) }}">
-                                        Lección {{ $loop->iteration }}.- {{ $lesson->name }} 
+                                    <a class="ml-4" href="{{ route('courses.showLesson', ['id_lesson' => $lesson->id, 'slug' => $course->slug]) }}">
+                                        Lección {{ $loop->iteration }}.- {{ $lesson->name }}
                                     </a>
                                     <a class="ml-2 px-3 py-1 text-xs rounded-full bg-blue-500 text-gray-200" href="{{ route('courses.showLesson', ['id_lesson' => $lesson->id, 'slug' => $course->slug]) }}">ver Lección</a>
                                     <span class="ml-2 px-3 py-1 text-xs rounded-full bg-blue-500 text-gray-200"> mostrar/ocultar recursos </span>
@@ -33,7 +32,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- contenido --}}
                     @if(isset($resources[$lesson->id]))
                         <ul class="ml-10">
                             @foreach ($resources[$lesson->id] as $resource)
@@ -70,7 +68,7 @@
                             @endforeach
                         </ul>
                     @endif
-                </div>  
+                </div>
             </li>
         @endforeach
     @endif
@@ -122,7 +120,20 @@
         @endforelse
     </ul>
 
-
-
 </ul>
 
+@if (!$isEnrolled)
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Seleccionar todos los enlaces dentro de las lecciones y recursos
+        const lessonLinks = document.querySelectorAll('#lesson-list a');
+
+        // Deshabilitar el comportamiento predeterminado de los enlaces
+        lessonLinks.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+            });
+        });
+    });
+</script>
+@endif
