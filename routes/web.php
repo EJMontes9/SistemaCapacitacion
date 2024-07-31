@@ -95,3 +95,7 @@ Route::get('/evaluations/{evaluation}/unlink', 'App\Http\Controllers\EvaluationC
 
 //ruta reporteria de evalauciones
 Route::get('reportePorAlumno/{courseId}/{sectionId}', 'App\Http\Controllers\EvaluationController@reportePorAlumno')->name('reportePorAlumno');
+
+
+//Ruta para evaluaciones report busqueda
+//Route::get('/reporte-por-alumno/{courseId}/{sectionId}', [EvaluationController::class, 'reportePorAlumno'])->name('reportePorAlumno');
