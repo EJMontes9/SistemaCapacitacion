@@ -283,45 +283,6 @@
         });
     });
 
-    function handleResourceSubmit(event) {
-        event.preventDefault();
-        const button = event.target;
-        const formId = button.getAttribute('data-form');
-        const form = document.getElementById(formId);
-        const formData = new FormData(form);
-
-        button.disabled = true;
-
-        fetch('/api/resources', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Recurso creado:', data);
-                form.reset();
-                location.reload(); // Recarga la página para mostrar el nuevo recurso
-            })
-            .catch(error => {
-                console.error('Error al crear el recurso:', error);
-                alert('Error al crear el recurso: ' + error.message);
-            })
-            .finally(() => {
-                button.disabled = false;
-            });
-    }
-
     function handleResourceDelete(event) {
         event.preventDefault();
         if (!confirm('¿Estás seguro de que quieres eliminar este recurso?')) {
@@ -458,12 +419,15 @@
             }
         });
 
-        // Manejar envío de formulario de recursos
         document.body.addEventListener('click', function (e) {
             if (e.target && e.target.classList.contains('submit-resource')) {
                 e.preventDefault();
-                const form = document.getElementById(e.target.getAttribute('data-form'));
+                const button = e.target;
+                const form = document.getElementById(button.getAttribute('data-form'));
                 const formData = new FormData(form);
+
+                // Deshabilitar el botón para evitar múltiples envíos
+                button.disabled = true;
 
                 fetch('/api/resources', {
                     method: 'POST',
@@ -475,6 +439,7 @@
                     .then(response => response.json())
                     .then(data => {
                         console.log('Recurso creado:', data);
+                        console.log('Recurso creado con ID:', data.id); // Console log después de crear el recurso
                         // Recargar la lista de recursos
                         const lessonId = form.querySelector('input[name="lesson_id"]').value;
                         const resourceList = document.querySelector(`.resources-list[data-lesson-id="${lessonId}"]`);
@@ -482,28 +447,32 @@
                             .then(response => response.json())
                             .then(resources => {
                                 resourceList.innerHTML = resources.map(resource => `
-                            <li>
-                                <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
-                                    <div class="flex items-center ml-4">
-                                        <a href="${resource.url}" target="_blank" class="flex items-center">
-                                            <i class="fa-solid fa-file-alt mr-2"></i>
-                                            <span>${resource.name}</span>
-                                        </a>
-                                        <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-${getResourceTypeColor(resource.type)}">${resource.type}</span>
-                                    </div>
-                                    <div class="px-3 flex flex-row justify-center items-center">
-                                        <button class="delete-resource mx-0 p-0 my-auto" data-resource-id="${resource.id}">
-                                            <i class="fa-solid fa-trash text-red-600"></i>
-                                        </button>
-                                    </div>
+                        <li>
+                            <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
+                                <div class="flex items-center ml-4">
+                                    <a href="${resource.url}" target="_blank" class="flex items-center">
+                                        <i class="fa-solid fa-file-alt mr-2"></i>
+                                        <span>${resource.name}</span>
+                                    </a>
+                                    <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-${getResourceTypeColor(resource.type)}">${resource.type}</span>
                                 </div>
-                            </li>
-                        `).join('');
+                                <div class="px-3 flex flex-row justify-center items-center">
+                                    <button class="delete-resource mx-0 p-0 my-auto" data-resource-id="${resource.id}">
+                                        <i class="fa-solid fa-trash text-red-600"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    `).join('');
                             });
                         form.reset();
                     })
                     .catch(error => {
                         console.error('Error al crear el recurso:', error);
+                    })
+                    .finally(() => {
+                        // Habilitar el botón después de la respuesta
+                        button.disabled = false;
                     });
             }
         });
