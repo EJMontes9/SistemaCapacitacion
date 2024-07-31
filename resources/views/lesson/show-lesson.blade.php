@@ -27,12 +27,13 @@
                 </div>
             </div>
         </div>
+        <div class="w-full">
+            <h2 class="text-2xl  text-gray-900 mb-4">Descripción</h2>
+            <p class="text-gray-700">{{ $thislesson->description }}</p>
+        </div>
         <div class="w-3/4 mt-9">
             <div class="w-full">
-                <div class="w-1/2">
-                    <h2 class="text-2xl  text-gray-900 mb-4">Descripción</h2>
-                    <p class="text-gray-700">{{ $thislesson->description }}</p>
-                </div>
+
                 <div class="w-1/2">
                     <h2 class="text-2xl  text-gray-900 mb-4">Recursos</h2>
                     <ul class="text-gray-700">
