@@ -9,6 +9,7 @@ use App\Models\platforms;
 use App\Models\section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 // use Illuminate\Support\Facades\Request;
 use Illuminate\Http\Request;
 
@@ -67,10 +68,11 @@ class lessonsController extends Controller
     }
 
 
-
     public function show($id)
     {
-        return view('lesson.show-lesson', ['lesson' => lesson::findOrFail($id)]);
+        $lesson = lesson::findOrFail($id);
+        $resources = $lesson->resources; // Assuming you have a relationship defined in the Lesson model
+        return view('lesson.show-lesson', ['lesson' => $lesson, 'resources' => $resources]);
     }
 
     public function edit(lesson $lesson)
