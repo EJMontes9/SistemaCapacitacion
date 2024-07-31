@@ -85,3 +85,6 @@ Route::get('/user/{userId}/courses', [CourseUserController::class, 'userCourses'
 Route::get('/course/{courseId}/users', [CourseUserController::class, 'courseUsers']);
 Route::post('/course-user/subscribe', [CourseUserController::class, 'subscribeUser']);
 Route::get('/course-user/{courseId}/{userId}', [CourseUserController::class, 'subscribeUser2']);
+
+Route::get('/survey-questions', [SurveyController::class, 'getSurveyQuestions']);
+Route::get('/survey-responses/{surveyId}', [SurveyController::class, 'getSurveyResponses']);
