@@ -43,6 +43,7 @@ class lessonsController extends Controller
         $lesson = Lesson::create([
             'name' => $request->input('name'),
             'url' => $request->input('url'),
+            'description' => $request->input('description'),
             'section_id' => $request->input('section_id'),
             'platform_id' => $request->input('platform_id'),
             'iframe' => $request->input('iframe')

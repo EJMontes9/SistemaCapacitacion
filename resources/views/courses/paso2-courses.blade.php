@@ -142,94 +142,107 @@
 
     // Función para manejar el envío del formulario
     function handleSubmit(event) {
-        // let canSubmit = true;
         if (!canSubmit) return;
 
         canSubmit = false;
         event.target.disabled = true;
 
         const formId = event.target.dataset.form;
+        const form = document.getElementById(formId);
+        const formData = new FormData(form);
+
         const storedData = JSON.parse(localStorage.getItem(`lessonData_${formId}`));
 
         if (!storedData) {
-            // si no se encuentra id en el formulario de la lección creara una 
-            const newformData = new FormData(document.getElementById(formId));
-
-            const formDataJson = Object.fromEntries(newformData.entries());
-            // Disparar fetch con post para crear la lección
+            // Si no se encuentra id en el formulario de la lección, creará una nueva
+            console.log('Datos del formulario:', Object.fromEntries(formData.entries()));
             fetch('/api/lessons', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(formDataJson)
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: formData
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    // console.log(data);
-                    // Aquí puedes agregar código para actualizar la interfaz si es necesario
-
+                    console.log('Lección creada:', data);
                     location.reload();
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error('Error al crear la lección:', error);
                 });
-            console.error('No se encontraron datos en localStorage');
             return;
         }
 
-        const formData = new FormData();
         for (const [key, value] of Object.entries(storedData)) {
             formData.append(key, value);
         }
 
-        const url = new URL(location.href);
-        const rootUrl = `${url.protocol}://${url.host}`;
+        console.log('Datos del formulario:', Object.fromEntries(formData.entries()));
 
         if (storedData.lesson_id !== '') {
-            const storedData2 = JSON.parse(localStorage.getItem(`lessonData_${formId}`)); // llamamos los datos otra vez por si acaso no esten actualizandose
-            const formData2 = new FormData(); //creamos nuevo formdata por los valores actualizados 
-            for (const [key, value] of Object.entries(storedData)) {
-                formData2.append(key, value);
-            }
-            console.log(JSON.stringify(storedData2)); //para verificar si se actualizan los datos
-            // Disparar fetch con put para editar la lección
-            fetch('/api/lessons/' + storedData2.lesson_id, {
+            // Editar la lección existente
+            fetch(`/api/lessons/${storedData.lesson_id}`, {
                 method: 'PUT',
-                headers: {'Content-Type': 'application/json'}, // en laravel es muy necesario el headers json para los PUT
-                // body: formData
-                body: JSON.stringify(storedData2)
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(storedData)
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    console.log(data);
-                    //Aqui borramos las keys de edicion antes de actualizar la vista
+                    console.log('Lección actualizada:', data);
                     Object.keys(localStorage).forEach(key => {
                         if (key.includes("lessonData_lesson-form")) {
                             delete localStorage[key];
                         }
                     });
-                    // Aquí puedes agregar código para actualizar la interfaz si es necesario
                     location.reload();
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error('Error al actualizar la lección:', error);
                 });
         } else {
-            // Disparar fetch con post para crear la lección
+            // Crear una nueva lección
             fetch('/api/lessons', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
                 body: formData
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    console.log(data);
-                    // Aquí puedes agregar código para actualizar la interfaz si es necesario
-                    // location.reload();
+                    console.log('Lección creada:', data);
+                    location.reload();
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error('Error al crear la lección:', error);
                 });
         }
+
         event.preventDefault();
         setTimeout(() => {
             canSubmit = true;

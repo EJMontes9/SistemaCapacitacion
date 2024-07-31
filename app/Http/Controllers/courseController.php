@@ -209,7 +209,13 @@ class courseController extends Controller
             ->where('lesson_id', $id_lesson)
             ->exists();
 
-        return view('lesson.show-lesson', compact('lesson', 'section', 'course', 'thislesson', 'resources', 'evaluation', 'hasResponded'));
+        // Obtener la siguiente lección
+        $nextLesson = lesson::where('section_id', $thislesson->section_id)
+            ->where('id', '>', $thislesson->id)
+            ->orderBy('id', 'asc')
+            ->first();
+
+        return view('lesson.show-lesson', compact('lesson', 'section', 'course', 'thislesson', 'resources', 'evaluation', 'hasResponded', 'nextLesson'));
     }
 
     // public function addCourse(courses $course)
