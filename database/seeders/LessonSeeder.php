@@ -22,31 +22,37 @@ class LessonSeeder extends Seeder
             [
                 'name' => 'Introducción al curso',
                 'url' => 'https://example.com/lesson1',
+                'description'  => 'En esta lección aprenderás los conceptos básicos de la programación',
                 'iframe' => '<iframe src="https://example.com/embed1"></iframe>',
             ],
             [
                 'name' => 'Conceptos básicos',
                 'url' => 'https://example.com/lesson2',
+                'description'  => 'En esta lección aprenderás los conceptos básicos de la programación',
                 'iframe' => '<iframe src="https://example.com/embed2"></iframe>',
             ],
             [
                 'name' => 'Primeros pasos',
                 'url' => 'https://example.com/lesson3',
+                'description'  => 'En esta lección aprenderás los conceptos básicos de la programación',
                 'iframe' => '<iframe src="https://example.com/embed3"></iframe>',
             ],
             [
                 'name' => 'Técnicas avanzadas',
                 'url' => 'https://example.com/lesson4',
+                'description'  => 'En esta lección aprenderás los conceptos básicos de la programación',
                 'iframe' => '<iframe src="https://example.com/embed4"></iframe>',
             ],
             [
                 'name' => 'Proyecto práctico',
                 'url' => 'https://example.com/lesson5',
+                'description'  => 'En esta lección aprenderás los conceptos básicos de la programación',
                 'iframe' => '<iframe src="https://example.com/embed5"></iframe>',
             ],
             [
                 'name' => 'Conclusiones y siguientes pasos',
                 'url' => 'https://example.com/lesson6',
+                'description'  => 'En esta lección aprenderás los conceptos básicos de la programación',
                 'iframe' => '<iframe src="https://example.com/embed6"></iframe>',
             ],
         ];
@@ -55,6 +61,7 @@ class LessonSeeder extends Seeder
             Lesson::create([
                 'name' => $lessonData['name'],
                 'url' => $lessonData['url'],
+                'description' => $lessonData['description'],
                 'iframe' => $lessonData['iframe'],
                 'section_id' => $sections->random()->id,
                 'platform_id' => 1,

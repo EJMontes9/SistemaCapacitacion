@@ -18,7 +18,7 @@ class EvaluationSeeder extends Seeder
                 'course_id' => $course->id,
                 'title' => "Evaluación del curso: {$course->title}",
                 'description' => "Evaluación general para el curso {$course->title}",
-                'module_id' => null // Asumiendo que es una evaluación general del curso
+                'module_id' => 1 // Asumiendo que es una evaluación general del curso
             ]);
         }
     }

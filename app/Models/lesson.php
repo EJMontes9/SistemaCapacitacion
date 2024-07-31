@@ -10,6 +10,7 @@ class lesson extends Model
     protected $fillable = [
         'name',
         'url',
+        'description',
         'section_id',
         'platform_id',
         'iframe'

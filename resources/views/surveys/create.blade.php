@@ -18,7 +18,6 @@
                         <select name="category" id="category" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                             <option value="lesson">Lección</option>
                             <option value="course">Curso</option>
-                            <option value="section">Sección</option>
                         </select>
                     </div>
                     <div class="mb-4">
