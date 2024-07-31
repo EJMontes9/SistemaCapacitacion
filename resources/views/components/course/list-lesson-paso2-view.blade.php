@@ -83,7 +83,7 @@
 
     @if ($evaluation = $evaluation->where('module_id', $sectionsObj->id)->first())
         <li>
-            <div class="flex flex-row justify-between border-2 ml-12 py-2 rounded-xl mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
+            <div class="flex flex-row justify-between border-2 py-2 rounded-xl mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
                 <a href="{{ route('evaluations.show', $evaluation->id) }}" class="ml-4">Ver evaluación</a>
                 <a href="{{ route('evaluations.view', ['evaluation' => $evaluation->id, 'user' => Auth::id()]) }}"
                    class="flex items-center text-blue-700 hover:text-blue-900 font-bold mr-4">
@@ -100,7 +100,7 @@
             <!-- Formulario para agregar lecciones -->
             <div class="bg-blue-500 bg-opacity-50 rounded-xl shadow-sm mb-2">
                 <div x-data="{ open: false }">
-                    <div class="p-4 cursor-pointer" id="acordeon-{{$sectionsObj->id}}" @click="open = !open">
+                    <div class="p-4 cursor-pointer mt-3" id="acordeon-{{$sectionsObj->id}}" @click="open = !open">
                         <h4 class="text-sm font-medium flex justify-between items-center">
                             <span>Agregar Lección a {{$sectionsObj->name}}</span>
                             <svg x-show="!open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

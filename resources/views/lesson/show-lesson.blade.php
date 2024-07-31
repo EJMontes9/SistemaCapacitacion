@@ -31,20 +31,25 @@
             <h2 class="text-2xl  text-gray-900 mb-4">Descripción</h2>
             <p class="text-gray-700">{{ $thislesson->description }}</p>
         </div>
-        <div class="w-3/4 mt-9">
-            <div class="w-full">
-
-                <div class="w-1/2">
-                    <h2 class="text-2xl  text-gray-900 mb-4">Recursos</h2>
-                    <ul class="text-gray-700">
-                        @foreach ($resources as $resource)
-                            <li>
-                                <a href="{{ $resource->url }}" target="_blank">{{ $resource->name }}</a>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
+        <div class="w-full mt-3">
+            <h2 class="text-2xl  text-gray-900 mb-4">Recursos</h2>
+            <ul class="grid grid-cols-4 gap-3">
+                @foreach ($resources as $resource)
+                    <li class="flex items-center bg-gray-100 px-4 py-2 border rounded-lg">
+                        @if ($resource->type === 'documento')
+                            <i class="fas fa-file-alt mr-2"></i>
+                        @elseif ($resource->type === 'imagen')
+                            <i class="fas fa-image mr-2"></i>
+                        @elseif ($resource->type === 'url')
+                            <i class="fas fa-link mr-2"></i>
+                        @elseif ($resource->type === 'video')
+                            <i class="fas fa-video mr-2"></i>
+                        @endif
+                        <a href="{{ $resource->url }}" target="_blank">{{ $resource->name }} - {{ $resource->type }}</a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
         </div>
         @push('scripts')
             {{-- script detector  de encuesta tipo yes/no --}}

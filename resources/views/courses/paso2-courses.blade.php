@@ -4,22 +4,31 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="md:col-span-1">
-                <h1 class="text-2xl font-semibold text-gray-900 mb-4">Ahora agreguemos secciones a: {{ $course->title }}</h1>
-                <img class="w-full h-48 object-cover rounded-lg mb-4" src="../../images/courses/{{ $course->image }}" alt="">
+                <h1 class="text-2xl font-semibold text-gray-900 mb-4">Ahora agreguemos secciones
+                    a: {{ $course->title }}</h1>
+                <img class="w-full h-48 object-cover rounded-lg mb-4" src="../../images/courses/{{ $course->image }}"
+                     alt="">
                 <div class="mt-4">
-                    <h3 id="agregar-secciones" class="text-lg font-semibold text-gray-600">Agrega las secciones que necesites en el siguiente formulario</h3>
+                    <h3 id="agregar-secciones" class="text-lg font-semibold text-gray-600">Agrega las secciones que
+                        necesites en el siguiente formulario</h3>
                 </div>
                 <div id="form-secciones" class="mt-4">
-                    <input type="text" id="nombre-seccion" class="bg-gray-100 text-gray-900 py-2 px-4 w-full rounded-md" placeholder="Nombre de la nueva sección">
-                    <button id="guardar-seccion" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-2">Agregar Sección</button>
-                    <a href="{{route('courses.show',$course->slug)}}" id="finalizar-curso" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 flex justify-center rounded w-100 mt-4">Finalizar</a>
+                    <input type="text" id="nombre-seccion" class="bg-gray-100 text-gray-900 py-2 px-4 w-full rounded-md"
+                           placeholder="Nombre de la nueva sección">
+                    <button id="guardar-seccion"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mt-2">
+                        Agregar Sección
+                    </button>
+                    <a href="{{route('courses.show',$course->slug)}}" id="finalizar-curso"
+                       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 flex justify-center rounded w-100 mt-4">Finalizar</a>
                 </div>
             </div>
             <div class="md:col-span-2">
                 <div class="bg-white rounded-lg shadow-md p-0">
                     <ul id="listado-secciones" class="p-0">
                     </ul>
-                    <x-course.list-section-paso2-view :section="$section" :resources="$resources" :lesson="$lesson" :course="$course" :evaluation="$evaluation"/>
+                    <x-course.list-section-paso2-view :section="$section" :resources="$resources" :lesson="$lesson"
+                                                      :course="$course" :evaluation="$evaluation"/>
                 </div>
             </div>
         </div>
@@ -27,49 +36,53 @@
 </x-app-layout>
 
 <script>
-const form = document.getElementById('form-secciones');
-const nombreSeccionInput = document.getElementById('nombre-seccion');
-const guardarSeccionButton = document.getElementById('guardar-seccion');
-const listadoSecciones = document.getElementById('listado-secciones');
+    const form = document.getElementById('form-secciones');
+    const nombreSeccionInput = document.getElementById('nombre-seccion');
+    const guardarSeccionButton = document.getElementById('guardar-seccion');
+    const listadoSecciones = document.getElementById('listado-secciones');
 
-guardarSeccionButton.addEventListener('click', async () => {
-    const nombreSeccion = nombreSeccionInput.value;
-    const cursoId = {{ $course->id }};
-    const url = new URL(location.href);
-    const rootUrl = `${url.protocol}://${url.host}`;
-        
-    const response = await fetch(`/api/sections2`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: nombreSeccion,
-            course_id: cursoId
-        })
+    guardarSeccionButton.addEventListener('click', async () => {
+        const nombreSeccion = nombreSeccionInput.value;
+        const cursoId = {{ $course->id }};
+        const url = new URL(location.href);
+        const rootUrl = `${url.protocol}://${url.host}`;
+
+        const response = await fetch(`/api/sections2`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: nombreSeccion,
+                course_id: cursoId
+            })
+        });
+        if (response.ok) {
+            location.reload();
+            const nuevaSeccion = document.createElement('li');
+            nuevaSeccion.textContent = nombreSeccion;
+            listadoSecciones.appendChild(nuevaSeccion);
+            nombreSeccionInput.value = '';
+        } else {
+            console.error('Error al agregar sección');
+        }
     });
-    if (response.ok) {
-        location.reload();
-        const nuevaSeccion = document.createElement('li');
-        nuevaSeccion.textContent = nombreSeccion;
-        listadoSecciones.appendChild(nuevaSeccion);
-        nombreSeccionInput.value = '';
-    } else {
-        console.error('Error al agregar sección');
-    }
-});
 </script>
 
 
 {{-- script de lecciones --}}
 <script>
     //Aqui borramos las keys de edicion antes de actualizar la vista
-    Object.keys(localStorage).forEach(key => { if (key.includes("lessonData_lesson-form")) { delete localStorage[key]; }});
+    Object.keys(localStorage).forEach(key => {
+        if (key.includes("lessonData_lesson-form")) {
+            delete localStorage[key];
+        }
+    });
 
     let acordeonCerrado = false; // acordeon de formulario de lecciones en estado cerrado, cambia con el boton edit o al desplegar el acordeon
     document.querySelectorAll('.editarLeccion').forEach(button => {
         button.addEventListener('click', (e) => {
-            
+
             var lessonName = button.getAttribute('data-lessonName');
             var lessonId = button.getAttribute('data-lessonId');
             var lessonUrl = button.getAttribute('data-lessonUrl');
@@ -87,11 +100,11 @@ guardarSeccionButton.addEventListener('click', async () => {
             updateLocalStorage(sectionForm);
             var accordion = document.querySelector(`#acordeon-${sectionId}`);
 
-            if (!acordeonCerrado){ //cada vez que se abre o cierra un acordeon cambiamos el estado para que se despliegue correctamente en cada edit
+            if (!acordeonCerrado) { //cada vez que se abre o cierra un acordeon cambiamos el estado para que se despliegue correctamente en cada edit
                 accordion.click();
                 acordeonCerrado = true;
             }
-                
+
             // form.querySelector('.submit-lesson').disabled = false;
 
             // Agregar eventos a los campos del formulario
@@ -104,7 +117,7 @@ guardarSeccionButton.addEventListener('click', async () => {
         const fields = form.querySelectorAll('input, textarea');
         fields.forEach(field => {
             // ['focus', 'input', 'change'].forEach(eventType => {
-            ['input','change'].forEach(eventType => {
+            ['input', 'change'].forEach(eventType => {
                 field.addEventListener(eventType, () => updateLocalStorage(formId));
             });
         });
@@ -137,27 +150,28 @@ guardarSeccionButton.addEventListener('click', async () => {
 
         const formId = event.target.dataset.form;
         const storedData = JSON.parse(localStorage.getItem(`lessonData_${formId}`));
-        
+
         if (!storedData) {
             // si no se encuentra id en el formulario de la lección creara una 
-            const newformData = new FormData(document.getElementById(formId));;
+            const newformData = new FormData(document.getElementById(formId));
+
             const formDataJson = Object.fromEntries(newformData.entries());
             // Disparar fetch con post para crear la lección
             fetch('/api/lessons', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(formDataJson)
             })
-            .then(response => response.json())
-            .then(data => {
-                // console.log(data);
-                // Aquí puedes agregar código para actualizar la interfaz si es necesario
-                
-                location.reload();
-            })
-            .catch(error => {
-                console.error(error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data);
+                    // Aquí puedes agregar código para actualizar la interfaz si es necesario
+
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
             console.error('No se encontraron datos en localStorage');
             return;
         }
@@ -173,44 +187,48 @@ guardarSeccionButton.addEventListener('click', async () => {
         if (storedData.lesson_id !== '') {
             const storedData2 = JSON.parse(localStorage.getItem(`lessonData_${formId}`)); // llamamos los datos otra vez por si acaso no esten actualizandose
             const formData2 = new FormData(); //creamos nuevo formdata por los valores actualizados 
-        for (const [key, value] of Object.entries(storedData)) {
-            formData2.append(key, value);
-        }
+            for (const [key, value] of Object.entries(storedData)) {
+                formData2.append(key, value);
+            }
             console.log(JSON.stringify(storedData2)); //para verificar si se actualizan los datos
             // Disparar fetch con put para editar la lección
             fetch('/api/lessons/' + storedData2.lesson_id, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' }, // en laravel es muy necesario el headers json para los PUT
+                headers: {'Content-Type': 'application/json'}, // en laravel es muy necesario el headers json para los PUT
                 // body: formData
                 body: JSON.stringify(storedData2)
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                //Aqui borramos las keys de edicion antes de actualizar la vista
-                Object.keys(localStorage).forEach(key => { if (key.includes("lessonData_lesson-form")) { delete localStorage[key]; }});
-                // Aquí puedes agregar código para actualizar la interfaz si es necesario
-                location.reload();
-            })
-            .catch(error => {
-                console.error(error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    //Aqui borramos las keys de edicion antes de actualizar la vista
+                    Object.keys(localStorage).forEach(key => {
+                        if (key.includes("lessonData_lesson-form")) {
+                            delete localStorage[key];
+                        }
+                    });
+                    // Aquí puedes agregar código para actualizar la interfaz si es necesario
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         } else {
             // Disparar fetch con post para crear la lección
             fetch('/api/lessons', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                // Aquí puedes agregar código para actualizar la interfaz si es necesario
-                // location.reload();
-            })
-            .catch(error => {
-                console.error(error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    // Aquí puedes agregar código para actualizar la interfaz si es necesario
+                    // location.reload();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         }
         event.preventDefault();
         setTimeout(() => {
@@ -231,12 +249,12 @@ guardarSeccionButton.addEventListener('click', async () => {
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Manejar cambios en el tipo de recurso
-        document.body.addEventListener('change', function(e) {
+        document.body.addEventListener('change', function (e) {
             if (e.target && e.target.name === 'type') {
                 const form = e.target.closest('form');
                 const fileInput = form.querySelector('.file-input');
                 const urlInput = form.querySelector('.url-input');
-                
+
                 if (e.target.value === 'documento' || e.target.value === 'imagen') {
                     fileInput.classList.remove('hidden');
                     urlInput.classList.add('hidden');
@@ -251,14 +269,14 @@ guardarSeccionButton.addEventListener('click', async () => {
         });
 
         // Agregar event listener para el botón de crear recurso
-        document.body.addEventListener('click', function(e) {
+        document.body.addEventListener('click', function (e) {
             if (e.target && e.target.classList.contains('submit-resource')) {
                 handleResourceSubmit(e);
             }
         });
 
         // Agregar event listener para los botones de eliminar recurso
-        document.body.addEventListener('click', function(e) {
+        document.body.addEventListener('click', function (e) {
             if (e.target && e.target.classList.contains('delete-resource')) {
                 handleResourceDelete(e);
             }
@@ -282,26 +300,26 @@ guardarSeccionButton.addEventListener('click', async () => {
                 'Accept': 'application/json'
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(text);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Recurso creado:', data);
-            form.reset();
-            location.reload(); // Recarga la página para mostrar el nuevo recurso
-        })
-        .catch(error => {
-            console.error('Error al crear el recurso:', error);
-            alert('Error al crear el recurso: ' + error.message);
-        })
-        .finally(() => {
-            button.disabled = false;
-        });
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Recurso creado:', data);
+                form.reset();
+                location.reload(); // Recarga la página para mostrar el nuevo recurso
+            })
+            .catch(error => {
+                console.error('Error al crear el recurso:', error);
+                alert('Error al crear el recurso: ' + error.message);
+            })
+            .finally(() => {
+                button.disabled = false;
+            });
     }
 
     function handleResourceDelete(event) {
@@ -323,25 +341,25 @@ guardarSeccionButton.addEventListener('click', async () => {
                 'Accept': 'application/json'
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(text);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Recurso eliminado:', data);
-            button.closest('li').remove();
-        })
-        .catch(error => {
-            console.error('Error al eliminar el recurso:', error);
-            alert('Error al eliminar el recurso: ' + error.message);
-        })
-        .finally(() => {
-            button.disabled = false;
-        });
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Recurso eliminado:', data);
+                button.closest('li').remove();
+            })
+            .catch(error => {
+                console.error('Error al eliminar el recurso:', error);
+                alert('Error al eliminar el recurso: ' + error.message);
+            })
+            .finally(() => {
+                button.disabled = false;
+            });
     }
 
 </script>
@@ -376,7 +394,7 @@ guardarSeccionButton.addEventListener('click', async () => {
 
 {{-- scripts de procesamiento de recursos en lecciones --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', () => {
         // Cargar recursos para cada lección
         document.querySelectorAll('.resources-list').forEach(resourceList => {
             const lessonId = resourceList.getAttribute('data-lesson-id');
@@ -384,44 +402,49 @@ guardarSeccionButton.addEventListener('click', async () => {
                 .then(response => response.json())
                 .then(resources => {
                     resourceList.innerHTML = resources.map(resource => `
-                        <li>
-                            <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
-                                <div class="flex items-center ml-4">
-                                    <a href="${resource.url}" target="_blank" class="flex items-center">
-                                        <i class="fa-solid fa-file-alt mr-2"></i>
-                                        <span>${resource.name}</span>
-                                    </a>
-                                    <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-${getResourceTypeColor(resource.type)}">${resource.type}</span>
-                                </div>
-                                <div class="px-3 flex flex-row justify-center items-center">
-                                    <button class="delete-resource mx-0 p-0 my-auto" data-resource-id="${resource.id}">
-                                        <i class="fa-solid fa-trash text-red-600"></i>
-                                    </button>
-                                </div>
+                    <li>
+                        <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
+                            <div class="flex items-center ml-4">
+                                <a href="${resource.url}" target="_blank" class="flex items-center">
+                                    <i class="fa-solid fa-file-alt mr-2"></i>
+                                    <span>${resource.name}</span>
+                                </a>
+                                <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-${getResourceTypeColor(resource.type)}">${resource.type}</span>
                             </div>
-                        </li>
-                    `).join('');
+                            <div class="px-3 flex flex-row justify-center items-center">
+                                <button class="delete-resource mx-0 p-0 my-auto" data-resource-id="${resource.id}">
+                                    <i class="fa-solid fa-trash text-red-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                `).join('');
                 });
         });
-    
+
         // Función para obtener el color del tipo de recurso
         function getResourceTypeColor(type) {
-            switch(type) {
-                case 'documento': return 'blue-100 text-blue-600';
-                case 'imagen': return 'green-100 text-green-600';
-                case 'url': return 'green-400 bg-opacity-50 text-green-600';
-                case 'video': return 'red-100 text-red-600';
-                default: return 'gray-100 text-gray-600';
+            switch (type) {
+                case 'documento':
+                    return 'blue-100 text-blue-600';
+                case 'imagen':
+                    return 'green-100 text-green-600';
+                case 'url':
+                    return 'green-400 bg-opacity-50 text-green-600';
+                case 'video':
+                    return 'red-100 text-red-600';
+                default:
+                    return 'gray-100 text-gray-600';
             }
         }
-    
+
         // Manejar cambios en el tipo de recurso
-        document.body.addEventListener('change', function(e) {
+        document.body.addEventListener('change', function (e) {
             if (e.target && e.target.name === 'type') {
                 const form = e.target.closest('form');
                 const fileInput = form.querySelector('input[name="file"]');
                 const urlInput = form.querySelector('input[name="url"]');
-                
+
                 if (e.target.value === 'documento' || e.target.value === 'imagen') {
                     fileInput.classList.remove('hidden');
                     urlInput.classList.add('hidden');
@@ -434,14 +457,14 @@ guardarSeccionButton.addEventListener('click', async () => {
                 }
             }
         });
-    
+
         // Manejar envío de formulario de recursos
-        document.body.addEventListener('click', function(e) {
+        document.body.addEventListener('click', function (e) {
             if (e.target && e.target.classList.contains('submit-resource')) {
                 e.preventDefault();
                 const form = document.getElementById(e.target.getAttribute('data-form'));
                 const formData = new FormData(form);
-    
+
                 fetch('/api/resources', {
                     method: 'POST',
                     body: formData,
@@ -449,66 +472,78 @@ guardarSeccionButton.addEventListener('click', async () => {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Recurso creado:', data);
-                    // Recargar la lista de recursos
-                    const lessonId = form.querySelector('input[name="lesson_id"]').value;
-                    const resourceList = document.querySelector(`.resources-list[data-lesson-id="${lessonId}"]`);
-                    fetch(`/api/lessons/${lessonId}/resources`)
-                        .then(response => response.json())
-                        .then(resources => {
-                            resourceList.innerHTML = resources.map(resource => `
-                                <li>
-                                    <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
-                                        <div class="flex items-center ml-4">
-                                            <a href="${resource.url}" target="_blank" class="flex items-center">
-                                                <i class="fa-solid fa-file-alt mr-2"></i>
-                                                <span>${resource.name}</span>
-                                            </a>
-                                            <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-${getResourceTypeColor(resource.type)}">${resource.type}</span>
-                                        </div>
-                                        <div class="px-3 flex flex-row justify-center items-center">
-                                            <button class="delete-resource mx-0 p-0 my-auto" data-resource-id="${resource.id}">
-                                                <i class="fa-solid fa-trash text-red-600"></i>
-                                            </button>
-                                        </div>
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Recurso creado:', data);
+                        // Recargar la lista de recursos
+                        const lessonId = form.querySelector('input[name="lesson_id"]').value;
+                        const resourceList = document.querySelector(`.resources-list[data-lesson-id="${lessonId}"]`);
+                        fetch(`/api/lessons/${lessonId}/resources`)
+                            .then(response => response.json())
+                            .then(resources => {
+                                resourceList.innerHTML = resources.map(resource => `
+                            <li>
+                                <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
+                                    <div class="flex items-center ml-4">
+                                        <a href="${resource.url}" target="_blank" class="flex items-center">
+                                            <i class="fa-solid fa-file-alt mr-2"></i>
+                                            <span>${resource.name}</span>
+                                        </a>
+                                        <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-${getResourceTypeColor(resource.type)}">${resource.type}</span>
                                     </div>
-                                </li>
-                            `).join('');
-                        });
-                    form.reset();
-                })
-                .catch(error => {
-                    console.error('Error al crear el recurso:', error);
-                });
+                                    <div class="px-3 flex flex-row justify-center items-center">
+                                        <button class="delete-resource mx-0 p-0 my-auto" data-resource-id="${resource.id}">
+                                            <i class="fa-solid fa-trash text-red-600"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        `).join('');
+                            });
+                        form.reset();
+                    })
+                    .catch(error => {
+                        console.error('Error al crear el recurso:', error);
+                    });
             }
         });
-    
+
         // Manejar eliminación de recursos
-        document.body.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('delete-resource')) {
+        document.body.addEventListener('click', function (e) {
+            const button = e.target.closest('.delete-resource');
+            if (button) {
                 e.preventDefault();
-                const resourceId = e.target.getAttribute('data-resource-id');
-                if (confirm('¿Estás seguro de que quieres eliminar este recurso?')) {
-                    fetch(`/api/resources/${resourceId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Content-Type': 'application/json'
+                if (!confirm('¿Estás seguro de que quieres eliminar este recurso?')) {
+                    return;
+                }
+
+                const resourceId = button.getAttribute('data-resource-id');
+
+                fetch(`/api/resources/${resourceId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                throw new Error(text);
+                            });
                         }
+                        return response.json();
                     })
-                    .then(response => response.json())
                     .then(data => {
                         console.log('Recurso eliminado:', data);
                         // Eliminar el elemento del DOM
-                        e.target.closest('li').remove();
+                        button.closest('li').remove();
                     })
                     .catch(error => {
                         console.error('Error al eliminar el recurso:', error);
+                        alert('Error al eliminar el recurso: ' + error.message);
                     });
-                }
             }
         });
     });
-    </script>
+</script>
