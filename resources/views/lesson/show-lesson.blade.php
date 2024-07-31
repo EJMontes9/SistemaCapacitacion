@@ -9,7 +9,7 @@
                 Volver
             </button>
             @if($nextLesson)
-                <a href="{{ route('lessons.show', ['lesson' => $nextLesson->id]) }}"
+                <a href="{{ route('courses.showLesson', ['slug' => $course->slug, 'id_lesson' => $nextLesson->id]) }}"
                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                     Siguiente Lección
                 </a>
