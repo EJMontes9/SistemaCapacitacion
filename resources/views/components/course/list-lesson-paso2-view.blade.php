@@ -105,7 +105,10 @@
                             <div class="p-4 border-t">
                                 <form id="lesson-form-{{$sectionsObj->id}}" class="space-y-6">
                                     <div class="form-group">
-                                        <input type="text" id="name" name="name" value="" placeholder="Nombre de la lección" class="block w-full p-2 pl-40 text-sm text-gray-700 bg-gray-50 rounded-md" />
+                                        <input type="text" id="name" name="name" value="" placeholder="Nombre de la lección" class="block w-full p-2 text-sm text-gray-700 bg-gray-50 rounded-md" />
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea id="description" name="description" placeholder="Descripción del video" class="block w-full p-2 text-sm text-gray-700 bg-gray-50 rounded-md"></textarea>
                                     </div>
                                     <div class="form-group">
                                         <input type="hidden" value="" id="lesson_id" name="lesson_id" class="form-control"/>
@@ -113,10 +116,10 @@
                                         <input type="hidden" value="1" id="platform_id" name="platform_id" class="form-control"/>
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" id="url" name="url" value="" placeholder="Url de la lección" class="block w-full p-2 pl-40 text-sm text-gray-700 bg-gray-50 rounded-md" />
+                                        <input type="text" id="url" name="url" value="" placeholder="Url de la lección" class="block w-full p-2 text-sm text-gray-700 bg-gray-50 rounded-md" />
                                     </div>
                                     <div class="form-group">
-                                        <textarea id="iframe" name="iframe" placeholder="Iframe del video" class="block w-full p-2 pl-40 text-sm text-gray-700 bg-gray-50 rounded-md"></textarea>
+                                        <textarea id="iframe" name="iframe" placeholder="Iframe del video" class="block w-full p-2 text-sm text-gray-700 bg-gray-50 rounded-md"></textarea>
                                     </div>
                                 </form>
                                 <button type="button" data-form="lesson-form-{{$sectionsObj->id}}" id="enviar-{{$sectionsObj->id}}" class="submit-lesson bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-full mt-2 rounded">Enviar lección</button>    

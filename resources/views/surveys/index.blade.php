@@ -43,7 +43,7 @@
                                 <textarea id="edit-description" name="description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
                             </div>
                             <div class="mb-4">
-                                <label for="edit-category" class="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
+                                <label for="edit-category" class="block text-gray-700 text-sm font-bold mb-2">Categoríasssss:</label>
                                 <select id="edit-category" name="category" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                                     <option value="lesson">Lección</option>
                                     <option value="course">Curso</option>
@@ -124,7 +124,6 @@
                                     <option value="">Seleccione una categoría</option>
                                     <option value="lesson">Lección</option>
                                     <option value="course">Curso</option>
-                                    <option value="section">Sección</option>
                                 </select>
                             </div>
                             <div id="create-course-select-container" class="mb-4 hidden">

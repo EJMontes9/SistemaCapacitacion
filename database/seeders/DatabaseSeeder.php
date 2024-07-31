@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
         $this->call(roles_has_permissionsSeeder::class);
         $this->call(model_has_rolesSeeder::class);
         $this->call(SectionsTableSeeder::class);
-        $this->call(ResourceSeeder::class);
         $this->call(LessonSeeder::class);
+        $this->call(ResourceSeeder::class);
         $this->call(SurveySeeder::class);
         $this->call(EvaluationSeeder::class);
         $this->call(EvaluationResultSeeder::class);
