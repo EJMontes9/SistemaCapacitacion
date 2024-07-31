@@ -126,6 +126,8 @@
                 </div>
             </div>
         </div>
+
+    <!-- Vista para el Instructor -->
     @elseif($rolId == 2 || $rolId == 1)
         <div class="mt-7 mx-8">
             <h2 class="font-semibold text-2xl text-gray-800 leading-tight text-center">
@@ -141,10 +143,23 @@
                 </h2>
             </div>
         </div>
+
+        <form method="GET"
+            action="{{ route('reportePorAlumno', ['courseId' => $courseId, 'sectionId' => $sectionId]) }}"
+            class="flex items-center space-x-4 p-4 bg-white rounded-lg">
+            <input type="text" name="search" placeholder="Buscar por nombre de alumno" value="{{ request('search') }}"
+                class="p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit"
+                class="p-2 bg-blue-500 w-1/4 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Buscar
+            </button>
+        </form>
+
         @if (count($datos) === 0)
             <div class="container mx-auto">
                 <div class="bg-white shadow-md rounded-lg overflow-hidden mx-auto p-5">
-                    <p class="text-center text-2xl font-semibold text-gray-800 mb-10">Aún no se han realizado intentos de tus evaluaciones . . .</p>
+                    <p class="text-center text-2xl font-semibold text-gray-800 mb-10">Aún no se han realizado intentos
+                        de tus evaluaciones . . .</p>
                     <div class="flex justify-center mb-10">
                         <img src="https://www.webquestcreator2.com/majwq/files/files_user/62124/evaluacion.png"
                             alt="No hay intentos" class="w-1/4 h-1/4 opacity-30">
@@ -165,7 +180,8 @@
                             @foreach ($dato['resultados'] as $resultado)
                                 <p><span class="font-semibold">Nombre de la Evaluación:</span>
                                     {{ $resultado['evaluacion'] }}</p>
-                                <p><span class="font-semibold">Calificación Obtenida:</span> {{ $resultado['puntuacion']}}
+                                <p><span class="font-semibold">Calificación Obtenida:</span>
+                                    {{ $resultado['puntuacion'] }}
                                 </p>
                                 <p><span class="font-semibold">Fecha:</span> {{ $resultado['fecha'] }}</p>
                                 <hr class="my-2">
@@ -175,7 +191,8 @@
                 @endforeach
             </div>
         @endif
-        <div class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-32 text-center mx-auto my-10">
+        <div
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded w-32 text-center mx-auto my-10">
             <a href="#" onclick="goBack()">Regresar</a>
         </div>
     @endif

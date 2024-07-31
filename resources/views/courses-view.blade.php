@@ -3,7 +3,7 @@
     <div>
         <x-course.hero-view :course="$course" :name="$name_user"/>
     </div>
-    
+
     <div class="w-full">
         <!-- botonera de los tabs -->
         <div class="flex justify-center mb-4">
@@ -18,7 +18,7 @@
                         <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Estadísticas Generales</span>
                     </a>
                     <!-- Tab 3 Estadísticas para el Instructor -->
-                    @hasanyrole('Instructor|Admin') 
+                    @hasanyrole('Instructor|Admin')
                     <a href="#" role="tab" class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none">
                         <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Estadísticas Para el Instructor</span>
                     </a>
@@ -26,7 +26,7 @@
                 </nav>
             </div>
         </div>
-    
+
         <!-- Contenido de los tabs -->
         <div class="mt-6">
             <!-- Tab 1 Content -->
@@ -40,7 +40,7 @@
                 <x-course.coursestats-view />
             </div>
             <!-- Tab 3 Content -->
-            @hasanyrole('Instructor|Admin') 
+            @hasanyrole('Instructor|Admin')
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow mt-4 hidden">
                 <x-course.coursegeneralstats-view />
             </div>

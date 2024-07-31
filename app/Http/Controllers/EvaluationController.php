@@ -146,7 +146,7 @@ class EvaluationController extends Controller
     public function show($id)
     {
         try {
-            $evaluation = Evaluation::with('course', 'module')->findOrFail($id);
+            $evaluation = Evaluation::with('course', 'module', 'questions.options')->findOrFail($id);
             $course = $evaluation->course;
             $section = $evaluation->module;  // Sección a la que pertenece la evaluación actual
         } catch (ModelNotFoundException $e) {
@@ -160,17 +160,16 @@ class EvaluationController extends Controller
                 ->with('error', 'Esta evaluación no se encuentra en tus registros.');
         }
 
-        // Obtener todas las evaluaciones que pertenecen al mismo módulo (sección)
-        $evaluations = Evaluation::where('module_id', $evaluation->module_id)
-            ->with('questions.options')
-            ->get();
+        // Verifica si la evaluación pertenece al mismo módulo
+        if ($evaluation->module_id != $section->id) {
+            return redirect()->route('evaluations.index')
+                ->with('error', 'La evaluación no pertenece al módulo especificado.');
+        }
 
-        // Preparar las preguntas de todas las evaluaciones agrupadas
-        $questions = $evaluations->flatMap(function ($evaluation) {
-            return $evaluation->questions;
-        });
+        // Obtener las preguntas de la evaluación actual
+        $questions = $evaluation->questions;
 
-        return view('evaluations.show', compact('questions', 'evaluation', 'course', 'section', 'evaluations'));
+        return view('evaluations.show', compact('questions', 'evaluation', 'course', 'section'));
     }
 
 
@@ -441,7 +440,7 @@ class EvaluationController extends Controller
                 $grades['4-6']++;
             } elseif ($result->total_score > 6 && $result->total_score <= 8) {
                 $grades['6-8']++;
-            }else {
+            } else {
                 $grades['8-10']++;
             }
         }
@@ -467,12 +466,14 @@ class EvaluationController extends Controller
         $evaluation->module_id = null;
         $evaluation->save();
 
-        return redirect()->route('evaluations.index')->with('success', 'La evaluación ha sido desvinculada de la sección.');
+        return back()->with('success', 'La evaluación ha sido desvinculada de la sección.');
     }
 
     //Reportería de evaluaciones por alumno
-    public function reportePorAlumno($courseId, $sectionId)
+    public function reportePorAlumno(Request $request, $courseId, $sectionId)
     {
+        $search = $request->input('search');
+
         // Obtener los resultados de las evaluaciones para el curso y sección específicos
         $evaluaciones = EvaluationResult::with(['user', 'evaluation'])
             ->whereHas('evaluation', function ($query) use ($courseId, $sectionId) {
@@ -489,23 +490,24 @@ class EvaluationController extends Controller
         $nameEvaluation = Evaluation::where('course_id', $courseId)->where('module_id', $sectionId)->first()->title;
 
         $rolId = auth()->user()->roles->pluck('id')->first();
-        //dd($rolId);
 
         // Preparar los datos para la vista
         $datosParaVista = [];
         foreach ($evaluaciones as $userId => $resultados) {
+            $alumno = $resultados->first()->user->name;
+            if ($search && stripos($alumno, $search) === false) {
+                continue; // Si hay un término de búsqueda y no coincide, omitir este resultado
+            }
             $datosParaVista[] = [
-                'alumno' => $resultados->first()->user->name,
+                'alumno' => $alumno,
                 'resultados' => $resultados->map(function ($resultado) {
                     return [
-                        //acceder al tittle de evaluation mediante el evaluation_id de la tabla de evaluation_results
                         'evaluacion' => $resultado->evaluation->title,
                         'puntuacion' => $resultado->total_score,
                         'fecha' => $resultado->created_at->format('d/m/Y'),
                     ];
                 }),
             ];
-            //dd($datosParaVista);
         }
 
         // Retornar la vista con los datos, incluyendo course->title, section->name, y rolId
@@ -516,6 +518,9 @@ class EvaluationController extends Controller
             'rolId' => $rolId,
             'title' => $title,
             'nameEvaluation' => $nameEvaluation,
+            'search' => $search, // Pasar el término de búsqueda a la vista
+            'courseId' => $courseId, // Pasar courseId a la vista
+            'sectionId' => $sectionId, // Pasar sectionId a la vista
         ]);
     }
 }
