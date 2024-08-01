@@ -21,7 +21,7 @@
             @if(Auth::user()->id == $course->user_id)
                 <div class="flex flex-row justify-end items-center">
                     <a href="{{route('courses.edit', $course)}}" class=" mr-4"><i
-                                class="fa-solid fa-pen text-blue-900"></i></a>
+                            class="fa-solid fa-pen text-blue-900"></i></a>
                     <form action="{{route('courses.destroy',$course)}}" method="post">
                         @csrf
                         @method('delete')
@@ -42,8 +42,9 @@
                     <li class="py-2">
                         <div class="flex items-center">
                             <div>
-                                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
-                                            class="fas fa-fingerprint"></i></span>
+                                <span
+                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
+                                        class="fas fa-fingerprint"></i></span>
                             </div>
                             <div>
                                 <h4 class="text-blueGray-500">
@@ -55,8 +56,9 @@
                     <li class="py-2">
                         <div class="flex items-center">
                             <div>
-                                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
-                                            class="fab fa-html5"></i></span>
+                                <span
+                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
+                                        class="fab fa-html5"></i></span>
                             </div>
                             <div>
                                 <h4 class="text-blueGray-500">{{$course->category->name}}</h4>
@@ -66,8 +68,9 @@
                     <li class="py-2">
                         <div class="flex items-center">
                             <div>
-                                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
-                                            class="far fa-paper-plane"></i></span>
+                                <span
+                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
+                                        class="far fa-paper-plane"></i></span>
                             </div>
                             <div>
                                 <h4 class="text-blueGray-500">{{$course->level->name}}</h4>
@@ -112,52 +115,50 @@
         const courseId = {{ $course->id }};
         const userId = {{ Auth::user()->id }};
 
-        rateCourseButton.addEventListener('click', function () {
-            console.log(`Buscando datos de valoración para el curso con ID: ${courseId} y usuario con ID: ${userId}`);
-            rateCoursePopup.classList.remove('hidden');
-            fetch(`/api/course/${courseId}/surveys`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Datos recibidos:', data);
-                    if (data.data && Array.isArray(data.data)) {
+        fetch(`/api/course/${courseId}/surveys`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+                    rateCourseButton.classList.remove('hidden');
+                    rateCourseButton.addEventListener('click', function () {
+                        rateCoursePopup.classList.remove('hidden');
                         const survey = data.data[0]; // Assuming there's only one survey for simplicity
                         if (survey) {
                             showRatingWidget(survey);
                         } else {
                             ratingContainer.innerHTML = '<p>No se encontraron datos de calificaciones.</p>';
                         }
-                    } else {
-                        ratingContainer.innerHTML = '<p>No se encontraron datos de calificaciones.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching ratings:', error);
-                    ratingContainer.innerHTML = '<p>Error al cargar las calificaciones.</p>';
-                });
-        });
+                    });
+                } else {
+                    rateCourseButton.classList.add('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching surveys:', error);
+                rateCourseButton.classList.add('hidden');
+            });
 
         closePopupButton.addEventListener('click', function () {
             rateCoursePopup.classList.add('hidden');
         });
 
         function showRatingWidget(ratingData) {
-            console.log('Mostrando widget de calificación con datos:', ratingData);
-            const { averageRating = 0, ratingCount = 0, userRating = null, survey_id } = ratingData;
+            const {averageRating = 0, ratingCount = 0, userRating = null, survey_id} = ratingData;
             ratingContainer.innerHTML = `
-            <div class="flex flex-col items-center">
-                <div class="flex items-center space-x-1">
-                    ${[1, 2, 3, 4, 5].map(star => `
-                        <button type="button" class="star ${star <= (userRating ?? Math.round(averageRating)) ? 'text-yellow-400' : 'text-gray-300'}" data-value="${star}">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.287 3.97c.3.921-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.175 0l-3.39 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.97a1 1 0 00-.364-1.118l-3.39-2.46c-.784-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.97z"/>
-                            </svg>
-                        </button>
-                    `).join('')}
-                </div>
-                <p class="text-sm mt-2">Promedio: ${averageRating.toFixed(1)} (${ratingCount} valoraciones)</p>
-                <p class="text-sm hidden">Tu calificación: ${userRating ?? 'No has calificado aún'}</p>
+        <div class="flex flex-col items-center">
+            <div class="flex items-center space-x-1">
+                ${[1, 2, 3, 4, 5].map(star => `
+                    <button type="button" class="star ${star <= (userRating ?? Math.round(averageRating)) ? 'text-yellow-400' : 'text-gray-300'}" data-value="${star}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.287 3.97c.3.921-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.175 0l-3.39 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.97a1 1 0 00-.364-1.118l-3.39-2.46c-.784-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.97z"/>
+                        </svg>
+                    </button>
+                `).join('')}
             </div>
-            `;
+            <p class="text-sm mt-2">Promedio: ${averageRating.toFixed(1)} (${ratingCount} valoraciones)</p>
+            <p class="text-sm hidden">Tu calificación: ${userRating ?? 'No has calificado aún'}</p>
+        </div>
+        `;
 
             ratingContainer.querySelectorAll('.star').forEach(star => {
                 star.addEventListener('click', function () {
@@ -183,7 +184,6 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Rating submitted:', data);
                     showRatingWidget({
                         averageRating: data.averageRating,
                         ratingCount: data.ratingCount,
