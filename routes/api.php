@@ -1,14 +1,16 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ResourceController;
-use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\SurveyResponseController;
+use App\Http\Controllers\CourseUserController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\LessonRatingController;
-use App\Http\Controllers\CourseUserController;
+use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\SurveyResponseController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,11 +27,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/courses/list', [CourseController::class, 'list']); // api de listado de cursos
-Route::get('/courses/{courseId}/sections', [CourseController::class, 'sections']);// api de listado de secciones
-Route::get('/sections/{sectionId}/lessons', [CourseController::class, 'lessons']);// api de listado de lecciones
+Route::get('/courses/{courseId}/sections', [CourseController::class, 'sections']); // api de listado de secciones
+Route::get('/sections/{sectionId}/lessons', [CourseController::class, 'lessons']); // api de listado de lecciones
 Route::get('/sections/{id}', [CourseController::class, 'getSection']); //api de datos de seccion
 Route::get('/lessons/{id}', [CourseController::class, 'getLesson']); //api de datos de lección
-
 
 // Route::get('/modules2', 'App\Http\Controllers\LessonsController@index2');
 Route::get('/modules', 'App\Http\Controllers\ModuleController@index');
@@ -48,7 +49,7 @@ Route::put('/lessons/{id}', 'App\Http\Controllers\lessonsController@updateLesson
 
 // creeando recursos por api
 Route::post('/resources', 'App\Http\Controllers\ResourceController@store');
-Route::put('/resources/{id}','App\Http\Controllers\ResourceController@update');
+Route::put('/resources/{id}', 'App\Http\Controllers\ResourceController@update');
 Route::delete('/resources/{id}', 'App\Http\Controllers\ResourceController@destroy')->name('sections.addbyApi');
 
 Route::get('/lessons/{lessonId}/resources', [ResourceController::class, 'getResourcesByLesson']);
@@ -65,8 +66,6 @@ Route::get('/surveys/{id}', [SurveyController::class, 'show']);
 Route::put('/surveys/{id}', [SurveyController::class, 'update']);
 Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy']);
 
-
-
 Route::get('/check-survey/{lessonId}', [SurveyResponseController::class, 'checkSurvey']);
 Route::post('/survey-responses', [SurveyResponseController::class, 'store']);
 Route::get('/course-statistics/{courseId}', [SurveyResponseController::class, 'getCourseStatistics']);
@@ -75,7 +74,6 @@ Route::get('/course/{courseId}/lesson-ratings', [LessonRatingController::class, 
 Route::post('/lesson-ratings', [LessonRatingController::class, 'store']);
 Route::get('/course-statistics-rating/{courseId}', [LessonRatingController::class, 'getCourseStatistics']);
 Route::get('/course/{courseId}/surveys', [LessonRatingController::class, 'getCourseSurvey']);
-
 
 //endpoint de estadística de lecciones
 Route::get('/course/{courseId}/grades', [EvaluationController::class, 'getCourseGrades']);
@@ -91,3 +89,42 @@ Route::get('/course-user/{courseId}/{userId}', [CourseUserController::class, 'su
 Route::get('/survey-questions/{courseId}', [SurveyController::class, 'getSurveyQuestions']);
 Route::get('/survey-responses/{surveyId}', [SurveyController::class, 'getSurveyResponses']);
 Route::get('/survey-ratings/{surveyId}', [SurveyController::class, 'getSurveyRatings']);
+
+Route::get('/lesson-user/{userId}/{lessonId}', function ($userId, $lessonId) {
+    $completed = DB::table('lesson_user')
+        ->where('user_id', $userId)
+        ->where('lesson_id', $lessonId)
+        ->exists();
+
+    return response()->json(['completed' => $completed]);
+});
+
+Route::post('/lesson-user', function (Request $request) {
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'lesson_id' => 'required|exists:lessons,id',
+        'created_at' => 'required|date',
+        'updated_at' => 'required|date',
+    ]);
+
+    try {
+        DB::table('lesson_user')->insert($validated);
+
+        return response()->json(['success' => true, 'message' => 'Data inserted successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+});
+
+Route::delete('/lesson-user/{userId}/{lessonId}', function ($userId, $lessonId) {
+    try {
+        DB::table('lesson_user')
+            ->where('user_id', $userId)
+            ->where('lesson_id', $lessonId)
+            ->delete();
+
+        return response()->json(['success' => true, 'message' => 'Data deleted successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+});

@@ -22,13 +22,28 @@
                     {!! $thislesson->iframe !!}
                 </div>
             </div>
-            <div class="w-1/4">
-                <h2 class="text-2xl  text-gray-900 mb-4">FeedBack</h2>
-                <div class="lesson-content" id="encuesta" data-userId='{{ Auth::user()->id }}'>
-                    @if ($hasResponded)
-                        <p class="mt-2 text-sm text-gray-600">Ya has respondido a esta encuesta.</p>
-                    @endif
-                    <!-- El script insertará los botones de la encuesta aquí si es necesario -->
+            <div class="flex flex-col w-1/4">
+                <div class="w-full">
+                    <h2 class="text-2xl  text-gray-900 mb-4">FeedBack</h2>
+                    <div class="lesson-content" id="encuesta" data-userId='{{ Auth::user()->id }}'>
+                        @if ($hasResponded)
+                            <p class="mt-2 text-sm text-gray-600">Ya has respondido a esta encuesta.</p>
+                        @endif
+                        <!-- El script insertará los botones de la encuesta aquí si es necesario -->
+                    </div>
+                </div>
+                <div class="flex flex-row mt-5">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" class="sr-only peer">
+                        <div
+                            class="peer ring-0 bg-rose-400  rounded-full outline-none duration-300 after:duration-500 w-12 h-12
+        shadow-md peer-checked:bg-emerald-500  peer-focus:outline-none  after:content-['✖️']
+        after:rounded-full after:absolute after:outline-none after:h-10 after:w-10 after:bg-gray-50
+        after:top-1 after:left-1 after:flex after:justify-center after:items-center  peer-hover:after:scale-75
+        peer-checked:after:content-['✔️'] after:-rotate-180 peer-checked:after:rotate-0">
+                        </div>
+                    </label>
+                    <p class="ml-3">Lección completada</p>
                 </div>
             </div>
         </div>
@@ -279,6 +294,78 @@
                     })
                     .catch(error => console.error('Error submitting rating:', error));
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkbox = document.querySelector('input[type="checkbox"]');
+            const lessonId = document.querySelector('#dataLesson').getAttribute('data-lessonId');
+            const userId = document.querySelector('#encuesta').getAttribute('data-userId');
+
+            // Fetch the current completion status
+            fetch(`/api/lesson-user/${userId}/${lessonId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.completed) {
+                        checkbox.checked = true;
+                    }
+                })
+                .catch(error => console.error('Error fetching completion status:', error));
+
+            checkbox.addEventListener('change', function () {
+                const currentTimestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+                if (this.checked) {
+                    fetch('/api/lesson-user', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            user_id: userId,
+                            lesson_id: lessonId,
+                            created_at: currentTimestamp,
+                            updated_at: currentTimestamp
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Data inserted successfully:', data.message);
+                            } else {
+                                console.error('Error inserting data:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            fetch('/api/lesson-user')
+                                .then(response => response.text())
+                                .then(text => console.error('Response text:', text));
+                        });
+                } else {
+                    fetch(`/api/lesson-user/${userId}/${lessonId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Data deleted successfully:', data.message);
+                            } else {
+                                console.error('Error deleting data:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            fetch(`/api/lesson-user/${userId}/${lessonId}`)
+                                .then(response => response.text())
+                                .then(text => console.error('Response text:', text));
+                        });
+                }
+            });
         });
     </script>
 </x-app-layout>

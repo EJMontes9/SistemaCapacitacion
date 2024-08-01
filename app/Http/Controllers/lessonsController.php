@@ -112,4 +112,6 @@ class lessonsController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+
 }
