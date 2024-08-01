@@ -40,7 +40,7 @@
             </div>
             <!-- Tab 2 Content -->
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow mt-4 hidden">
-                <x-course.coursestats-view />
+                <x-course.coursestats-view  :course="$course" />
             </div>
             <!-- Tab 3 Content -->
             @hasanyrole('Instructor|Admin')

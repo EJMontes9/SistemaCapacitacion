@@ -128,3 +128,32 @@ Route::delete('/lesson-user/{userId}/{lessonId}', function ($userId, $lessonId) 
         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
 });
+
+Route::get('/course-completion-stats/{courseId}', function ($courseId) {
+    $totalStudents = DB::table('course_user')
+        ->where('course_id', $courseId)
+        ->count();
+
+    $completedStudents = DB::table('course_user')
+        ->join('lesson_user', 'course_user.user_id', '=', 'lesson_user.user_id')
+        ->join('lessons', 'lesson_user.lesson_id', '=', 'lessons.id')
+        ->join('sections', 'lessons.section_id', '=', 'sections.id')
+        ->where('sections.course_id', $courseId)
+        ->select('course_user.user_id')
+        ->groupBy('course_user.user_id')
+        ->havingRaw('COUNT(lesson_user.lesson_id) = (
+            SELECT COUNT(*)
+            FROM lessons
+            JOIN sections ON lessons.section_id = sections.id
+            WHERE sections.course_id = ?
+        )', [$courseId])
+        ->get()
+        ->count();
+
+    $incompleteStudents = $totalStudents - $completedStudents;
+
+    return response()->json([
+        'completed' => $completedStudents,
+        'incomplete' => $incompleteStudents,
+    ]);
+});
