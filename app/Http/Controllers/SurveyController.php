@@ -115,17 +115,20 @@ class SurveyController extends Controller
     }
 
 
-    // app/Http/Controllers/SurveyController.php
-public function getSurveyQuestions()
-{
-    $questions = DB::table('surveys')
-        ->join('lessons', 'surveys.target_id', '=', 'lessons.id')
-        ->where('surveys.has_yes_no', 1)
-        ->select('surveys.id', 'surveys.title as question', 'lessons.name as lesson')
-        ->get();
+    public function getSurveyQuestions($courseId)
+    {
+        $questions = DB::table('surveys')
+            ->join('lessons', 'surveys.target_id', '=', 'lessons.id')
+            ->join('sections', 'lessons.section_id', '=', 'sections.id')
+            ->join('courses', 'sections.course_id', '=', 'courses.id')
+            ->where('surveys.has_yes_no', 1)
+            ->where('courses.id', $courseId)
+            ->select('surveys.id', 'surveys.title as question', 'lessons.name as lesson')
+            ->get();
 
-    return response()->json($questions);
-}
+        return response()->json($questions);
+    }
+
     public function getSurveyResponses($surveyId)
     {
         $responses = DB::table('survey_responses')
@@ -143,6 +146,23 @@ public function getSurveyQuestions()
             'no' => $noCount,
             'total' => $totalCount
         ]);
+    }
+
+    public function getSurveyRatings($courseId)
+    {
+        $responses = DB::table('survey_responses')
+            ->where('lesson_id', $courseId)
+            ->select('response_number', DB::raw('count(*) as count'))
+            ->groupBy('response_number')
+            ->get();
+
+        $ratingCounts = [0, 0, 0, 0, 0];
+        foreach ($responses as $response) {
+            if ($response->response_number >= 1 && $response->response_number <= 5) {
+                $ratingCounts[$response->response_number - 1] = $response->count;
+            }
+        }
+        return response()->json($ratingCounts);
     }
 
 

@@ -51,7 +51,7 @@
 
             <!-- Tab 4 Content -->
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow mt-4 hidden">
-                <x-course.valoracion-view />
+                <x-course.valoracion-view :courseId="$course->id" />
             </div>
         </div>
     </div>
