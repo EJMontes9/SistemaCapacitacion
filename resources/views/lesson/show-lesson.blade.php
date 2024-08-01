@@ -30,13 +30,6 @@
                     @endif
                     <!-- El script insertará los botones de la encuesta aquí si es necesario -->
                 </div>
-                <h2 class="text-2xl  text-gray-900 my-4">Valoraciones</h2>
-                <div id="lesson-rating" class="mt-4">
-                    @if ($hasResponded)
-                        <p class="mt-2 text-sm text-gray-600">Ya has respondido a esta encuesta</p>
-                    @endif
-                    <!-- El widget de calificación se insertará aquí dinámicamente -->
-                </div>
             </div>
         </div>
         <div class="w-full">

@@ -68,7 +68,7 @@
                                 </select>
                             </div>
                             <input type="hidden" id="edit-target_id" name="target_id">
-                            <div class="mb-4">
+                            <div class="hidden mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Tipos de preguntas:</label>
                                 <div>
                                     <input type="checkbox" id="edit-has_yes_no" name="has_yes_no" value="1">
@@ -144,8 +144,8 @@
                                 </select>
                             </div>
                             <input type="hidden" id="create-target_id" name="target_id">
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Tipos de preguntas:</label>
+                            <div class="hidden mb-4">
+                                <label class=" block text-gray-700 text-sm font-bold mb-2">Tipos de preguntas:</label>
                                 <div>
                                     <input type="radio" id="create-has_yes_no" name="has_yes_no" value="1">
                                     <label for="create-has_yes_no">Sí/No</label>
@@ -176,6 +176,70 @@
 
 
 <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const createCategorySelect = document.getElementById('create-category');
+    const createHasYesNo = document.getElementById('create-has_yes_no');
+    const createHasRating = document.getElementById('create-has_rating');
+
+    createCategorySelect.addEventListener('change', function() {
+        if (createCategorySelect.value === 'lesson') {
+            createHasYesNo.checked = true;
+            createHasRating.checked = false;
+        } else if (createCategorySelect.value === 'course') {
+            createHasYesNo.checked = false;
+            createHasRating.checked = true;
+        }
+    });
+
+    const editCategorySelect = document.getElementById('edit-category');
+    const editHasYesNo = document.getElementById('edit-has_yes_no');
+    const editHasRating = document.getElementById('edit-has_rating');
+
+    editCategorySelect.addEventListener('change', function() {
+        if (editCategorySelect.value === 'lesson') {
+            editHasYesNo.checked = true;
+            editHasRating.checked = false;
+        } else if (editCategorySelect.value === 'course') {
+            editHasYesNo.checked = false;
+            editHasRating.checked = true;
+        }
+    });
+});
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const createCategorySelect = document.getElementById('create-category');
+        const createHasYesNo = document.getElementById('create-has_yes_no');
+        const createHasRating = document.getElementById('create-has_rating');
+
+        createCategorySelect.addEventListener('change', function() {
+            if (createCategorySelect.value === 'lesson') {
+                createHasYesNo.checked = true;
+                createHasRating.checked = false;
+            } else if (createCategorySelect.value === 'course') {
+                createHasYesNo.checked = false;
+                createHasRating.checked = true;
+            }
+        });
+
+        const editCategorySelect = document.getElementById('edit-category');
+        const editHasYesNo = document.getElementById('edit-has_yes_no');
+        const editHasRating = document.getElementById('edit-has_rating');
+
+        editCategorySelect.addEventListener('change', function() {
+            if (editCategorySelect.value === 'lesson') {
+                editHasYesNo.checked = true;
+                editHasRating.checked = false;
+            } else if (editCategorySelect.value === 'course') {
+                editHasYesNo.checked = false;
+                editHasRating.checked = true;
+            }
+        });
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         loadSurveys();
         setupEventListeners();
@@ -216,7 +280,7 @@
 
     function handleCategoryChange(prefix) {
         const category = document.getElementById(`${prefix}-category`).value;
-        const containers = ['course', 'section', 'lesson'].map(type => 
+        const containers = ['course', 'section', 'lesson'].map(type =>
             document.getElementById(`${prefix}-${type}-select-container`)
         );
 
@@ -289,7 +353,7 @@
             .then(courses => {
                 const select = document.getElementById(`${prefix}-course-id`);
                 if (select) {
-                    select.innerHTML = '<option value="">Seleccione un curso</option>' + 
+                    select.innerHTML = '<option value="">Seleccione un curso</option>' +
                         courses.map(course => `<option value="${course.id}">${course.title}</option>`).join('');
                 }
             });
@@ -301,7 +365,7 @@
             .then(sections => {
                 const select = document.getElementById(`${prefix}-section-id`);
                 if (select) {
-                    select.innerHTML = '<option value="">Seleccione una sección</option>' + 
+                    select.innerHTML = '<option value="">Seleccione una sección</option>' +
                         sections.map(section => `<option value="${section.id}">${section.name}</option>`).join('');
                 }
             });
@@ -313,7 +377,7 @@
             .then(lessons => {
                 const select = document.getElementById(`${prefix}-lesson-id`);
                 if (select) {
-                    select.innerHTML = '<option value="">Seleccione una lección</option>' + 
+                    select.innerHTML = '<option value="">Seleccione una lección</option>' +
                         lessons.map(lesson => `<option value="${lesson.id}">${lesson.name}</option>`).join('');
                 }
             });
@@ -321,7 +385,7 @@
 
     async function openEditModal(surveyId) {
         const survey = await fetch(`/api/surveys/${surveyId}`).then(response => response.json());
-        
+
         const elements = [
             { id: 'edit-survey-id', property: 'value', value: survey.id },
             { id: 'edit-title', property: 'value', value: survey.title },
@@ -339,9 +403,9 @@
                 element[property] = value;
             }
         });
-        
+
         await loadRelatedData('edit', survey.category, survey.target_id);
-        
+
         const editModal = document.getElementById('editModal');
         if (editModal) {
             editModal.classList.remove('hidden');
@@ -365,7 +429,7 @@
         } else if (category === 'section' || category === 'lesson') {
             const courseId = await getCourseIdFromTarget(category, targetId);
             if (courseSelect) courseSelect.value = courseId;
-            
+
             const sections = await fetch(`/api/courses/${courseId}/sections`).then(response => response.json());
             if (sectionSelect) populateSelect(sectionSelect, sections, 'id', 'name');
 
@@ -390,7 +454,7 @@
     }
 
     function populateSelect(select, options, valueKey, textKey) {
-        select.innerHTML = options.map(option => 
+        select.innerHTML = options.map(option =>
             `<option value="${option[valueKey]}">${option[textKey]}</option>`
         ).join('');
         select.insertAdjacentHTML('afterbegin', '<option value="">Seleccione una opción</option>');
@@ -495,7 +559,7 @@
 
     function deleteSurvey(id) {
         if (confirm('¿Estás seguro de querer eliminar esta encuesta?')) {
-            fetch(`/api/surveys/${id}`, { 
+            fetch(`/api/surveys/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

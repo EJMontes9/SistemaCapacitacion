@@ -74,6 +74,8 @@ Route::get('/course-statistics/{courseId}', [SurveyResponseController::class, 'g
 Route::get('/course/{courseId}/lesson-ratings', [LessonRatingController::class, 'getLessonRatings']);
 Route::post('/lesson-ratings', [LessonRatingController::class, 'store']);
 Route::get('/course-statistics-rating/{courseId}', [LessonRatingController::class, 'getCourseStatistics']);
+Route::get('/course/{courseId}/surveys', [LessonRatingController::class, 'getCourseSurvey']);
+
 
 //endpoint de estadística de lecciones
 Route::get('/course/{courseId}/grades', [EvaluationController::class, 'getCourseGrades']);

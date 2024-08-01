@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LessonRating;
 use App\Models\Course;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Lesson;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,64 @@ use App\Models\SurveyResponse;
 
 class LessonRatingController extends Controller
 {
+
+    public function getCourseSurvey($courseId)
+    {
+        try {
+            $userId = request('user_id');
+
+            $surveys = DB::table('surveys')
+                ->join('courses', 'surveys.target_id', '=', 'courses.id')
+                ->leftJoin('survey_responses', 'surveys.id', '=', 'survey_responses.survey_id')
+                ->where('target_id', $courseId)
+                ->where('surveys.category', 'course')
+                ->select(
+                    'surveys.id as survey_id',
+                    'surveys.title',
+                    'surveys.description',
+                    'surveys.target_id',
+                    DB::raw('AVG(survey_responses.response_number) as average_rating'),
+                    DB::raw('COUNT(survey_responses.id) as rating_count')
+                )
+                ->groupBy('surveys.id', 'surveys.title', 'surveys.description', 'surveys.target_id')
+                ->get();
+
+            $userRatings = DB::table('survey_responses')
+                ->where('user_id', $userId)
+                ->whereIn('survey_id', $surveys->pluck('survey_id'))
+                ->select('survey_id', 'response_number as user_rating')
+                ->get()
+                ->keyBy('survey_id');
+
+            $formattedSurveys = $surveys->map(function ($survey) use ($userRatings) {
+                return [
+                    'survey_id' => $survey->survey_id,
+                    'title' => $survey->title,
+                    'description' => $survey->description,
+                    'target_id' => $survey->target_id,
+                    'averageRating' => round($survey->average_rating, 2),
+                    'ratingCount' => $survey->rating_count,
+                    'userRating' => $userRatings->get($survey->survey_id) ? $userRatings->get($survey->survey_id)->user_rating : null,
+                ];
+            });
+
+            if ($formattedSurveys->isEmpty()) {
+                return response()->json([
+                    'message' => 'No hay encuestas disponibles para este curso.',
+                    'data' => []
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Encuestas del curso obtenidas con éxito.',
+                'data' => $formattedSurveys
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Error al obtener las encuestas del curso: ' . $e->getMessage()], 500);
+        }
+    }
+
+
     public function getLessonRatings($courseId)
     {
         try {
@@ -35,16 +94,18 @@ class LessonRatingController extends Controller
                 )
                 ->groupBy('lessons.id', 'surveys.id', 'lessons.name')
                 ->get();
-    
+
+            dd($ratings);
+
             $userId = request('user_id');
-    
+
             $userRatings = DB::table('survey_responses')
                 ->where('user_id', $userId)
                 ->whereIn('survey_id', $ratings->pluck('survey_id'))
                 ->select('lesson_id', 'response_number as user_rating')
                 ->get()
                 ->keyBy('lesson_id');
-    
+
             $formattedRatings = $ratings->map(function ($rating) use ($userRatings) {
                 return [
                     'lesson_id' => $rating->lesson_id,
@@ -52,24 +113,24 @@ class LessonRatingController extends Controller
                     'lesson_name' => $rating->lesson_name,
                     'averageRating' => round($rating->average_rating, 2),
                     'ratingCount' => $rating->rating_count,
-                    'userRating' => $userRatings->get($rating->lesson_id) ? 
+                    'userRating' => $userRatings->get($rating->lesson_id) ?
                         $userRatings->get($rating->lesson_id)->user_rating : null,
                     'has_rating' => true
                 ];
             });
-    
+
             if ($formattedRatings->isEmpty()) {
                 return response()->json([
                     'message' => 'No hay encuestas con calificaciones disponibles para las lecciones de este curso.',
                     'data' => []
                 ]);
             }
-    
+
             return response()->json([
                 'message' => 'Datos de calificaciones de lecciones obtenidos con éxito.',
                 'data' => $formattedRatings
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Error al obtener las calificaciones de las lecciones: ' . $e->getMessage()], 500);
         }
     }
@@ -103,7 +164,7 @@ class LessonRatingController extends Controller
                 'ratingCount' => $stats->rating_count,
                 'userRating' => $response->response_number
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'error' => 'Error al guardar la calificación: ' . $e->getMessage()
             ], 500);
@@ -147,7 +208,7 @@ class LessonRatingController extends Controller
                 ];
             }
             return response()->json($formattedStats);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'error' => 'Error al obtener las estadísticas del curso: ' . $e->getMessage()
             ], 500);

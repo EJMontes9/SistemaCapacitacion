@@ -105,17 +105,24 @@ class courseController extends Controller
      */
     public function show(string $slug)
     {
-        $course = courses::where('slug', $slug)->firstOrFail();
-        $sections = section::where('course_id', $course->id)->get();
+        $course = Courses::where('slug', $slug)->firstOrFail();
+        $sections = Section::where('course_id', $course->id)->get();
         $user = User::findOrFail($course->user_id);
         $name_user = $user->name;
 
-        $lessons = lesson::whereIn('section_id', $sections->pluck('id'))->get()->groupBy('section_id');
+        $lessons = Lesson::whereIn('section_id', $sections->pluck('id'))->get()->groupBy('section_id');
         $resources = Resource::whereIn('lesson_id', $lessons->flatten()->pluck('id'))->get()->groupBy('lesson_id');
 
         $evaluation = Evaluation::where('course_id', $course->id)->get();
 
-        return view('courses-view', compact('course', 'sections', 'lessons', 'name_user', 'evaluation', 'resources'));
+        $userId = Auth::id();
+        $hasResponded = DB::table('survey_responses')
+            ->where('user_id', $userId)
+            ->where('lesson_id', $course->id)
+            ->whereNotNull('response_number')
+            ->exists();
+
+        return view('courses-view', compact('course', 'sections', 'lessons', 'name_user', 'evaluation', 'resources', 'hasResponded'));
     }
 
     // paso 2 de creación, las secciones
