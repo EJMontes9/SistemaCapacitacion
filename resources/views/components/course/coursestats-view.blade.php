@@ -5,6 +5,9 @@
             <canvas id="completionChart" width="400" height="400"></canvas>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         </div>
+        <div class="p-4 bg-white rounded-lg shadow w-3/4  justify-center items-center mr-4">
+            
+        </div>
     </div>
 </div>
 

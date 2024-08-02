@@ -1,4 +1,5 @@
 <div class="flex flex-row">
+    <h1>{{$courseId}}</h1>
     <div class="w-1/3 p-4 bg-white rounded-lg shadow mt-4 h-[33rem] justify-center items-center mr-4">
         <label for="surveyQuestion" class="block text-sm font-medium text-gray-700">Seleccione una lección:</label>
         <x-combobox id="surveyQuestion" class="form-select mt-1 block w-full">
@@ -57,7 +58,7 @@
 
         let myPieChart = new Chart(ctx, config);
 
-        fetch(`/api/survey-questions/${courseId}`)
+        fetch(`/api/survey-questions/{{$courseId}}`)
             .then(response => response.json())
             .then(questions => {
                 const surveyQuestionSelect = document.getElementById('surveyQuestion');
@@ -138,7 +139,7 @@
 
         let myBarChart = new Chart(barCtx, barConfig);
 
-        fetch(`/api/survey-ratings/${courseId}`)
+        fetch(`/api/survey-ratings/{{$courseId}}`)
             .then(response => response.json())
             .then(data => {
                 myBarChart.data.datasets[0].data = data;
