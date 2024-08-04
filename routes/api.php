@@ -90,6 +90,9 @@ Route::get('/survey-questions/{courseId}', [SurveyController::class, 'getSurveyQ
 Route::get('/survey-responses/{surveyId}', [SurveyController::class, 'getSurveyResponses']);
 Route::get('/survey-ratings/{surveyId}', [SurveyController::class, 'getSurveyRatings']);
 
+Route::get('/section-completion-stats/{courseId}', [CourseController::class, 'getSectionCompletionStats']);
+
+
 Route::get('/lesson-user/{userId}/{lessonId}', function ($userId, $lessonId) {
     $completed = DB::table('lesson_user')
         ->where('user_id', $userId)
@@ -111,7 +114,7 @@ Route::post('/lesson-user', function (Request $request) {
         DB::table('lesson_user')->insert($validated);
 
         return response()->json(['success' => true, 'message' => 'Data inserted successfully']);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
 });
@@ -124,7 +127,7 @@ Route::delete('/lesson-user/{userId}/{lessonId}', function ($userId, $lessonId) 
             ->delete();
 
         return response()->json(['success' => true, 'message' => 'Data deleted successfully']);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
 });

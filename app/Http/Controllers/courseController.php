@@ -285,4 +285,23 @@ class courseController extends Controller
         $lesson = Lesson::findOrFail($id);
         return response()->json($lesson);
     }
+
+    public function getSectionCompletionStats($courseId)
+    {
+        $course = Courses::find($courseId);
+
+        if (!$course) {
+            return response()->json(['error' => 'Course not found'], 404);
+        }
+
+        $sections = $course->sections()->get();
+        $sectionStats = $sections->map(function ($section) {
+            return [
+                'name' => $section->name,
+                'completed_students_count' => $section->completedStudents()
+            ];
+        });
+
+        return response()->json($sectionStats);
+    }
 }
