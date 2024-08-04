@@ -3,8 +3,12 @@
     <table class="items-center w-full bg-transparent border-collapse">
         <thead>
         <tr>
-            <th class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap">Cursos</th>
-            <th class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap min-w-140-px">Progreso</th>
+            <th class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap">
+                Cursos
+            </th>
+            <th class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap min-w-140-px">
+                Progreso
+            </th>
         </tr>
         </thead>
         <tbody id="courses-progress" class="divide-y divide-gray-100">
@@ -23,7 +27,7 @@
 
         fetch(`/api/user-courses-progress/${userId}`)
             .then(response => {
-                console.log('la respuesta es: ',response);
+                console.log('la respuesta es: ', response);
                 if (!response.ok) {
                     return response.text().then(text => {
                         throw new Error(text);

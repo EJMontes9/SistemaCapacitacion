@@ -127,5 +127,43 @@ class CourseUserController extends Controller
         }
     }
 
+    public function getCourseProgress($courseId, $userId)
+    {
+        try {
+            $course = DB::table('courses')
+                ->join('course_user', 'courses.id', '=', 'course_user.course_id')
+                ->where('course_user.user_id', $userId)
+                ->where('courses.id', $courseId)
+                ->select('courses.id', 'courses.title')
+                ->first();
+
+            if (!$course) {
+                return response()->json(['error' => 'Course not found or user not enrolled'], 404);
+            }
+
+            $totalLessons = DB::table('lessons')
+                ->join('sections', 'lessons.section_id', '=', 'sections.id')
+                ->where('sections.course_id', $course->id)
+                ->count();
+
+            $completedLessons = DB::table('lesson_user')
+                ->join('lessons', 'lesson_user.lesson_id', '=', 'lessons.id')
+                ->join('sections', 'lessons.section_id', '=', 'sections.id')
+                ->where('sections.course_id', $course->id)
+                ->where('lesson_user.user_id', $userId)
+                ->count();
+
+            $progress = $totalLessons > 0 ? ($completedLessons / $totalLessons) * 100 : 0;
+
+            return response()->json([
+                'title' => $course->title,
+                'progress' => round($progress, 2)
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error fetching course progress: ' . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
+
 
 }

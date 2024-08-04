@@ -21,7 +21,7 @@
             @if(Auth::user()->id == $course->user_id)
                 <div class="flex flex-row justify-end items-center">
                     <a href="{{route('courses.edit', $course)}}" class=" mr-4"><i
-                            class="fa-solid fa-pen text-blue-900"></i></a>
+                                class="fa-solid fa-pen text-blue-900"></i></a>
                     <form action="{{route('courses.destroy',$course)}}" method="post">
                         @csrf
                         @method('delete')
@@ -43,8 +43,8 @@
                         <div class="flex items-center">
                             <div>
                                 <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
-                                        class="fas fa-fingerprint"></i></span>
+                                        class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
+                                            class="fas fa-fingerprint"></i></span>
                             </div>
                             <div>
                                 <h4 class="text-blueGray-500">
@@ -57,8 +57,8 @@
                         <div class="flex items-center">
                             <div>
                                 <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
-                                        class="fab fa-html5"></i></span>
+                                        class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
+                                            class="fab fa-html5"></i></span>
                             </div>
                             <div>
                                 <h4 class="text-blueGray-500">{{$course->category->name}}</h4>
@@ -69,18 +69,28 @@
                         <div class="flex items-center">
                             <div>
                                 <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
-                                        class="far fa-paper-plane"></i></span>
+                                        class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-cyan-600 bg-cyan-200 mr-3"><i
+                                            class="far fa-paper-plane"></i></span>
                             </div>
                             <div>
                                 <h4 class="text-blueGray-500">{{$course->level->name}}</h4>
                             </div>
                         </div>
                     </li>
+
                 </ul>
+
+                <div class="block w-full overflow-x-auto">
+                    <div id="course-progress" class="divide-y divide-gray-100">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Add this button to trigger the popup -->
                 <button id="rateCourseButton"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Valorar Curso
+                        class="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110">
+                    <i class="fa fa-star text-2xl"></i>
+                    <span class="ml-2 hidden hover:inline-block">Valorar</span>
                 </button>
             </div>
         </div>
@@ -197,4 +207,46 @@
                 .catch(error => console.error('Error submitting rating:', error));
         }
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const courseId = '{{ $course->id }}';
+        const userId = '{{ Auth::id() }}';
+        if (!userId) {
+            console.error('User is not authenticated.');
+            return;
+        }
+
+        fetch(`/api/course-progress/${courseId}/${userId}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                const progressContainer = document.getElementById('course-progress');
+                progressContainer.innerHTML = ''; // Clear existing content
+
+                const progress = data.progress;
+                const progressBar = document.createElement('div');
+                progressBar.classList.add('text-gray-500');
+
+                progressBar.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="mr-2 text-xs font-medium">${progress}%</span>
+                        <div class="relative w-full">
+                            <div class="w-full bg-gray-200 rounded-sm h-2">
+                                <div class="bg-cyan-600 h-2 rounded-sm" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                progressContainer.appendChild(progressBar);
+            })
+            .catch(error => console.error('Error fetching course progress:', error));
+    });
+
 </script>

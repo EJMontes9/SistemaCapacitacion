@@ -162,3 +162,5 @@ Route::get('/course-completion-stats/{courseId}', function ($courseId) {
 });
 
 Route::get('/user-courses-progress/{userId}', [CourseUserController::class, 'getUserCoursesProgress']);
+
+Route::get('/course-progress/{courseId}/{userId}', [CourseUserController::class, 'getCourseProgress']);
