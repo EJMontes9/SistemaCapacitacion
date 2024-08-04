@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\CourseUser;
 use App\Models\User;
 use App\Models\Courses;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Log;
 
 class CourseUserController extends Controller
 {
@@ -56,6 +59,7 @@ class CourseUserController extends Controller
 
         return response()->json($courseUser, 201);
     }
+
     public function subscribeUser2($courseId, $userId)
     {
         // Verificar si el curso y el usuario existen
@@ -64,8 +68,8 @@ class CourseUserController extends Controller
 
         // Verificar si ya existe la suscripción
         $existingSubscription = CourseUser::where('course_id', $courseId)
-                                            ->where('user_id', $userId)
-                                            ->first();
+            ->where('user_id', $userId)
+            ->first();
 
         if ($existingSubscription) {
             return response()->json([
@@ -85,4 +89,43 @@ class CourseUserController extends Controller
             'subscription' => $courseUser
         ], 201);
     }
+
+    public function getUserCoursesProgress($userId)
+    {
+        try {
+            $courses = DB::table('courses')
+                ->join('course_user', 'courses.id', '=', 'course_user.course_id')
+                ->where('course_user.user_id', $userId)
+                ->select('courses.id', 'courses.title')
+                ->get();
+
+            $coursesProgress = $courses->map(function ($course) use ($userId) {
+                $totalLessons = DB::table('lessons')
+                    ->join('sections', 'lessons.section_id', '=', 'sections.id')
+                    ->where('sections.course_id', $course->id)
+                    ->count();
+
+                $completedLessons = DB::table('lesson_user')
+                    ->join('lessons', 'lesson_user.lesson_id', '=', 'lessons.id')
+                    ->join('sections', 'lessons.section_id', '=', 'sections.id')
+                    ->where('sections.course_id', $course->id)
+                    ->where('lesson_user.user_id', $userId)
+                    ->count();
+
+                $progress = $totalLessons > 0 ? ($completedLessons / $totalLessons) * 100 : 0;
+
+                return [
+                    'title' => $course->title,
+                    'progress' => round($progress, 2)
+                ];
+            });
+
+            return response()->json($coursesProgress);
+        } catch (Exception $e) {
+            Log::error('Error fetching user courses progress: ' . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
+
+
 }

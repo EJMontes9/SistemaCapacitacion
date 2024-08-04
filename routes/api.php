@@ -160,3 +160,5 @@ Route::get('/course-completion-stats/{courseId}', function ($courseId) {
         'incomplete' => $incompleteStudents,
     ]);
 });
+
+Route::get('/user-courses-progress/{userId}', [CourseUserController::class, 'getUserCoursesProgress']);
