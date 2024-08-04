@@ -15,93 +15,114 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const courseId = document.querySelector('#dataCourse').getAttribute('data-courseId');
+        let completionChart;
+        let sectionCompletionChart;
 
-        fetch(`/api/course-completion-stats/${courseId}`)
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                const ctx = document.getElementById('completionChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Completo', 'Incompleto'],
-                        datasets: [{
-                            data: [data.completed, data.incomplete],
-                            backgroundColor: ['#4CAF50', '#F44336']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            title: {
-                                display: true,
-                                text: 'Progreso de los estudiantes en el curso'
-                            }
-                        }
+        const fetchDataAndUpdateCharts = () => {
+            fetch(`/api/course-completion-stats/${courseId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
                     }
-                });
-            })
-            .catch(error => console.error('Error fetching completion stats:', error));
-
-        fetch(`/api/section-completion-stats/${courseId}`)
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!Array.isArray(data)) {
-                    throw new Error('Invalid data format');
-                }
-
-                const sectionCtx = document.getElementById('sectionCompletionChart').getContext('2d');
-                const sectionLabels = data.map(section => section.name);
-                const sectionData = data.map(section => section.completed_students_count);
-
-                new Chart(sectionCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: sectionLabels,
-                        datasets: [{
-                            label: 'Estudiantes que han culminado',
-                            data: sectionData,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        scales: {
-                            x: {
-                                beginAtZero: true
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false,
+                    return response.json();
+                })
+                .then(data => {
+                    const ctx = document.getElementById('completionChart').getContext('2d');
+                    if (completionChart) {
+                        completionChart.data.datasets[0].data = [data.completed, data.incomplete];
+                        completionChart.update();
+                    } else {
+                        completionChart = new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Completo', 'Incompleto'],
+                                datasets: [{
+                                    data: [data.completed, data.incomplete],
+                                    backgroundColor: ['#4CAF50', '#F44336']
+                                }]
                             },
-                            title: {
-                                display: true,
-                                text: 'Cantidad de estudiantes que han culminado cada sección'
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Progreso de los estudiantes en el curso'
+                                    }
+                                }
                             }
-                        }
+                        });
                     }
-                });
-            })
-            .catch(error => console.error('Error fetching section completion stats:', error));
+                })
+                .catch(error => console.error('Error fetching completion stats:', error));
+
+            fetch(`/api/section-completion-stats/${courseId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data)) {
+                        throw new Error('Invalid data format');
+                    }
+
+                    const sectionCtx = document.getElementById('sectionCompletionChart').getContext('2d');
+                    const sectionLabels = data.map(section => section.name);
+                    const sectionData = data.map(section => section.completed_students_count);
+
+                    if (sectionCompletionChart) {
+                        sectionCompletionChart.data.labels = sectionLabels;
+                        sectionCompletionChart.data.datasets[0].data = sectionData;
+                        sectionCompletionChart.update();
+                    } else {
+                        sectionCompletionChart = new Chart(sectionCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: sectionLabels,
+                                datasets: [{
+                                    label: 'Estudiantes que han culminado',
+                                    data: sectionData,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                scales: {
+                                    x: {
+                                        beginAtZero: true
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false,
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Cantidad de estudiantes que han culminado cada sección'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching section completion stats:', error));
+        };
+
+        // Fetch data and update charts every 30 seconds
+        setInterval(fetchDataAndUpdateCharts, 30000);
+
+        // Initial fetch and render
+        fetchDataAndUpdateCharts();
     });
 </script>
