@@ -25,14 +25,10 @@
                     @endif
                     @endhasanyrole
                     <!-- Tab 3 Estadísticas para el Instructor -->
-                    @hasanyrole('Instructor|Admin')
-                    @if(Auth::user()->id == $course->user_id)
-                        <a href="#" role="tab"
-                           class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none">
-                            <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Estadísticas Desempeño</span>
-                        </a>
-                    @endif
-                    @endhasanyrole
+                    <a href="#" role="tab"
+                       class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none">
+                        <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Estadísticas Desempeño</span>
+                    </a>
                     <a href="#" role="tab"
                        class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm leading-5 focus:outline-none">
                         <span class="bg-white rounded-full group-hover:bg-gray-50 group-focus:ring-4 group-focus:ring-indigo-500 group-focus:ring-opacity-50 py-2 px-4">Valoraciones</span>
@@ -59,11 +55,10 @@
             @endif
             @endhasanyrole
             <!-- Tab 3 Content -->
-            @hasanyrole('Instructor|Admin')
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow mt-4 hidden">
-                <x-course.coursegeneralstats-view  :course="$course"/>
+                <x-course.coursegeneralstats-view :course="$course"/>
             </div>
-            @endhasanyrole
+
 
             <!-- Tab 4 Content -->
             <div role="tabpanel" class="p-4 bg-white rounded-lg shadow mt-4 hidden">
