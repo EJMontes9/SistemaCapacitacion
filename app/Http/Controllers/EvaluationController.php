@@ -408,7 +408,6 @@ class EvaluationController extends Controller
         return view('evaluations.index', compact('evaluations', 'courseName', 'sectionName'));
     }
 
-    // metodo para endpoint de data estadistica
     public function getCourseGrades($courseId)
     {
         // Verificar si el curso existe
@@ -421,8 +420,29 @@ class EvaluationController extends Controller
 
         // Obtener todos los resultados de evaluación para el curso
         $results = EvaluationResult::where('course_id', $courseId)
-            ->select('total_score')
+            ->select('user_id', 'total_score')
             ->get();
+
+
+        // Inicializar el array para almacenar los promedios
+        $studentAverages = [];
+
+        // Agrupar los resultados por estudiante y calcular el promedio
+        foreach ($results as $result) {
+            if (!isset($studentAverages[$result->user_id])) {
+                $studentAverages[$result->user_id] = [
+                    'total_score' => 0,
+                    'count' => 0
+                ];
+            }
+            $studentAverages[$result->user_id]['total_score'] += $result->total_score;
+            $studentAverages[$result->user_id]['count']++;
+        }
+
+        // Calcular el promedio de cada estudiante
+        foreach ($studentAverages as $userId => $data) {
+            $studentAverages[$userId] = $data['total_score'] / $data['count'];
+        }
 
         // Inicializar las categorías
         $grades = [
@@ -432,28 +452,21 @@ class EvaluationController extends Controller
             '8-10' => 0
         ];
 
-        // Contar manualmente los resultados en cada categoría
-        foreach ($results as $result) {
-            if ($result->total_score >= 0 && $result->total_score <= 4) {
+        // Contar los estudiantes en cada categoría
+        foreach ($studentAverages as $average) {
+            if ($average >= 0 && $average <= 4) {
                 $grades['0-4']++;
-            } elseif ($result->total_score > 4 && $result->total_score <= 6) {
+            } elseif ($average > 4 && $average <= 6) {
                 $grades['4-6']++;
-            } elseif ($result->total_score > 6 && $result->total_score <= 8) {
+            } elseif ($average > 6 && $average <= 8) {
                 $grades['6-8']++;
             } else {
                 $grades['8-10']++;
             }
         }
 
-        if (empty($results)) {
-            return response()->json([
-                'message' => 'No hay datos de evaluaciones disponibles para este curso.',
-                'data' => $grades
-            ]);
-        }
-
         return response()->json([
-            'message' => 'Métricas de evaluaciones obtenidas con éxito.',
+            'message' => 'Promedios de calificaciones obtenidos con éxito.',
             'data' => $grades
         ]);
     }
