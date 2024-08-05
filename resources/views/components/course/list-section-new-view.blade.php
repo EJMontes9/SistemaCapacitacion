@@ -11,9 +11,11 @@ $numSection = 1;
             <div class="flex flex-row justify-between items-center lg:text-2xl md:text-xl text-lg lg:pb-3 p-0 font-black text-gray-700">
                 <h2>Secciones del curso:</h2>
                 @hasanyrole('Instructor|Admin')
-                <a href="{{route('courses.paso2', $course)}}" class="mr-4">
-                    <i class="fa-solid fa-pen text-blue-900"></i>
-                </a>
+                @if(Auth::user()->id == $course->user_id)
+                    <a href="{{route('courses.paso2', $course)}}" class="mr-4">
+                        <i class="fa-solid fa-pen text-blue-900"></i>
+                    </a>
+                @endif
                 @endhasanyrole
             </div>
 

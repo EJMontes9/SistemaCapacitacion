@@ -80,7 +80,7 @@
 
                 </ul>
 
-                <div class="block w-full overflow-x-auto">
+                <div class="block w-full overflow-x-auto my-3">
                     <div id="course-progress" class="divide-y divide-gray-100">
                         <!-- Dynamic content will be inserted here -->
                     </div>

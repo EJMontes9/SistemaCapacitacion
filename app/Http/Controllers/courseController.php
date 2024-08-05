@@ -304,4 +304,16 @@ class courseController extends Controller
 
         return response()->json($sectionStats);
     }
+
+    public function getAverageGradesBySection($courseId, $userId) {
+        $averageGrades = DB::table('evaluation_results')
+            ->join('sections', 'evaluation_results.module_id', '=', 'sections.id')
+            ->select('sections.name as section_name', DB::raw('AVG(total_score) as average_score'))
+            ->where('evaluation_results.course_id', $courseId)
+            ->where('evaluation_results.user_id', $userId)
+            ->groupBy('sections.name')
+            ->get();
+
+        return response()->json($averageGrades);
+    }
 }
