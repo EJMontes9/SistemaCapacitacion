@@ -12,6 +12,7 @@
     <div id="promedioCalificacionesChart" class="space-y-8">
         <p class="text-2xl font-bold">Promedio de calificaciones por sección</p>
         <select id="studentSelector" class="mb-4 p-2 w-1/4 border rounded">
+            <option value="" selected>Seleccione 1 alumno</option>
             <!-- Options will be populated dynamically -->
         </select>
         <canvas id="promedioCalificacionesChartCanvas" class="w-full h-10"></canvas>
