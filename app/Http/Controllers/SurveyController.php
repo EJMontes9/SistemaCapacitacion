@@ -121,7 +121,7 @@ class SurveyController extends Controller
             ->join('lessons', 'surveys.target_id', '=', 'lessons.id')
             ->join('sections', 'lessons.section_id', '=', 'sections.id')
             ->join('courses', 'sections.course_id', '=', 'courses.id')
-            ->where('surveys.has_yes_no', 1)
+            ->where('surveys.has_rating', 1)
             ->where('courses.id', $courseId)
             ->select('surveys.id', 'surveys.title as question', 'lessons.name as lesson')
             ->get();
@@ -133,18 +133,21 @@ class SurveyController extends Controller
     {
         $responses = DB::table('survey_responses')
             ->where('survey_id', $surveyId)
-            ->select('response_text', DB::raw('count(*) as count'))
-            ->groupBy('response_text')
+            ->select('response_number', DB::raw('count(*) as count'))
+            ->groupBy('response_number')
             ->get();
 
-        $yesCount = $responses->where('response_text', 'yes')->first()->count ?? 0;
-        $noCount = $responses->where('response_text', 'no')->first()->count ?? 0;
-        $totalCount = $yesCount + $noCount;
+        $labels = ['1 estrella', '2 estrellas', '3 estrellas', '4 estrellas', '5 estrellas'];
+        $data = [0, 0, 0, 0, 0];
+        foreach ($responses as $response) {
+            if ($response->response_number >= 1 && $response->response_number <= 5) {
+                $data[$response->response_number - 1] = $response->count;
+            }
+        }
 
         return response()->json([
-            'yes' => $yesCount,
-            'no' => $noCount,
-            'total' => $totalCount
+            'labels' => $labels,
+            'data' => $data
         ]);
     }
 
