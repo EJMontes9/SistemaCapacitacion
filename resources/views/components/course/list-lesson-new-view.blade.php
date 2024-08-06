@@ -28,60 +28,30 @@
     @else
         @foreach ($lessons as $lesson)
             <li class="mb-4">
-                <div class="rounded-xl px-2 pt-2 mb-0">
+                <div class="rounded-xl px-2 pt-2 mb-0 mg">
                     <div class="flex bg-gray-300 bg-opacity-50 hover:bg-gray-100 items-center justify-between w-full p-2 cursor-pointer border-2 rounded-xl {{ in_array($lesson->id, $completedLessons) ? 'bg-green-100' : 'bg-gray-200' }}"
                          id="seccion-list">
-                        <div class="flex flex-row justify-between items-center w-full">
-                            <div class="flex flex-row flex-wrap ml-2">
-                                <div class="text-sm my-auto leading-3 font-bold w-full {{ in_array($lesson->id, $completedLessons) ? 'text-green-700' : 'text-gray-700' }}">
-                                    <a class="ml-4"
+                        <div class="flex flex-row justify-between items-center w-full ">
+                            <div class="flex flex-row items-center">
+                                @if(in_array($lesson->id, $completedLessons))
+                                    <div class="text-green-700 mr-2">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                @endif
+                                <div class="text-sm my-auto leading-3 font-bold  {{ in_array($lesson->id, $completedLessons) ? 'text-green-700' : 'text-gray-700' }}">
+                                    <a class="ml-2"
                                        href="{{ route('courses.showLesson', ['id_lesson' => $lesson->id, 'slug' => $course->slug]) }}">
                                         Lección {{ $loop->iteration }}.- {{ $lesson->name }}
                                     </a>
-                                    <a class="ml-2 px-3 py-1 text-xs rounded-full bg-blue-500 text-gray-200"
-                                       href="{{ route('courses.showLesson', ['id_lesson' => $lesson->id, 'slug' => $course->slug]) }}">ver
-                                        Lección</a>
-                                    <span class="ml-2 px-3 py-1 text-xs rounded-full bg-blue-500 text-gray-200"> mostrar/ocultar recursos </span>
                                 </div>
+                            </div>
+                            <div class="flex flex-row items-center">
+                                <a class="ml-2 px-3 py-1 text-xs rounded-full bg-blue-500 text-gray-200"
+                                   href="{{ route('courses.showLesson', ['id_lesson' => $lesson->id, 'slug' => $course->slug]) }}">ver
+                                    Lección</a>
                             </div>
                         </div>
                     </div>
-                    @if(isset($resources[$lesson->id]))
-                        <ul class="ml-10">
-                            @foreach ($resources[$lesson->id] as $resource)
-                                <li>
-                                    <div class="flex flex-row justify-between items-center border-2 py-1 my-2 bg-green-200 bg-opacity-50 rounded-xl">
-                                        <div class="flex items-center ml-4">
-                                            <a href="{{ $resource->url }}" target="_blank" class="flex items-center">
-                                                <i class="fa-solid fa-file-alt mr-2"></i>
-                                                <span>{{ $resource->name }}</span>
-                                            </a>
-                                            <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full
-                                                @switch($resource->type)
-                                                    @case('documento')
-                                                        bg-blue-100 text-blue-600
-                                                        @break
-                                                    @case('imagen')
-                                                        bg-green-100 text-green-600
-                                                        @break
-                                                    @case('url')
-                                                        bg-green-400 bg-opacity-50 text-green-600
-                                                        @break
-                                                    @case('video')
-                                                        bg-red-100 text-red-600
-                                                        @break
-                                                    @default
-                                                        bg-gray-100 text-gray-600
-                                                @endswitch
-                                            ">
-                                                {{ ucfirst($resource->type) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
                 </div>
             </li>
         @endforeach
