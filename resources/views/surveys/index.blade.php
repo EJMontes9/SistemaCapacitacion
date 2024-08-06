@@ -181,8 +181,14 @@
     const createCategorySelect = document.getElementById('create-category');
     const createHasYesNo = document.getElementById('create-has_yes_no');
     const createHasRating = document.getElementById('create-has_rating');
+        createCategorySelect.addEventListener('change', function() {
+            if (createCategorySelect.value !== null && createCategorySelect.value !== '') {
+                createHasYesNo.checked = false;
+                createHasRating.checked = true;
+            }
+        });
 
-    createCategorySelect.addEventListener('change', function() {
+    /*createCategorySelect.addEventListener('change', function() {
         if (createCategorySelect.value === 'lesson') {
             createHasYesNo.checked = true;
             createHasRating.checked = false;
@@ -190,20 +196,24 @@
             createHasYesNo.checked = false;
             createHasRating.checked = true;
         }
-    });
+    });*/
 
     const editCategorySelect = document.getElementById('edit-category');
     const editHasYesNo = document.getElementById('edit-has_yes_no');
     const editHasRating = document.getElementById('edit-has_rating');
 
     editCategorySelect.addEventListener('change', function() {
-        if (editCategorySelect.value === 'lesson') {
+        if (editCategorySelect.value !== null && editCategorySelect.value !== '') {
+            editHasYesNo.checked = false;
+            editHasRating.checked = true;
+        }
+        /*if (editCategorySelect.value === 'lesson') {
             editHasYesNo.checked = true;
             editHasRating.checked = false;
         } else if (editCategorySelect.value === 'course') {
             editHasYesNo.checked = false;
             editHasRating.checked = true;
-        }
+        }*/
     });
 });
 
@@ -216,13 +226,17 @@
         const createHasRating = document.getElementById('create-has_rating');
 
         createCategorySelect.addEventListener('change', function() {
-            if (createCategorySelect.value === 'lesson') {
+            if (createCategorySelect.value !== null && createCategorySelect.value !== '') {
+                createHasYesNo.checked = false;
+                createHasRating.checked = true;
+            }
+            /*if (createCategorySelect.value === 'lesson') {
                 createHasYesNo.checked = true;
                 createHasRating.checked = false;
             } else if (createCategorySelect.value === 'course') {
                 createHasYesNo.checked = false;
                 createHasRating.checked = true;
-            }
+            }*/
         });
 
         const editCategorySelect = document.getElementById('edit-category');
@@ -230,13 +244,17 @@
         const editHasRating = document.getElementById('edit-has_rating');
 
         editCategorySelect.addEventListener('change', function() {
-            if (editCategorySelect.value === 'lesson') {
+            if (editCategorySelect.value !== null && editCategorySelect.value !== '') {
+                editHasYesNo.checked = false;
+                editHasRating.checked = true;
+            }
+            /*if (editCategorySelect.value === 'lesson') {
                 editHasYesNo.checked = true;
                 editHasRating.checked = false;
             } else if (editCategorySelect.value === 'course') {
                 editHasYesNo.checked = false;
                 editHasRating.checked = true;
-            }
+            }*/
         });
     });
 
@@ -471,123 +489,123 @@
         }
     }
 
-    async function getSectionIdFromLesson(lessonId) {
-        const lesson = await fetch(`/api/lessons/${lessonId}`).then(response => response.json());
-        return lesson.section_id;
-    }
+        async function getSectionIdFromLesson(lessonId) {
+            const lesson = await fetch(`/api/lessons/${lessonId}`).then(response => response.json());
+            return lesson.section_id;
+        }
 
-    function saveEditSurvey() {
-        const surveyId = document.getElementById('edit-survey-id').value;
-        const formData = new FormData(document.getElementById('edit-survey-form'));
-        const data = Object.fromEntries(formData.entries());
+        function saveEditSurvey() {
+            const surveyId = document.getElementById('edit-survey-id').value;
+            const formData = new FormData(document.getElementById('edit-survey-form'));
+            const data = Object.fromEntries(formData.entries());
 
-        // Convierte los checkboxes a booleanos
-        data.has_yes_no = !!data.has_yes_no;
-        data.has_rating = !!data.has_rating;
-        data.has_comment = !!data.has_comment;
+            // Convierte los checkboxes a booleanos
+            data.has_yes_no = !!data.has_yes_no;
+            data.has_rating = !!data.has_rating;
+            data.has_comment = !!data.has_comment;
 
-        // Asegúrate de que target_id sea un número
-        data.target_id = parseInt(data.target_id);
+            // Asegúrate de que target_id sea un número
+            data.target_id = parseInt(data.target_id);
 
-        fetch(`/api/surveys/${surveyId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-                });
-            }
-            return response.json();
-        })
-        .then(survey => {
-            alert('Encuesta actualizada con éxito');
-            document.getElementById('editModal').classList.add('hidden');
-            loadSurveys();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert(`Error al actualizar la encuesta: ${error.message}`);
-        });
-    }
-
-    function saveCreateSurvey() {
-        const formData = new FormData(document.getElementById('create-survey-form'));
-        const data = Object.fromEntries(formData.entries());
-
-        // Convierte los checkboxes a booleanos
-        data.has_yes_no = !!data.has_yes_no;
-        data.has_rating = !!data.has_rating;
-        data.has_comment = !!data.has_comment;
-
-        // Asegúrate de que target_id sea un número
-        data.target_id = parseInt(data.target_id);
-
-        fetch('/api/surveys', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-                });
-            }
-            return response.json();
-        })
-        .then(survey => {
-            alert('Encuesta creada con éxito');
-            document.getElementById('createModal').classList.add('hidden');
-            loadSurveys();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert(`Error al crear la encuesta: ${error.message}`);
-        });
-    }
-
-    function deleteSurvey(id) {
-        if (confirm('¿Estás seguro de querer eliminar esta encuesta?')) {
-            fetch(`/api/surveys/${id}`, {
-                method: 'DELETE',
+            fetch(`/api/surveys/${surveyId}`, {
+                method: 'PUT',
                 headers: {
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json'
-                }
+                },
+                body: JSON.stringify(data)
             })
-            .then(response => {
-                if (response.ok) {
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(survey => {
+                    alert('Encuesta actualizada con éxito');
+                    document.getElementById('editModal').classList.add('hidden');
                     loadSurveys();
-                } else {
-                    alert('Error al eliminar la encuesta');
-                }
-            });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`Error al actualizar la encuesta: ${error.message}`);
+                });
         }
-    }
 
-    function openCreateModal() {
-        resetForm('create-survey-form');
-        document.getElementById('createModal').classList.remove('hidden');
-    }
+        function saveCreateSurvey() {
+            const formData = new FormData(document.getElementById('create-survey-form'));
+            const data = Object.fromEntries(formData.entries());
 
-    function resetForm(formId) {
-        document.getElementById(formId).reset();
-        const categorySelect = document.getElementById(`${formId.split('-')[0]}-category`);
-        if (categorySelect) {
-            categorySelect.dispatchEvent(new Event('change'));
+            // Convierte los checkboxes a booleanos
+            data.has_yes_no = !!data.has_yes_no;
+            data.has_rating = !!data.has_rating;
+            data.has_comment = !!data.has_comment;
+
+            // Asegúrate de que target_id sea un número
+            data.target_id = parseInt(data.target_id);
+
+            fetch('/api/surveys', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(survey => {
+                    alert('Encuesta creada con éxito');
+                    document.getElementById('createModal').classList.add('hidden');
+                    loadSurveys();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`Error al crear la encuesta: ${error.message}`);
+                });
         }
-    }
+
+        function deleteSurvey(id) {
+            if (confirm('¿Estás seguro de querer eliminar esta encuesta?')) {
+                fetch(`/api/surveys/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            loadSurveys();
+                        } else {
+                            alert('Error al eliminar la encuesta');
+                        }
+                    });
+            }
+        }
+
+        function openCreateModal() {
+            resetForm('create-survey-form');
+            document.getElementById('createModal').classList.remove('hidden');
+        }
+
+        function resetForm(formId) {
+            document.getElementById(formId).reset();
+            const categorySelect = document.getElementById(`${formId.split('-')[0]}-category`);
+            if (categorySelect) {
+                categorySelect.dispatchEvent(new Event('change'));
+            }
+        }
 
     function closeModals() {
         document.getElementById('editModal').classList.add('hidden');

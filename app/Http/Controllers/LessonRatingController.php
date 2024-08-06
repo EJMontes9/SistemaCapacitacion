@@ -95,8 +95,6 @@ class LessonRatingController extends Controller
                 ->groupBy('lessons.id', 'surveys.id', 'lessons.name')
                 ->get();
 
-            dd($ratings);
-
             $userId = request('user_id');
 
             $userRatings = DB::table('survey_responses')
