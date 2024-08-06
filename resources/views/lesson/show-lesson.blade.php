@@ -23,8 +23,8 @@
                 </div>
             </div>
             <div class="flex flex-col w-1/4">
-                <h2 class="text-2xl  text-gray-900 mb-4">FeedBack</h2>
-                <div class="lesson-content" id="encuesta" data-userId='{{ Auth::user()->id }}'>
+                <h2 class="text-2xl  text-gray-900 mb-4 hidden">FeedBack</h2>
+                <div class="lesson-content hidden" id="encuesta" data-userId='{{ Auth::user()->id }}'>
                     @if ($hasResponded)
                         <p class="mt-2 text-sm text-gray-600">Ya has respondido a esta encuesta.</p>
                     @endif
