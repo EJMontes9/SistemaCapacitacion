@@ -56,7 +56,7 @@
             </li>
         @endforeach
     @endif
-</ul>
+
 @forelse ($evaluation as $evl)
     <li>
         <div class="flex flex-row justify-between border-2  py-2 rounded-xl mt-3 bg-cyan-200 text-cyan-900 border-cyan-300">
@@ -102,9 +102,7 @@
         </div>
     </li>
     @endforelse
-    </ul>
-
-    </ul>
+</ul>
 
     @if (!$isEnrolled)
         <script>
