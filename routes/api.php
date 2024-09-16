@@ -137,26 +137,31 @@ Route::get('/course-completion-stats/{courseId}', function ($courseId) {
         ->where('course_id', $courseId)
         ->count();
 
-    $completedStudents = DB::table('course_user')
-        ->join('lesson_user', 'course_user.user_id', '=', 'lesson_user.user_id')
-        ->join('lessons', 'lesson_user.lesson_id', '=', 'lessons.id')
-        ->join('sections', 'lessons.section_id', '=', 'sections.id')
-        ->where('sections.course_id', $courseId)
-        ->select('course_user.user_id')
-        ->groupBy('course_user.user_id')
-        ->havingRaw('COUNT(lesson_user.lesson_id) = (
-            SELECT COUNT(*)
-            FROM lessons
-            JOIN sections ON lessons.section_id = sections.id
-            WHERE sections.course_id = ?
-        )', [$courseId])
-        ->get()
-        ->count();
+    $completedStudents = DB::select(
+        'SELECT COUNT(*) AS completed_users
+        FROM (
+            SELECT course_user.user_id
+            FROM course_user
+            JOIN sections ON course_user.course_id = sections.course_id
+            JOIN lessons ON sections.id = lessons.section_id
+            LEFT JOIN lesson_user ON course_user.user_id = lesson_user.user_id AND lessons.id = lesson_user.lesson_id
+            WHERE course_user.course_id = ?
+            GROUP BY course_user.user_id
+            HAVING COUNT(lesson_user.lesson_id) = (
+                SELECT COUNT(lessons.id)
+                FROM lessons
+                JOIN sections ON lessons.section_id = sections.id
+                WHERE sections.course_id = ?
+            )
+        ) AS completed',
+        [$courseId, $courseId]
+    );
 
-    $incompleteStudents = $totalStudents - $completedStudents;
+    $completedStudentsCount = $completedStudents[0]->completed_users;
+    $incompleteStudents = $totalStudents - $completedStudentsCount;
 
     return response()->json([
-        'completed' => $completedStudents,
+        'completed' => $completedStudentsCount,
         'incomplete' => $incompleteStudents,
     ]);
 });

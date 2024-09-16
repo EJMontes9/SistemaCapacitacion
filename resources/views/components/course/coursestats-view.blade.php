@@ -29,6 +29,7 @@
                     return response.json();
                 })
                 .then(data => {
+                    console.log('Los datos del grafico son',data);
                     const ctx = document.getElementById('completionChart').getContext('2d');
                     if (completionChart) {
                         completionChart.data.datasets[0].data = [data.completed, data.incomplete];
