@@ -296,13 +296,25 @@ class courseController extends Controller
 
         $sections = $course->sections()->get();
         $sectionStats = $sections->map(function ($section) {
+            $completedStudentsCount = DB::selectOne('
+        SELECT COUNT(*) AS completed_users
+        FROM (
+            SELECT lesson_user.user_id
+            FROM lessons
+            JOIN lesson_user ON lessons.id = lesson_user.lesson_id
+            WHERE lessons.section_id = ?
+            GROUP BY lesson_user.user_id
+            HAVING COUNT(lesson_user.lesson_id) = (SELECT COUNT(*) FROM lessons WHERE section_id = ?)
+        ) AS subquery
+    ', [$section->id, $section->id])->completed_users;
+
             return [
                 'name' => $section->name,
-                'completed_students_count' => $section->completedStudents()
+                'completed_students_count' => $completedStudentsCount,
             ];
         });
 
-        return response()->json($sectionStats);
+        return response()->json($sectionStats->values()->all());
     }
 
     public function getAverageGradesBySection($courseId, $userId) {

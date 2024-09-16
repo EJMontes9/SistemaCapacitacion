@@ -18,7 +18,7 @@ class section extends Model
     //Relacion uno a muchos
     public function lessons()
     {
-        return $this->hasMany('App\Models\lessons');
+        return $this->hasMany(Lesson::class);
     }
 
     //Relacion uno a muchos inversa
@@ -29,17 +29,19 @@ class section extends Model
 
     public function completedStudents()
     {
-        return $this->hasManyThrough(
-            User::class,
-            Lesson::class,
-            'section_id', // Clave foránea en la tabla de lecciones
-            'id', // Clave foránea en la tabla de usuarios
-            'id', // Clave local en la tabla de secciones
-            'id' // Clave local en la tabla de usuarios
-        )->join('lesson_user', 'lessons.id', '=', 'lesson_user.lesson_id')
-            ->select('users.id')
-            ->distinct()
-            ->count();
+        $totalLessonsCount = $this->lessons()->count();
+
+        $completedUsersSubquery = $this->lessons()
+            ->join('lesson_user', 'lessons.id', '=', 'lesson_user.lesson_id')
+            ->select('lesson_user.user_id')
+            ->groupBy('lesson_user.user_id')
+            ->havingRaw('COUNT(lesson_user.lesson_id) = ?', [$totalLessonsCount]);
+
+        $completedUsersCount = DB::table(DB::raw("({$completedUsersSubquery->toSql()}) as subquery"))
+            ->mergeBindings($completedUsersSubquery->getQuery())
+            ->count(DB::raw('DISTINCT subquery.user_id'));
+
+        return $completedUsersCount;
     }
 
 }
