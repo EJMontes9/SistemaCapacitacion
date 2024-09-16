@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('survey_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('lesson_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('lesson_id'); // Change this line
             $table->enum('response', ['yes', 'no']);
             $table->timestamps();
         });

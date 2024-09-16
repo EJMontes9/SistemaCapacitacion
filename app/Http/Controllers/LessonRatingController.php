@@ -135,10 +135,11 @@ class LessonRatingController extends Controller
 
     public function store(Request $request)
     {
+
         try {
             $validatedData = $request->validate([
                 'user_id' => 'required|exists:users,id',
-                'lesson_id' => 'required|exists:lessons,id',
+                'lesson_id' => 'required',
                 'survey_id' => 'required|exists:surveys,id',
                 'rating' => 'required|integer|between:1,5',
             ]);
