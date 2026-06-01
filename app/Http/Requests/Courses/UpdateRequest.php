@@ -55,7 +55,10 @@ class UpdateRequest extends FormRequest
             'category_id' => 'required|integer',
             'user_id' => 'required|integer',
             'image' => 'mimes:jpg,jpeg,png|max:10240',
-            //'image' => 'required',
+            'modalidad_id' => 'nullable|exists:catalog_items,id',
+            'periodo_id' => 'nullable|exists:catalog_items,id',
+            'sede_id' => 'nullable|exists:catalog_items,id',
+            'nivel_id' => 'nullable|exists:catalog_items,id',
         ];
     }
 }

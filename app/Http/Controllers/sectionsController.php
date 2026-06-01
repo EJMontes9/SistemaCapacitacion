@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Sections\StoreRequest;
 use App\Http\Requests\Sections\UpdateRequest;
-use App\Models\courses;
+use App\Models\Course;
 use App\Models\platforms;
 use App\Models\section;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +44,7 @@ class sectionsController extends Controller
     // monolitos
     public function create()
     {
-        $courses = courses::where('user_id', Auth::id())->pluck('title', 'id');
+        $courses = Course::where('user_id', Auth::id())->pluck('title', 'id');
         $platform = platforms::pluck('name', 'id');
 
         return view('sections.create-sections', compact('courses', 'platform'));
@@ -64,7 +64,7 @@ class sectionsController extends Controller
 
     public function edit(section $section)
     {
-        $courses = courses::pluck('title', 'id');
+        $courses = Course::pluck('title', 'id');
         $platform = platforms::pluck('name', 'id');
 
         return view('sections.edit-sections', compact('courses', 'platform', 'section'));

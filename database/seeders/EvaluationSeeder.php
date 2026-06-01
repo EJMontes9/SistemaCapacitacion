@@ -4,13 +4,13 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Evaluation;
-use App\Models\Courses;
+use App\Models\Course;
 
 class EvaluationSeeder extends Seeder
 {
     public function run()
     {
-        $courses = Courses::take(3)->get();
+        $courses = Course::take(3)->get();
 
         foreach ($courses as $course) {
             Evaluation::create([

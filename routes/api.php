@@ -7,6 +7,8 @@ use App\Http\Controllers\LessonRatingController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SurveyResponseController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ModuleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -33,11 +35,11 @@ Route::get('/sections/{id}', [CourseController::class, 'getSection']); //api de 
 Route::get('/lessons/{id}', [CourseController::class, 'getLesson']); //api de datos de lección
 
 // Route::get('/modules2', 'App\Http\Controllers\LessonsController@index2');
-Route::get('/modules', 'App\Http\Controllers\ModuleController@index');
-Route::get('/modules/{id}', 'ModuleController@show');
-Route::post('/modules', 'ModuleController@store');
-Route::put('/modules/{id}', 'ModuleController@update');
-Route::delete('/modules/{id}', 'ModuleController@destroy');
+Route::get('/modules', [ModuleController::class, 'index']);
+Route::get('/modules/{id}', [ModuleController::class, 'show']);
+Route::post('/modules', [ModuleController::class, 'store']);
+Route::put('/modules/{id}', [ModuleController::class, 'update']);
+Route::delete('/modules/{id}', [ModuleController::class, 'destroy']);
 
 // creando secciones por api
 Route::get('/sections', 'App\Http\Controllers\sectionsController@index');
@@ -171,3 +173,9 @@ Route::get('/user-courses-progress/{userId}', [CourseUserController::class, 'get
 Route::get('/course-progress/{courseId}/{userId}', [CourseUserController::class, 'getCourseProgress']);
 
 Route::get('/course/{courseId}/user/{userId}/average-grades', [CourseController::class, 'getAverageGradesBySection']);
+
+// Asistencia
+Route::post('/attendance/mark/{sessionId}', [AttendanceController::class, 'markAttendance']);
+Route::get('/attendance/course/{courseId}', [AttendanceController::class, 'getCourseAttendance']);
+Route::get('/attendance/student/{courseId}/{userId}', [AttendanceController::class, 'getStudentAttendance']);
+Route::apiResource('class-sessions', AttendanceController::class);

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\Lesson;
+use App\Models\Section;
 use App\Models\Survey;
 use DB;
 use Exception;
@@ -41,9 +44,9 @@ class SurveyController extends Controller
             ]);
 
             $targetTypes = [
-                'lesson' => 'App\Models\Lesson',
-                'course' => 'App\Models\Course',
-                'section' => 'App\Models\Section',
+                'lesson' => Lesson::class,
+                'course' => Course::class,
+                'section' => Section::class,
             ];
 
             $validatedData['target_type'] = $targetTypes[$validatedData['category']];

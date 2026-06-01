@@ -12,7 +12,7 @@ class ResourceSeeder extends Seeder
         Resource::create([
             'name' => 'Documento de ejemplo',
             'url' => 'https://ejemplo.com/documento.pdf',
-            'type' => 'pdf',
+            'type' => 'documento',
             'lesson_id' => 1, // Asegúrate de que este ID de sección exista
         ]);
 

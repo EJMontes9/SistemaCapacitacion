@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Courses\StoreRequest;
 use App\Http\Requests\Courses\UpdateRequest;
 use App\Models\category;
-use App\Models\courses;
+use App\Models\Course;
 use App\Models\Evaluation;
 use App\Models\lesson;
 use App\Models\level;
@@ -34,7 +34,7 @@ class courseController extends Controller
         // }
         // fin dumpdata de secciones
 
-        $courses = courses::query()
+        $courses = Course::query()
             ->when($filterByUser, function ($query) use ($userId) {
                 return $query->where('user_id', $userId); // Filtra los cursos por el user_id solo cuando el filtro de usuario está activo
             })
@@ -55,13 +55,14 @@ class courseController extends Controller
         $categories = Category::pluck('name', 'id');
         $levels = Level::pluck('name', 'id');
 
-        // Obtener todas las secciones existentes
         $existingSections = section::all();
 
-        // Agregar un dump para verificar los datos
-        // dump($existingSections);
+        $modalidades = \App\Models\Catalog::getItemsBySlug('modalidades')->pluck('name', 'id');
+        $periodos = \App\Models\Catalog::getItemsBySlug('periodos')->pluck('name', 'id');
+        $sedes = \App\Models\Catalog::getItemsBySlug('sedes')->pluck('name', 'id');
+        $niveles = \App\Models\Catalog::getItemsBySlug('niveles')->pluck('name', 'id');
 
-        return view('courses.create-courses', compact('categories', 'levels', 'existingSections'));
+        return view('courses.create-courses', compact('categories', 'levels', 'existingSections', 'modalidades', 'periodos', 'sedes', 'niveles'));
     }
 
     /**
@@ -76,7 +77,7 @@ class courseController extends Controller
             $request->validated()['image']->move(public_path('images/courses'), $filename);
         }
 
-        $course = courses::create($data); // Crear el curso
+        $course = Course::create($data); // Crear el curso
 
         // Guardar las secciones
         $newCourseSections = [];
@@ -105,7 +106,7 @@ class courseController extends Controller
      */
     public function show(string $slug)
     {
-        $course = Courses::where('slug', $slug)->firstOrFail();
+        $course = Course::where('slug', $slug)->firstOrFail();
         $sections = Section::where('course_id', $course->id)->get();
         $user = User::findOrFail($course->user_id);
         $name_user = $user->name;
@@ -122,11 +123,15 @@ class courseController extends Controller
             ->whereNotNull('response_number')
             ->exists();
 
-        return view('courses-view', compact('course', 'sections', 'lessons', 'name_user', 'evaluation', 'resources', 'hasResponded'));
+        $mediaFiles = $course->mediaFiles()->orderBy('created_at', 'desc')->get();
+        $announcements = \App\Models\Announcement::published()->active()->forCourse($course->id)->latest()->get();
+        $assignments = \App\Models\Assignment::forCourse($course->id)->with('submissions')->latest()->get();
+
+        return view('courses-view', compact('course', 'sections', 'lessons', 'name_user', 'evaluation', 'resources', 'hasResponded', 'mediaFiles', 'announcements', 'assignments'));
     }
 
     // paso 2 de creación, las secciones
-    public function paso2(courses $course)
+    public function paso2(Course $course)
     {
         $categories = category::pluck('name', 'id');
         $levels = level::pluck('name', 'id');
@@ -134,7 +139,7 @@ class courseController extends Controller
         $lesson = [];
         $resources = [];
         $numSection = 1;
-        $course = courses::where('id', $course->id)->firstOrFail();
+        $course = Course::where('id', $course->id)->firstOrFail();
         $section = section::where('course_id', $course->id)->get();
         $section_id = section::where('course_id', $course->id)->pluck('id');
 
@@ -154,12 +159,18 @@ class courseController extends Controller
      * Show the form for editing a specific course.
      * The categories and levels are fetched to be used in the form.
      */
-    public function edit(courses $course)
+    public function edit(Course $course)
     {
         $categories = category::pluck('name', 'id');
         $levels = level::pluck('name', 'id');
 
-        return view('courses.edit-courses', compact('categories', 'levels', 'course'));
+        $modalidades = \App\Models\Catalog::getItemsBySlug('modalidades')->pluck('name', 'id');
+        $periodos = \App\Models\Catalog::getItemsBySlug('periodos')->pluck('name', 'id');
+        $sedes = \App\Models\Catalog::getItemsBySlug('sedes')->pluck('name', 'id');
+        $niveles = \App\Models\Catalog::getItemsBySlug('niveles')->pluck('name', 'id');
+        $assignments = \App\Models\Assignment::forCourse($course->id)->latest()->get();
+
+        return view('courses.edit-courses', compact('categories', 'levels', 'course', 'modalidades', 'periodos', 'sedes', 'niveles', 'assignments'));
     }
 
     /**
@@ -167,7 +178,7 @@ class courseController extends Controller
      * The course data is validated using the UpdateRequest class before being updated.
      * If an image is provided, it is stored on the server and the course's image field is updated.
      */
-    public function update(UpdateRequest $request, courses $course)
+    public function update(UpdateRequest $request, Course $course)
     {
         $data = $request->validated();
 
@@ -184,7 +195,7 @@ class courseController extends Controller
     /**
      * Remove a specific course from the database.
      */
-    public function destroy(courses $course)
+    public function destroy(Course $course)
     {
         $course->delete();
 
@@ -198,7 +209,7 @@ class courseController extends Controller
     {
         $lesson = [];
         $numSection = 1;
-        $course = courses::where('slug', $slug)->firstOrFail();
+        $course = Course::where('slug', $slug)->firstOrFail();
         $section = section::where('course_id', $course->id)->get();
         $section_id = section::where('course_id', $course->id)->pluck('id');
         foreach ($section_id as $id) {
@@ -211,7 +222,7 @@ class courseController extends Controller
         $evaluation = Evaluation::query()->where('course_id', $course->id)->get();
 
         $userId = auth()->id();
-        $hasResponded = \DB::table('survey_responses')
+        $hasResponded = DB::table('survey_responses')
             ->where('user_id', $userId)
             ->where('lesson_id', $id_lesson)
             ->exists();
@@ -258,7 +269,7 @@ class courseController extends Controller
 
     public function list() // listado de cursos
     {
-        $courses = Courses::select('id', 'title')->get();
+        $courses = Course::select('id', 'title')->get();
         return response()->json($courses);
     }
 
@@ -288,7 +299,7 @@ class courseController extends Controller
 
     public function getSectionCompletionStats($courseId)
     {
-        $course = Courses::find($courseId);
+        $course = Course::find($courseId);
 
         if (!$course) {
             return response()->json(['error' => 'Course not found'], 404);

@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $numCursos = \App\Models\Courses::count();
+        $numCursos = \App\Models\Course::count();
         $numAlumnos = \App\Models\User::whereHas('roles', function ($query) {
             $query->where('name', 'alumno');
         })->count();

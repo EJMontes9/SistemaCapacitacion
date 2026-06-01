@@ -5,14 +5,14 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
-use App\Models\Courses;
+use App\Models\Course;
 
 class CourseUserSeeder extends Seeder
 {
     public function run()
     {
-        $users = User::take(4)->get();
-        $course = Courses::first();
+        $course = Course::first();
+        $users = User::take(5)->get();
 
         foreach ($users as $user) {
             DB::table('course_user')->insert([

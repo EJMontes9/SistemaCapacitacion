@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CourseUser;
 use App\Models\User;
-use App\Models\Courses;
+use App\Models\Course;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +39,7 @@ class CourseUserController extends Controller
 
     public function courseUsers($courseId)
     {
-        $course = Courses::findOrFail($courseId);
+        $course = Course::findOrFail($courseId);
         $users = $course->users;
 
         return response()->json($users);
@@ -63,7 +63,7 @@ class CourseUserController extends Controller
     public function subscribeUser2($courseId, $userId)
     {
         // Verificar si el curso y el usuario existen
-        $course = Courses::findOrFail($courseId);
+        $course = Course::findOrFail($courseId);
         $user = User::findOrFail($userId);
 
         // Verificar si ya existe la suscripción

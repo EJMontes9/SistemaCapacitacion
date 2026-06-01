@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ \App\Models\Setting::getValue('site_name', config('app.name', 'Laravel')) }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -19,6 +19,24 @@
 
     <!-- Styles -->
     @livewireStyles
+
+    <style>
+        :root {
+            --primary-color: {{ \App\Models\Setting::getValue('primary_color', '#3B82F6') }};
+            --secondary-color: {{ \App\Models\Setting::getValue('secondary_color', '#1E40AF') }};
+        }
+        .text-primary-dynamic { color: var(--primary-color); }
+        .bg-primary-dynamic { background-color: var(--primary-color); }
+        .text-secondary-dynamic { color: var(--secondary-color); }
+        .bg-secondary-dynamic { background-color: var(--secondary-color); }
+        .hover\:text-primary-dynamic:hover { color: var(--primary-color); }
+        .hover\:bg-primary-dynamic:hover { background-color: var(--primary-color); }
+    </style>
+
+    @php $favicon = \App\Models\Setting::getValue('site_favicon'); @endphp
+    @if($favicon)
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $favicon) }}">
+    @endif
 </head>
 
 {{-- redirigir al path principal si no hay sesion --}}
@@ -32,7 +50,7 @@
 </script>
 
 
-<body class="font-sans antialiased">
+<body class="font-sans antialiased overflow-hidden">
     <x-banner />
     <div class="min-h-screen bg-gray-100">
         @livewire('navigation-menu')
@@ -60,7 +78,7 @@
                             </button>
                             <a href="/dashboard" class="text-xl font-bold flex items-center lg:ml-2.5 w-1/3 h-1/3">
                                 <x-application-mark class="block h-9 w-auto  lg:block lg:pl-32" />
-                                <span class="self-center whitespace-nowrap ml-3">StudyApp</span>
+                                <span class="self-center whitespace-nowrap ml-3">{{ \App\Models\Setting::getValue('site_name', 'StudyApp') }}</span>
                             </a>
                             <div class="hidden lg:block lg:pl-32">
                                 <div class="mt-1 relative lg:w-64">
@@ -104,7 +122,7 @@
                             </button>
                             <a href="" class="text-xl font-bold flex items-center lg:ml-2.5 w-1/3 h-1/3">
                                 <x-application-mark class="block h-9 w-auto" />
-                                <span class="self-center whitespace-nowrap ml-3">StudyApp</span>
+                                <span class="self-center whitespace-nowrap ml-3">{{ \App\Models\Setting::getValue('site_name', 'StudyApp') }}</span>
                             </a>
                             <form action="/dashboard" method="GET" class="hidden lg:block lg:pl-32">
                                 <div class="mt-1 relative lg:w-64">
@@ -152,7 +170,7 @@
         @endif
 
         <!-- Page Content -->
-        <main class="flex flex-col min-h-screen">
+        <main class="flex flex-col h-screen">
             <div class="flex-1 overflow-hidden bg-white pt-16 flex flex-col relative">
                 <div class="bg-gray-900 opacity-50 hidden fixed inset-0 z-10" id="sidebarBackdrop"></div>
                 <div id="main-content" class="flex-1 flex flex-col overflow-y-auto lg:ml-64">

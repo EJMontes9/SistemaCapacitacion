@@ -66,6 +66,31 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="text-lg text-gray-600">Intentos máximos</label>
+                            <input type="number" name="max_attempts" id="max_attempts" value="3" min="1"
+                                class="border-2 border-gray-300 p-2 w-full rounded-lg">
+                        </div>
+                        <div>
+                            <label class="text-lg text-gray-600">Límite de tiempo (minutos)</label>
+                            <input type="number" name="time_limit" id="time_limit" value="" min="0" placeholder="Sin límite"
+                                class="border-2 border-gray-300 p-2 w-full rounded-lg">
+                        </div>
+                        <div>
+                            <label class="text-lg text-gray-600">Puntaje mínimo para aprobar</label>
+                            <input type="number" name="passing_score" id="passing_score" value="5.00" step="0.01" min="0"
+                                class="border-2 border-gray-300 p-2 w-full rounded-lg">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="allow_retake" id="allow_retake" value="1" checked
+                                class="form-checkbox h-5 w-5 text-blue-600">
+                            <span class="ml-2 text-lg text-gray-600">Permitir reintento</span>
+                        </label>
+                    </div>
+
                     <div id="questions-container" class="shadow-md rounded-md p-5 mb-2">
                         <!-- Las tarjetas de las preguntas se agregarán aquí -->
                     </div>

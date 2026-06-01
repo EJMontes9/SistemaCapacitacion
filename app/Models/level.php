@@ -12,6 +12,6 @@ class level extends Model
 
     //Relacion uno a muchos
     public function courses(){
-        return $this->hasMany('App\Models\courses');
+        return $this->hasMany(Course::class);
     }
 }

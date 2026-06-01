@@ -61,7 +61,10 @@ class StoreRequest extends FormRequest
             'category_id' => 'required|integer',
             'user_id' => 'required|integer',
             'image' => 'required',
-            //'image' => 'required|image',
+            'modalidad_id' => 'nullable|exists:catalog_items,id',
+            'periodo_id' => 'nullable|exists:catalog_items,id',
+            'sede_id' => 'nullable|exists:catalog_items,id',
+            'nivel_id' => 'nullable|exists:catalog_items,id',
         ];
     }
 }
