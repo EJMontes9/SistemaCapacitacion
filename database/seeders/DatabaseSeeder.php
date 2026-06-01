@@ -36,6 +36,9 @@ class DatabaseSeeder extends Seeder
         $this->call(EvaluationSeeder::class);
         $this->call(EvaluationResultSeeder::class);
         $this->call(CourseUserSeeder::class);
-        
+        $this->call(SettingsSeeder::class);
+        $this->call(MenuSeeder::class);
+        $this->call(CatalogSeeder::class);
+        $this->call(CalendarSeeder::class);
     }
 }

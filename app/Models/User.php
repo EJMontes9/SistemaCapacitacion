@@ -73,13 +73,13 @@ class User extends Authenticatable
     //Relacion de uno a muchos
     public function courses_dictated()
     {
-        return $this->hasMany('App/Models/courses');
+        return $this->hasMany(Course::class);
     }
 
     //Relacion de muchos a muchos
     public function courses_enrolled()
     {
-        return $this->belongsToMany('App/Models/courses');
+        return $this->belongsToMany(Course::class);
     }
 
     public function reviews()
@@ -104,7 +104,7 @@ class User extends Authenticatable
 
     public function courses(): BelongsToMany
     {
-        return $this->belongsToMany(courses::class, 'course_user', 'user_id', 'course_id');
+        return $this->belongsToMany(Course::class, 'course_user', 'user_id', 'course_id');
     }
 
 }

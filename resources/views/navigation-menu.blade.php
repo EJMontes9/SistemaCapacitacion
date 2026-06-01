@@ -1,3 +1,10 @@
+@php
+    $primaryColor = \App\Models\Setting::getValue('primary_color', '#3B82F6');
+    $secondaryColor = \App\Models\Setting::getValue('secondary_color', '#1E40AF');
+    $mainMenu = \App\Models\Menu::where('slug', 'main')->first();
+    $menuItems = $mainMenu ? $mainMenu->items : collect();
+@endphp
+
 <aside id="sidebar"
        class="fixed hidden z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75"
        aria-label="Sidebar">
@@ -5,88 +12,58 @@
         <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div class="flex-1 px-3 bg-white divide-y space-y-1">
                 <ul class="space-y-2 pb-2">
-                    <li>
-                        <a href="/dashboard"
-                           class="text-base font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ url()->current() == url('/dashboard') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
-                            <svg class="w-6 h-6 text-gray-500 group-hover:text-gray-900 transition duration-75"
-                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-                                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
-                            </svg>
-                            <span class="ml-3">Dashboard</span>
-                        </a>
-                    </li>
-                    @hasanyrole('Alumno')
-                    <!--<li>
-                        <a href="/mycourses"
-                           class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ url()->current() == url('/mycourses') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
-                            <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
-                                      clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="ml-3 flex-1 whitespace-nowrap">Mis cursos</span>
-                        </a>
-                    </li>-->
-                    @endhasanyrole
-                    @hasanyrole('Instructor|Admin')
-                    <li>
-                        <a href="{{ route('courses.create') }}"
-                           class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ url()->current() == url('/courses/create') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
-                            <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
-                                      clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="ml-3 flex-1 whitespace-nowrap">Creacion de cursos</span>
-                        </a>
-                    </li>
-                    @endhasanyrole
-                    <li>
-                        <a href="/listcourse"
-                           class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ request()->is('courses') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
-                            <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
-                                      clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="ml-3 flex-1 whitespace-nowrap">Cursos</span>
-                        </a>
-                    </li>
-                    @role('Instructor')
-                    <li>
-                        <a href="{{ route('surveys.index') }}"
-                           class="text-base font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ Route::is('surveys.*') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
-                            <i class="fa-solid fa-comments ml-1 font-bold"></i>
-                            <span class="ml-3 flex-1 whitespace-nowrap">Encuestas</span>
-                        </a>
-                    </li>
-                    @endrole
-                    @role('Instructor')
-                    <li>
-                        <a href="{{ route('evaluations.index') }}"
-                           class="text-base font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ Route::is('evaluations.*') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
-                            <i class="fa-solid fa-list-check ml-1 font-bold"></i>
-                            <span class="ml-3 flex-1 whitespace-nowrap">Mis Evaluaciones</span>
-                        </a>
-                    </li>
-                    @endrole
-                    <!-- Solo el perfil de Administrador podrá ver esta sección -->
-                    @role('Admin')
-                    <li>
-                        <a href="{{ route('admin.home') }}"
-                           class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                            <i class="fa-solid fa-screwdriver-wrench ml-1"></i>
-                            <span class="ml-3 flex-1 whitespace-nowrap">Administración</span>
-                        </a>
-                    </li>
-                    @endrole
+                    @foreach($menuItems as $item)
+                        @if($item->isVisible())
+                            @if($item->children->count() > 0 && $item->children->where('is_active', true)->count() > 0)
+                                <li x-data="{ open: false }">
+                                    <button @click="open = !open"
+                                        class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group w-full text-left">
+                                        @if($item->icon)
+                                            <i class="{{ $item->icon }} ml-1 text-gray-500 group-hover:text-gray-900"></i>
+                                        @else
+                                            <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        @endif
+                                        <span class="ml-3 flex-1 whitespace-nowrap">{{ $item->title }}</span>
+                                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                    <ul x-show="open" class="space-y-1 pl-4 mt-1">
+                                        @foreach($item->children as $child)
+                                            @if($child->isVisible())
+                                                <li>
+                                                    <a href="{{ $child->getUrl() }}"
+                                                       target="_top"
+                                                       class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ Request::url() === url($child->getUrl()) ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
+                                                        <span class="ml-3 flex-1 whitespace-nowrap">{{ $child->title }}</span>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                <li>
+                                    <a href="{{ $item->getUrl() }}" target="_top"
+                                       class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ Request::url() === url($item->getUrl()) ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
+                                        @if($item->icon)
+                                            <i class="{{ $item->icon }} ml-1 text-gray-500 group-hover:text-gray-900"></i>
+                                        @else
+                                            <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        @endif
+                                        <span class="ml-3 flex-1 whitespace-nowrap">{{ $item->title }}</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endif
+                    @endforeach
                 </ul>
                 <div class="space-y-2 pt-2">
-                    <a href="{{ route('profile.show') }}"
+                    <a href="{{ route('profile.show') }}" target="_top"
                        class="text-base font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group {{ Route::is('profile.show') ? '!text-blue-500 bg-blue-100' : 'text-gray-900' }}">
                         <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
                              fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -124,4 +101,16 @@
             </div>
         </div>
     </div>
+    <style>
+        .active-link {
+            color: {{ $primaryColor }} !important;
+            background-color: {{ $primaryColor }}15 !important;
+        }
+        .hover\:bg-primary-dynamic:hover {
+            background-color: {{ $primaryColor }} !important;
+        }
+        .text-primary-dynamic {
+            color: {{ $primaryColor }} !important;
+        }
+    </style>
 </aside>

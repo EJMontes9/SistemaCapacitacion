@@ -17,7 +17,7 @@ class review extends Model
 
     //Relacion uno a muchos inversa
     public function course(){
-        return $this->belongsTo('App\Models\courses');
+        return $this->belongsTo(Course::class);
     }
 
 }

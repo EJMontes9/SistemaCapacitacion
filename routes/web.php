@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\SurveyController;
 
@@ -25,6 +26,8 @@ Route::get('/send-test-email', function () {
 
     return 'Test email sent!';
 });
+
+Route::get('/certificates/verify/{code}', 'App\Http\Controllers\Admin\CertificateController@verify')->name('certificates.verify');
 
 Route::get('/', function () {
     return view('welcome');
@@ -99,5 +102,25 @@ Route::middleware([
 //Ruta para evaluaciones report busqueda
 //Route::get('/reporte-por-alumno/{courseId}/{sectionId}', [EvaluationController::class, 'reportePorAlumno'])->name('reportePorAlumno');
 
+// Fase 2 - Evaluación y seguimiento avanzado
+    Route::get('/gradebook', [EvaluationController::class, 'gradebookIndex'])->name('evaluations.gradebook.index');
+    Route::get('/gradebook/{courseId}', [EvaluationController::class, 'gradebook'])->name('evaluations.gradebook');
+    Route::get('/gradebook/{courseId}/export', [EvaluationController::class, 'gradebookExport'])->name('evaluations.gradebook.export');
+    Route::get('/question-bank/{courseId}', [EvaluationController::class, 'questionBank'])->name('evaluations.question-bank');
+    Route::post('/question-bank/{courseId}', [EvaluationController::class, 'storeQuestionBank'])->name('evaluations.question-bank.store');
+    Route::post('/evaluations/{evaluation}/import-from-bank', [EvaluationController::class, 'importFromBank'])->name('evaluations.import-from-bank');
+
+    // Asistencia para estudiantes
+    Route::get('/my-attendance', [AttendanceController::class, 'myAttendance'])->name('attendance.my');
+    Route::get('/my-attendance/{courseId}', [AttendanceController::class, 'myAttendanceByCourse'])->name('attendance.my.course');
+
+    // Dashboard de asistencia por curso (instructor/admin)
+    Route::get('/course-attendance/{courseId}', [AttendanceController::class, 'courseAttendanceDashboard'])->name('attendance.course.dashboard');
+
+    // Calendario para estudiantes
+    Route::get('/calendar', 'App\Http\Controllers\Admin\CalendarController@studentIndex')->name('calendar.student');
+
+    // Asignaciones - entregas de estudiantes
+    Route::post('/assignments/{assignment}/submit', 'App\Http\Controllers\Admin\AssignmentController@submit')->name('assignments.submit');
 });
 

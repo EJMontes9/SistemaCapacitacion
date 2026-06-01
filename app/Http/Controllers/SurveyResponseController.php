@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SurveyResponse;
 use App\Models\Survey;
-use App\Models\Courses;
+use App\Models\Course;
 use App\Models\Lesson;
 use Exception;
 use Illuminate\Http\Request;

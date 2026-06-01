@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class section extends Model
 {
@@ -22,9 +23,9 @@ class section extends Model
     }
 
     //Relacion uno a muchos inversa
-    public function courses()
+    public function course()
     {
-        return $this->belongsTo('App\Models\courses');
+        return $this->belongsTo(Course::class);
     }
 
     public function completedStudents()

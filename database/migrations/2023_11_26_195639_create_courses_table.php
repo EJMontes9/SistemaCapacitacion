@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\courses;
+use App\Models\Course;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('subtitle');
             $table->text('description');
-            $table->enum('status', [courses::BORRADOR, courses::REVISION, courses::PUBLICADO])->default(1);
+            $table->enum('status', [Course::BORRADOR, Course::REVISION, Course::PUBLICADO])->default(1);
             $table->string('slug');
             $table->string('image')->nullable();
 

@@ -9,7 +9,7 @@ class Option extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['options', 'correct_answer', 'question_id'];
+    protected $fillable = ['options', 'correct_answer', 'question_id', 'optionable_id', 'optionable_type'];
 
     protected $attributes = [
         'correct_answer' => false,
@@ -18,5 +18,10 @@ class Option extends Model
     public function question()
     {
         return $this->belongsTo(Question::class);
+    }
+
+    public function optionable()
+    {
+        return $this->morphTo();
     }
 }

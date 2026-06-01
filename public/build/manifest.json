@@ -24,9 +24,14 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-4dae7b53.css",
+    "file": "assets/app-e658f34c.css",
     "isEntry": true,
     "src": "resources/css/app.css"
+  },
+  "resources/js/alert.js": {
+    "file": "assets/alert-befe48c5.js",
+    "isEntry": true,
+    "src": "resources/js/alert.js"
   },
   "resources/js/app.css": {
     "file": "assets/app-71c41fb9.css",
@@ -52,5 +57,10 @@
     "file": "assets/courses-view-646fbb31.js",
     "isEntry": true,
     "src": "resources/js/courses-view.js"
+  },
+  "resources/js/createevaluation.js": {
+    "file": "assets/createevaluation-682deeeb.js",
+    "isEntry": true,
+    "src": "resources/js/createevaluation.js"
   }
 }
